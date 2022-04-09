@@ -48,10 +48,8 @@ public class AudioCutterController implements Observer{
 		model=new AudioCutterModel();
 		model.addObserver(this);
 		String s=settings.getString(SETTING__VIEW_HORIZONTALDIVIDER);
-		if(s!=null) {
-			model.setHorizontalDividerPosition(Integer.parseInt(s));
-			model.setAudiodataViewWidth(Integer.parseInt(s));
-		}
+		model.setHorizontalDividerPosition(Integer.parseInt(s));
+		model.setAudiodataViewWidth(Integer.parseInt(s));
 		statusController=new StatusController(model);
 		view=new AudioCutterView(model,this);
 		view.setBounds(fixScreenBounds(settings.getRectangle(SETTING__VIEW_BOUNDS, AudioCutterModel.getDefaultFrameBounds()),AudioCutterModel.getDefaultFrameSize()));
@@ -86,7 +84,7 @@ public class AudioCutterController implements Observer{
 		view.setVisible(true);
 		audioPlayer=AudioPlayer.getInstance(model,this);
 		audioPlayer.start();
-		if(model.getFFmpegExecutablePath()!=null) {
+		if(model.getStatusMessage()==null) {
 			model.setStatusMessage(new StatusMessage(StatusMessage.Type.INFO,"ready"));
 		}
 	}

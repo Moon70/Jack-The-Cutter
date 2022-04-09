@@ -27,6 +27,7 @@ public class CreateTempWavFileWorker extends SwingWorker<Void, Void> {
 	@Override
 	public Void doInBackground() {
 		logger.debug("creating temp wav file...");
+		model.setStatusMessage(null);
 		StatusMessage statusMessage=new StatusMessage(StatusMessage.Type.INFO,"ready");
 		controller.setBusy(true);
 		try {
@@ -48,7 +49,9 @@ public class CreateTempWavFileWorker extends SwingWorker<Void, Void> {
 			statusMessage=new StatusMessage(StatusMessage.Type.ERROR,e.getMessage());
 		}finally {
 			controller.setBusy(false);
-			model.setStatusMessage(statusMessage);
+			if(model.getStatusMessage()==null) {
+				model.setStatusMessage(statusMessage);
+			}
 		}
 		return null;
 	}

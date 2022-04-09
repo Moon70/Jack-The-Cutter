@@ -25,7 +25,7 @@ public class AudioCutterModel extends Observable{
 	public static final int DEFAULT_FRAME_WIDTH=1290;
 	public static final int DEFAULT_FRAME_HEIGHT=(int)(DEFAULT_FRAME_WIDTH/SECTIOAUREA);
 	private Rectangle frameBounds=new Rectangle(0,0,DEFAULT_FRAME_WIDTH,DEFAULT_FRAME_HEIGHT);
-	private int horizontalDividerPosition=933;
+	private int horizontalDividerPosition;
 	private int verticalDividerPosition=24;
 
 	public static final int ZOOM_MIN=0;
@@ -384,7 +384,14 @@ public class AudioCutterModel extends Observable{
 		setZoom(0);
 	}
 
+	public StatusMessage getStatusMessage() {
+		return statusMessage;
+	}
+
 	public void setStatusMessage(StatusMessage statusMessage) {
+		if(statusMessage==null) {
+			return;
+		}
 		this.statusMessage=statusMessage;
 		sendMessage(statusMessage);
 	}

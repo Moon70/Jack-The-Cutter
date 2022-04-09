@@ -19,7 +19,7 @@ public class DetermineFFmpegVersionService implements ExecOutputCallback{
 	private String version;
 	private static final int TIMEOUT_SECONDS=5;
 
-	public void createWavFileFromMediaFile(AudioCutterModel model,DetermineFFmpegVersionWorker worker) {
+	public void determineFFmpegVersion(AudioCutterModel model,DetermineFFmpegVersionWorker worker) {
 		this.model=model;
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);

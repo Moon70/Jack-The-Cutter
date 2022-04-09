@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lunartools</groupId>
 	<artifactId>audiocutter</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>AudioCutter</name>
 	<description>GUI for lossless cutting audio files using FFmpeg</description>
 	<properties>
@@ -77,7 +77,7 @@
 		<dependency>
 			<groupId>lunartools</groupId>
 			<artifactId>lunartools</artifactId>
- 			<version>1.0.0</version>
+ 			<version>1.0.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
