@@ -29,4 +29,8 @@ public class StatusMessage {
 		return throwable;
 	}
 
+	public String toString() {
+		return type+", "+message;
+	}
+
 }
