@@ -34,3 +34,7 @@ For more infos please visit [Jack-The-Cutter wiki](https://github.com/Moon70/Jac
 ![](Jack-The-Cutter_screenshot.jpg)
 
 
+[![Download Jack-The-Cutter](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/jack-the-cutter/files/latest/download)
+
+
+[![Download Jack-The-Cutter](https://img.shields.io/sourceforge/dt/jack-the-cutter.svg)](https://sourceforge.net/projects/jack-the-cutter/files/latest/download)
