@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lunartools</groupId>
 	<artifactId>audiocutter</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<name>AudioCutter</name>
 	<description>GUI for lossless cutting audio files using FFmpeg</description>
 	<properties>
