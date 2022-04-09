@@ -49,7 +49,7 @@ public class CutMediaFileWorker extends SwingWorker<Void, Void> {
 			for(int i=0;i<audioSections.size();i++) {
 				AudioSection audioSection=audioSections.get(i);
 				String sectionFilename=audioSection.getName();
-				if(sectionFilename.trim().length()==0) {
+				if(sectionFilename==null || sectionFilename.trim().length()==0) {
 					continue;
 				}
 				File fileCut=new File(sectionsFolder,sectionFilename+mediaFileExtension);
