@@ -2,18 +2,19 @@ package lunartools.audiocutter.gui.buttonpanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
+import lunartools.audiocutter.AudioCutterController;
 import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioSection;
 import lunartools.audiocutter.player.AudioPlayer;
 
 public class ButtonsActionListener implements ActionListener{
 	private AudioCutterModel model;
+	private AudioCutterController controller;
 	private ButtonPanel view;
 
-	public ButtonsActionListener(AudioCutterModel model,ButtonPanel audioCutterView) {
+	public ButtonsActionListener(AudioCutterModel model,AudioCutterController controller,ButtonPanel audioCutterView) {
 		this.model=model;
+		this.controller=controller;
 		this.view=audioCutterView;
 	}
 
@@ -65,28 +66,7 @@ public class ButtonsActionListener implements ActionListener{
 	}
 
 	private void action_cut() {
-		ArrayList<AudioSection> audioSections=model.getAudioSections();
-		int cursorPos=model.getCursorPositionSampleNumber();
-		if(audioSections.size()==0) {
-			audioSections.add(new AudioSection(0));
-			audioSections.add(new AudioSection(cursorPos));
-			model.setAudioSections(audioSections);
-			return;
-		}else {
-			for(int i=0;i<audioSections.size();i++) {
-				AudioSection audioSection=audioSections.get(i);
-				if(audioSection.getPosition()==cursorPos) {
-					return;
-				}
-				if(audioSection.getPosition()>cursorPos) {
-					audioSections.add(i, new AudioSection(cursorPos));
-					model.setAudioSections(audioSections);
-					return;
-				}
-			}
-			audioSections.add(new AudioSection(cursorPos));
-			model.setAudioSections(audioSections);
-		}
+		controller.action_CutAtCursorPosition();
 	}
 
 }

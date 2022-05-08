@@ -60,7 +60,7 @@ public class ProjectXmlService implements ProjectfileTagnames{
 		String pathMediafile=projectfileXmlHandler.getMediaFilePath();
 		File fileMediafile=new File(pathMediafile);
 		if(!fileMediafile.exists()) {
-			throw new FileNotFoundException();
+			throw new FileNotFoundException("file >"+fileMediafile.getAbsolutePath()+"< does not exist");
 		}
 		ArrayList<AudioSection> audioSections=projectfileXmlHandler.getAudioSections();
 		model.setProjectFile(projectFile);

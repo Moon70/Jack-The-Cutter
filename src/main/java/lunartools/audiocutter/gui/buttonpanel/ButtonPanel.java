@@ -36,7 +36,7 @@ public class ButtonPanel extends JPanel implements Observer{
 		this.model=model;
 		this.setLayout(null);
 
-		ActionListener buttonActionListener=new ButtonsActionListener(model,this);
+		ActionListener buttonActionListener=new ButtonsActionListener(model,controller,this);
 
 		int buttonWidth=32;
 		int buttonHeight=30;

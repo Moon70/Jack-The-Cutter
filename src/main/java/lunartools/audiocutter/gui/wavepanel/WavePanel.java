@@ -85,16 +85,19 @@ public abstract class WavePanel extends JPanel implements Observer{
 		g.setColor(getBackground());
 		g.fillRect(0,0,audioViewWidth,panelHeightWithoutScale);
 
-		g.setColor(Color.GRAY);
-		g.drawLine(channelOffsetX, channel1CenterY, channelOffsetX+audioViewWidth, channel1CenterY);
-		g.drawLine(channelOffsetX, channel2CenterY, channelOffsetX+audioViewWidth, channel2CenterY);
-
 		if(!model.hasAudiodata()) {
+			g.setColor(Color.GRAY);
+			g.drawLine(channelOffsetX, channel1CenterY, channelOffsetX+audioViewWidth, channel1CenterY);
+			g.drawLine(channelOffsetX, channel2CenterY, channelOffsetX+audioViewWidth, channel2CenterY);
 			return;
 		}
 
 		drawSelectedSectionBackground(g);
 		drawSelectionBackground(g);
+
+		g.setColor(Color.GRAY);
+		g.drawLine(channelOffsetX, channel1CenterY, channelOffsetX+audioViewWidth, channel1CenterY);
+		g.drawLine(channelOffsetX, channel2CenterY, channelOffsetX+audioViewWidth, channel2CenterY);
 
 		byte[] audioDataBytes=model.getAudiodata();
 		int index=0;
