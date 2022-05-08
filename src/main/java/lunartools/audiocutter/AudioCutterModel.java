@@ -40,6 +40,8 @@ public class AudioCutterModel extends Observable{
 	private File sectionsFolder;
 	private byte[] audiodata;
 
+	private File cueSheetFile;
+
 	private int viewStartInSamples;
 	private int viewEndInSamples;
 
@@ -148,6 +150,14 @@ public class AudioCutterModel extends Observable{
 
 	public void setProjectFile(File projectFile) {
 		this.projectFile = projectFile;
+	}
+
+	public File getCueSheetFile() {
+		return cueSheetFile;
+	}
+
+	public void setCueSheetFile(File cueSheetFile) {
+		this.cueSheetFile = cueSheetFile;
 	}
 
 	public boolean isProjectDirty() {

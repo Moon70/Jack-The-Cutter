@@ -23,7 +23,8 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 	JMenuItem menuitemEditEnd;
 	private JMenuItem menuitemPlay;
 	private JMenuItem menuitemSelectAndZoom;
-	private JMenuItem menuitemRemove;
+	JMenuItem menuitemDeleteLeftCutpoint;
+	JMenuItem menuitemDeleteRightCutpoint;
 
 	public SectionTablePopupMenu(AudioCutterModel model,final TablePanel tablePanel) {
 		super();
@@ -52,10 +53,15 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 
 		this.add(new JPopupMenu.Separator());
 
-		menuitemRemove=new JMenuItem("remove");
-		this.add(menuitemRemove);
-		menuitemRemove.addActionListener(this);
-		menuitemRemove.setIcon(ImageTools.createImageIcon("/icons/DeleteSection.png"));
+		menuitemDeleteLeftCutpoint=new JMenuItem("delete left cutpoint");
+		this.add(menuitemDeleteLeftCutpoint);
+		menuitemDeleteLeftCutpoint.addActionListener(this);
+		menuitemDeleteLeftCutpoint.setIcon(ImageTools.createImageIcon("/icons/DeleteLeftCutpoint.png"));
+
+		menuitemDeleteRightCutpoint=new JMenuItem("delete right cutpoint");
+		this.add(menuitemDeleteRightCutpoint);
+		menuitemDeleteRightCutpoint.addActionListener(this);
+		menuitemDeleteRightCutpoint.setIcon(ImageTools.createImageIcon("/icons/DeleteRightCutpoint.png"));
 	}
 
 	@Override
@@ -104,9 +110,17 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 			}else {
 				model.setViewRangeInSamples(audioSection.getPosition(),audioSectionNext.getPosition());
 			}
-
-		}else if(object==menuitemRemove) {
+		}else if(object==menuitemDeleteLeftCutpoint) {
 			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			audioSections.remove(selectedRow);
+			model.setAudioSections(audioSections);
+			selectedRow=tablePanel.table.convertRowIndexToView(selectedRow-1);
+			tablePanel.table.setRowSelectionInterval(selectedRow, selectedRow);;
+		}else if(object==menuitemDeleteRightCutpoint) {
+			AudioSection selectedAudioSection=model.getAudioSection(selectedRow);
+			AudioSection nextAudioSection=model.getAudioSection(selectedRow+1);
+			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			nextAudioSection.setPosition(selectedAudioSection.getPosition());
 			audioSections.remove(selectedRow);
 			model.setAudioSections(audioSections);
 		}

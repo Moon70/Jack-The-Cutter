@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -23,6 +24,8 @@ import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.player.AudioPlayer;
 import lunartools.audiocutter.projectfile.ProjectFileFilter;
 import lunartools.audiocutter.projectfile.ProjectXmlService;
+import lunartools.audiocutter.worker.AutoCutWorker;
+import lunartools.audiocutter.worker.CreateCueSheetWorker;
 import lunartools.audiocutter.worker.CreateTempWavFileWorker;
 import lunartools.audiocutter.worker.CutMediaFileWorker;
 import lunartools.audiocutter.worker.DetermineFFmpegVersionWorker;
@@ -30,11 +33,11 @@ import lunartools.progressdialog.ProgressDialog;
 
 public class AudioCutterController implements Observer{
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterController.class);
-	private static final String SETTING__VIEW_BOUNDS = "ViewBounds";
-	private static final String SETTING__VIEW_HORIZONTALDIVIDER = "HDivider";
-	private static final String SETTING__AUDIOFILE_PATH = "AudiofilePath";
-	private static final String SETTING__PROJECTFILE_PATH = "ProjectfilePath";
-	private static final String SETTING__FFMPEG_PATH = "FFmpegExecutable";
+	private static final String SETTING__VIEW_BOUNDS = 				"ViewBounds";
+	private static final String SETTING__VIEW_HORIZONTALDIVIDER =	"HDivider";
+	private static final String SETTING__AUDIOFILE_PATH = 			"AudiofilePath";
+	private static final String SETTING__PROJECTFILE_PATH = 		"ProjectfilePath";
+	private static final String SETTING__FFMPEG_PATH = 				"FFmpegExecutable";
 	private Settings settings;
 	private AudioCutterModel model;
 	private AudioCutterView view;
@@ -243,6 +246,41 @@ public class AudioCutterController implements Observer{
 				)!=JOptionPane.OK_OPTION;
 	}
 
+	private boolean userCanceledCueSheetFileExistsDialogue(File choosenCueSheetFile) {
+		return JOptionPane.showConfirmDialog(
+				view,
+				"CUE sheet already exists, OK to overwrite?\n"+choosenCueSheetFile.getAbsolutePath(),
+				AudioCutterModel.PROGRAMNAME,
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null
+				)!=JOptionPane.OK_OPTION;
+	}
+
+	private boolean userCanceledWavFileExistsDialogue(File wavFile) {
+		return JOptionPane.showConfirmDialog(
+				view,
+				"Creating this CUE sheet overwrites this WAV file:\n"+wavFile.getAbsolutePath(),
+				AudioCutterModel.PROGRAMNAME,
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null
+				)!=JOptionPane.OK_OPTION;
+	}
+
+	public boolean userCanceledAutocutDialogue() {
+		return JOptionPane.showOptionDialog(
+				view,
+				"Autodetected cut points get\nadded to existing cut points",
+				AudioCutterModel.PROGRAMNAME,
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null,
+				null,
+				null
+				)!=JOptionPane.OK_OPTION;
+	}
+
 	public void action_OpenMediaFile() {
 		if(model.isProjectDirty() && userCanceledUnsavedChangesDialogue()){
 			return;
@@ -308,8 +346,8 @@ public class AudioCutterController implements Observer{
 		if(fileChooser.showOpenDialog(view)==JFileChooser.APPROVE_OPTION) {
 			File choosenProjectFile=fileChooser.getSelectedFile();
 			String filename=choosenProjectFile.getName();
-			if(!filename.toLowerCase().endsWith(".project")) {
-				choosenProjectFile=new File(choosenProjectFile.getParentFile(),filename+".project");
+			if(!filename.toLowerCase().endsWith(ProjectFileFilter.FILEEXTENSION)) {
+				choosenProjectFile=new File(choosenProjectFile.getParentFile(),filename+ProjectFileFilter.FILEEXTENSION);
 			}
 			if(!choosenProjectFile.exists()) {
 				JOptionPane.showMessageDialog(
@@ -353,10 +391,20 @@ public class AudioCutterController implements Observer{
 		}else if(settings.getString(SETTING__PROJECTFILE_PATH)!=null){
 			File lastProjectFile=new File(settings.getString(SETTING__PROJECTFILE_PATH));
 			fileChooser.setCurrentDirectory(lastProjectFile.getParentFile());
+			String mediaFilename=model.getMediaFile().getName();
+			int p=mediaFilename.lastIndexOf('.');
+			if(p!=-1) {
+				fileChooser.setSelectedFile(new File(lastProjectFile.getParentFile(),mediaFilename.substring(0, p)));
+			}
 		}else {
 			File currentMediaFile=model.getMediaFile();
 			if(currentMediaFile!=null) {
 				fileChooser.setCurrentDirectory(currentMediaFile.getParentFile());
+				String mediaFilename=currentMediaFile.getName();
+				int p=mediaFilename.lastIndexOf('.');
+				if(p!=-1) {
+					fileChooser.setSelectedFile(new File(currentMediaFile.getParentFile(),mediaFilename.substring(0, p)));
+				}
 			}
 		}
 		fileChooser.setDialogTitle("Select project file to save");
@@ -364,8 +412,8 @@ public class AudioCutterController implements Observer{
 		if(fileChooser.showSaveDialog(view)==JFileChooser.APPROVE_OPTION) {
 			File choosenProjectFile=fileChooser.getSelectedFile();
 			String filename=choosenProjectFile.getName();
-			if(!filename.toLowerCase().endsWith(".project")) {
-				choosenProjectFile=new File(choosenProjectFile.getParentFile(),filename+".project");
+			if(!filename.toLowerCase().endsWith(ProjectFileFilter.FILEEXTENSION)) {
+				choosenProjectFile=new File(choosenProjectFile.getParentFile(),filename+ProjectFileFilter.FILEEXTENSION);
 			}
 			if(choosenProjectFile.exists() && userCanceledProjectFileExistsDialogue(choosenProjectFile)) {
 				return;
@@ -393,6 +441,14 @@ public class AudioCutterController implements Observer{
 		model.closeProject();
 	}
 
+	public void action_AutoCut() {
+		if(model.hasAudioSections() && userCanceledAutocutDialogue()) {
+			return;
+		}
+		AutoCutWorker worker=new AutoCutWorker(model,this);
+		ProgressDialog.executeWithProgresssDialog(view,AudioCutterModel.PROGRAMNAME, "Autocut","",worker);
+	}
+
 	public void action_CutMediaFile() {
 		if(!model.isFFmpegAvailable()) {
 			model.setStatusMessage(new StatusMessage(StatusMessage.Type.WARNING,"please set path to FFmpeg executable"));
@@ -414,6 +470,12 @@ public class AudioCutterController implements Observer{
 			fileChooser.setSelectedFile(lastSectionsFolder);
 		}else {
 			fileChooser.setCurrentDirectory(currentMediaFile.getParentFile());
+			File projectFile=model.getProjectFile();
+			if(projectFile!=null) {
+				String projectFilename=projectFile.getName();
+				File suggestedFile=new File(currentMediaFile.getParentFile(),projectFilename.substring(0,projectFilename.length()-ProjectFileFilter.FILEEXTENSION.length()));
+				fileChooser.setSelectedFile(suggestedFile);
+			}
 		}
 		File choosenSectionFolder=null;
 		fileChooser.setDialogTitle("Select folder to save sections");
@@ -443,6 +505,34 @@ public class AudioCutterController implements Observer{
 		ProgressDialog.executeWithProgresssDialog(view,AudioCutterModel.PROGRAMNAME, "Cutting media file","",worker);
 	}
 
+	public void action_CutAtCursorPosition() {
+		createCutPointAt(model.getCursorPositionSampleNumber());
+	}
+
+	public void createCutPointAt(int sampleNumber) {
+		ArrayList<AudioSection> audioSections=model.getAudioSections();
+		if(audioSections.size()==0) {
+			audioSections.add(new AudioSection(0));
+			audioSections.add(new AudioSection(sampleNumber));
+			model.setAudioSections(audioSections);
+			return;
+		}else {
+			for(int i=0;i<audioSections.size();i++) {
+				AudioSection audioSection=audioSections.get(i);
+				if(audioSection.getPosition()==sampleNumber) {
+					return;
+				}
+				if(audioSection.getPosition()>sampleNumber) {
+					audioSections.add(i, new AudioSection(sampleNumber));
+					model.setAudioSections(audioSections);
+					return;
+				}
+			}
+			audioSections.add(new AudioSection(sampleNumber));
+			model.setAudioSections(audioSections);
+		}
+	}
+
 	public StatusController getStatusController() {
 		return statusController;
 	}
@@ -458,6 +548,55 @@ public class AudioCutterController implements Observer{
 		}else {
 			view.getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		}
+	}
+
+	public void action_CreateCueSheet() {
+		final JFileChooser fileChooser=new JFileChooser() {
+			public void updateUI() {
+				putClientProperty("FileChooser.useShellFolder", Boolean.FALSE);
+				super.updateUI();
+			}
+		};
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(new CueSheetFileFilter());
+		File currentCueSheetFile=model.getCueSheetFile();
+		if(currentCueSheetFile!=null) {
+			fileChooser.setCurrentDirectory(currentCueSheetFile.getParentFile());
+			fileChooser.setSelectedFile(currentCueSheetFile);
+		}else {
+			File currentMediaFile=model.getMediaFile();
+			if(currentMediaFile!=null) {
+				fileChooser.setCurrentDirectory(currentMediaFile.getParentFile());
+				String mediaFileName=currentMediaFile.getName();
+				int p=mediaFileName.lastIndexOf('.');
+				if(p!=-1) {
+					File suggesterCueSheetFile=new File(currentMediaFile.getParentFile(),mediaFileName.substring(0, p)+CueSheetFileFilter.FILEEXTENSION);
+					fileChooser.setSelectedFile(suggesterCueSheetFile);
+				}
+			}
+		}
+		fileChooser.setDialogTitle("Select CUE sheet to save");
+		fileChooser.setPreferredSize(new Dimension(800,(int)(800/AudioCutterModel.SECTIOAUREA)));
+		if(fileChooser.showSaveDialog(view)!=JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+
+		File fileCue=fileChooser.getSelectedFile();
+		String filename=fileCue.getName();
+		if(!filename.toLowerCase().endsWith(CueSheetFileFilter.FILEEXTENSION)) {
+			fileCue=new File(fileCue.getParentFile(),filename+CueSheetFileFilter.FILEEXTENSION);
+		}
+		if(fileCue.exists() && userCanceledCueSheetFileExistsDialogue(fileCue)) {
+			return;
+		}
+		model.setCueSheetFile(fileCue);
+		String nameCue=fileCue.getName();
+		File fileWav=new File(fileCue.getParentFile(),nameCue.substring(0, nameCue.length()-CueSheetFileFilter.FILEEXTENSION.length())+".wav");
+		if(fileWav.exists() && userCanceledWavFileExistsDialogue(fileWav)) {
+			return;
+		}
+		CreateCueSheetWorker worker=new CreateCueSheetWorker(model,this,fileCue,fileWav);
+		ProgressDialog.executeWithProgresssDialog(view,AudioCutterModel.PROGRAMNAME, "Create CUE sheet","",worker);
 	}
 
 }

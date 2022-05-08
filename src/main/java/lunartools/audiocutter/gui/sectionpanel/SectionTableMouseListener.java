@@ -36,6 +36,8 @@ public class SectionTableMouseListener extends MouseAdapter{
 		if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
 			((SectionTablePopupMenu)popupMenu).menuitemEditStart.setEnabled(row>0);
 			((SectionTablePopupMenu)popupMenu).menuitemEditEnd.setEnabled(row<model.getAudioSections().size()-1);
+			((SectionTablePopupMenu)popupMenu).menuitemDeleteLeftCutpoint.setEnabled(row>0);
+			((SectionTablePopupMenu)popupMenu).menuitemDeleteRightCutpoint.setEnabled(row<model.getAudioSections().size()-1);
 			popupMenu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}

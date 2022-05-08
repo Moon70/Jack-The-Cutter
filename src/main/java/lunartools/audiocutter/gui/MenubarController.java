@@ -15,15 +15,17 @@ import lunartools.audiocutter.gui.preferencespanel.PreferencesController;
 import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 
 public class MenubarController implements ActionListener, Observer{
-	private static final String ACTIONCOMMAND__OPEN_MEDIAFILE = "openMediafile";
-	private static final String ACTIONCOMMAND__OPEN_PROJECT = "loadProject";
-	private static final String ACTIONCOMMAND__SAVE_PROJECTAS = "saveProjectAs";
-	private static final String ACTIONCOMMAND__SAVE_PROJECT = "saveProject";
-	private static final String ACTIONCOMMAND__CLOSE_PROJECT = "closeProject";
-	private static final String ACTIONCOMMAND__CUT_MEDIAFILE = "cutMediaFile";
-	private static final String ACTIONCOMMAND__PREFERENCES = "preferences";
-	private static final String ACTIONCOMMAND__ABOUT = "about";
-	private static final String ACTIONCOMMAND__EXIT = "exit";
+	private static final String ACTIONCOMMAND__OPEN_MEDIAFILE = 	"openMediafile";
+	private static final String ACTIONCOMMAND__OPEN_PROJECT = 		"loadProject";
+	private static final String ACTIONCOMMAND__SAVE_PROJECTAS = 	"saveProjectAs";
+	private static final String ACTIONCOMMAND__SAVE_PROJECT = 		"saveProject";
+	private static final String ACTIONCOMMAND__CLOSE_PROJECT = 		"closeProject";
+	private static final String ACTIONCOMMAND__CUT_MEDIAFILE = 		"cutMediaFile";
+	private static final String ACTIONCOMMAND__PREFERENCES = 		"preferences";
+	private static final String ACTIONCOMMAND__AUTOCUT = 			"autocut";
+	private static final String ACTIONCOMMAND__CREATE_CUESHEET =	"createCuesheet";
+	private static final String ACTIONCOMMAND__ABOUT = 				"about";
+	private static final String ACTIONCOMMAND__EXIT = 				"exit";
 
 	private AudioCutterModel model;
 	private AudioCutterController controller;
@@ -37,6 +39,9 @@ public class MenubarController implements ActionListener, Observer{
 	private MenuItem menuItem_ProcessFile;
 	private MenuItem menuItem_Preferences;
 
+	private MenuItem menuItem_Autocut;
+	private MenuItem menuItem_CreateCuesheet;
+
 	public MenubarController(AudioCutterModel model,AudioCutterController controller,AudioCutterView view) {
 		this.model=model;
 		this.controller=controller;
@@ -47,7 +52,9 @@ public class MenubarController implements ActionListener, Observer{
 	public MenuBar createMenubar() {
 		MenuBar menuBar=new MenuBar();
 		menuBar.add(createFileMenu());
+		menuBar.add(createToolsMenu());
 		menuBar.add(createHelpMenu());
+		refresh();
 		return menuBar;
 	}
 
@@ -87,8 +94,20 @@ public class MenubarController implements ActionListener, Observer{
 		menuItem.setActionCommand(ACTIONCOMMAND__EXIT);
 		menu.add(menuItem);
 
-		refresh();
+		return menu;
+	}
 
+	private Menu createToolsMenu() {
+		Menu menu=new Menu("Tools");
+		menu.addActionListener(this);
+
+		menuItem_Autocut=new MenuItem("Auto cut");
+		menuItem_Autocut.setActionCommand(ACTIONCOMMAND__AUTOCUT);
+		menu.add(menuItem_Autocut);
+
+		menuItem_CreateCuesheet=new MenuItem("Create CUE Sheet");
+		menuItem_CreateCuesheet.setActionCommand(ACTIONCOMMAND__CREATE_CUESHEET);
+		menu.add(menuItem_CreateCuesheet);
 		return menu;
 	}
 
@@ -120,6 +139,10 @@ public class MenubarController implements ActionListener, Observer{
 			controller.action_CutMediaFile();
 		}else if(actionCommand.equals(ACTIONCOMMAND__PREFERENCES)){
 			new PreferencesController(model).editPreferences(view);
+		}else if(actionCommand.equals(ACTIONCOMMAND__AUTOCUT)){
+			controller.action_AutoCut();
+		}else if(actionCommand.equals(ACTIONCOMMAND__CREATE_CUESHEET)){
+			controller.action_CreateCueSheet();
 		}else if(actionCommand.equals(ACTIONCOMMAND__ABOUT)){
 			view.showMessageboxAbout();
 		}
@@ -151,6 +174,9 @@ public class MenubarController implements ActionListener, Observer{
 		menuItem_SaveProject.setEnabled(audiodataAvailable&ffmpegAvailable&model.isProjectDirty()&projectNameAvailable);
 		menuItem_CloseProject.setEnabled(audiodataAvailable&ffmpegAvailable);
 		menuItem_ProcessFile.setEnabled(audiodataAvailable&ffmpegAvailable&model.hasAudioSections());
+
+		menuItem_Autocut.setEnabled(audiodataAvailable);
+		menuItem_CreateCuesheet.setEnabled(audiodataAvailable);
 	}
 
 }

@@ -77,13 +77,11 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 			}
 		}
 		if(createSelection) {
-			int selectionEnd=model.getSelectionEndInSamples();
-			if(selectionEnd>sampleNumber) {
-				model.setSelectionRangeInSamples(sampleNumber, selectionBegin);
+			if(selectionBegin<sampleNumber) {
+				model.setSelectionRangeInSamples(selectionBegin, sampleNumber);
 			}else {
-				model.setSelectionRangeInSamples(selectionBegin,sampleNumber);
+				model.setSelectionRangeInSamples(sampleNumber,selectionBegin);
 			}
-
 		}else if(moveSectionPosition) {
 			model.setAudioSectionPosition(selectedSection, sampleNumber);
 		}
