@@ -43,9 +43,7 @@ public class AutoCutService {
 			}
 			Cutpoint cutpoint=new Cutpoint(index);
 			cutpoints.add(cutpoint);
-			System.out.print("cutpoint: "+cutpoint.getPosition());
 			finetune(cutpoint,audiobytes);
-			System.out.println(", finetune: "+cutpoint.getPosition());
 			index-=distance;
 			if(index<0) {
 				break;

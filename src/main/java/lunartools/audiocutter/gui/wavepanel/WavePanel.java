@@ -18,10 +18,10 @@ public abstract class WavePanel extends JPanel implements Observer{
 	AudioCutterModel model;
 	WaveController waveController;
 
-	static final Color COLOR_BACKGROUND_WAVE_FULL=new Color(0xf0f0ff);
-	static final Color COLOR_BACKGROUND_WAVE_ZOOM=new Color(0xf0fff0);
-	static final Color COLOR_EXTRA_ZOOM=new Color(0xe0eee0);
-	static final Color COLOR_SECTION=new Color(0xfff0e1);
+	static final Color COLOR_BACKGROUND_WAVE_FULL=new Color(0xC6E8FF);
+	static final Color COLOR_BACKGROUND_WAVE_ZOOM=new Color(0xFFFFE4);
+	static final Color COLOR_EXTRA_ZOOM=new Color(0xcccccc);
+	static final Color COLOR_SECTION=new Color(0xFFE4D5);
 	static final Color COLOR_SELECTION=new Color(0xdddddd);
 	static final Color COLOR_CURSOR=new Color(0x0099ff);
 	static final Color COLOR_CURSOR_PLAY=Color.BLACK;
@@ -37,7 +37,7 @@ public abstract class WavePanel extends JPanel implements Observer{
 	int channelHeightHalve;
 	int channel1CenterY;
 	int channel2CenterY;
-	private int panelHeightWithoutScale;
+	protected int panelHeightWithoutScale;
 	private int channel1Top;
 	private int channel1Bot;
 	private int channel2Top;
@@ -117,11 +117,11 @@ public abstract class WavePanel extends JPanel implements Observer{
 			drawAmplitudeZoom(g,i,sample1,sample2,previousSample1,previousSample2);
 
 			sample1=(sample1*(channelHeight>>1))>>15;
-			sample2=(sample2*(channelHeight>>1))>>15;
-			g.drawLine(channelOffsetX+i-1, channel1CenterY-previousSample1, channelOffsetX+i, channel1CenterY-sample1);
-			g.drawLine(channelOffsetX+i-1, channel2CenterY-previousSample2, channelOffsetX+i, channel2CenterY-sample2);
-			previousSample1=sample1;
-			previousSample2=sample2;
+		sample2=(sample2*(channelHeight>>1))>>15;
+		g.drawLine(channelOffsetX+i-1, channel1CenterY-previousSample1, channelOffsetX+i, channel1CenterY-sample1);
+		g.drawLine(channelOffsetX+i-1, channel2CenterY-previousSample2, channelOffsetX+i, channel2CenterY-sample2);
+		previousSample1=sample1;
+		previousSample2=sample2;
 		}
 
 		int cursorPosSample=model.getCursorPositionSampleNumber();

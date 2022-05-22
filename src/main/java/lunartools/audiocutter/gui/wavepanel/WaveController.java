@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.Calculator;
 
 public abstract class WaveController implements MouseListener,MouseMotionListener{
 	AudioCutterModel model;
@@ -91,7 +92,9 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {
+		model.setMousePositionSampleNumber(0);
+	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {}
@@ -110,6 +113,9 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 				view.setCursor(Cursor.getDefaultCursor());
 			}
 		}
+		int sampleNumber=convertScreenPositionToSampleNumber(e.getX());
+		model.setMousePositionSampleNumber(sampleNumber);
+
 	}
 
 	int convertScreenPositionToSampleNumber(int pixel) {

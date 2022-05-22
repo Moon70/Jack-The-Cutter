@@ -25,7 +25,6 @@ public class AudioCutterModel extends Observable{
 	public static final int DEFAULT_FRAME_WIDTH=1290;
 	public static final int DEFAULT_FRAME_HEIGHT=(int)(DEFAULT_FRAME_WIDTH/SECTIOAUREA);
 	private Rectangle frameBounds=new Rectangle(0,0,DEFAULT_FRAME_WIDTH,DEFAULT_FRAME_HEIGHT);
-	private int horizontalDividerPosition;
 	private int verticalDividerPosition=24;
 
 	public static final int ZOOM_MIN=0;
@@ -34,8 +33,10 @@ public class AudioCutterModel extends Observable{
 	private String ffmpegExecutablePath;
 	private String ffmpegVersion;
 	private File mediaFile;
+	private ArrayList<String> recentMediaFilePaths;
 	private File wavFile;
 	private File projectFile;
+	private ArrayList<String> recentProjectFilePaths;
 	private boolean projectIsDirty;
 	private File sectionsFolder;
 	private byte[] audiodata;
@@ -51,8 +52,10 @@ public class AudioCutterModel extends Observable{
 	private ArrayList<AudioSection> audioSections=new ArrayList<>();
 
 	private int audiodataViewWidth;
+	private int sectionTableWidth;
 
 	private int cursorPositionSampleNumber;
+	private int mousePositionSampleNumber;
 
 	private int playPositionSampleNumber;
 	private int playPosPreviousSample;
@@ -90,11 +93,7 @@ public class AudioCutterModel extends Observable{
 	}
 
 	public int getHorizontalDividerPosition() {
-		return horizontalDividerPosition;
-	}
-
-	public void setHorizontalDividerPosition(int horizontalDividerPosition) {
-		this.horizontalDividerPosition = horizontalDividerPosition;
+		return frameBounds.width-sectionTableWidth;
 	}
 
 	public int getVerticalDividerPosition() {
@@ -133,7 +132,24 @@ public class AudioCutterModel extends Observable{
 
 	public void setMediaFile(File mediaFile) {
 		this.mediaFile = mediaFile;
+		if(mediaFile!=null) {
+			addToRecentMediaFileList(mediaFile.getAbsolutePath());
+		}
 		sendMessage(SimpleEvents.MODEL_MEDIAFILECHANGED);
+	}
+
+	private void addToRecentMediaFileList(String absolutePath) {
+		final int maxNumberOfEntries=10;
+		recentMediaFilePaths.add(0, absolutePath);
+		for(int i=recentMediaFilePaths.size()-1;i>0;i--) {
+			if(recentMediaFilePaths.get(i).equalsIgnoreCase(absolutePath)) {
+				recentMediaFilePaths.remove(i);
+			}
+		}
+		for(int i=recentMediaFilePaths.size()-1;i>=maxNumberOfEntries;i--) {
+			recentMediaFilePaths.remove(i);
+		}
+		sendMessage(SimpleEvents.MODEL_RECENTMEDIAFILESLISTCHANGED);
 	}
 
 	public File getWavFile() {
@@ -150,6 +166,23 @@ public class AudioCutterModel extends Observable{
 
 	public void setProjectFile(File projectFile) {
 		this.projectFile = projectFile;
+		if(projectFile!=null) {
+			addToRecentProjectFileList(projectFile.getAbsolutePath());
+		}
+	}
+
+	private void addToRecentProjectFileList(String absolutePath) {
+		final int maxNumberOfEntries=10;
+		recentProjectFilePaths.add(0, absolutePath);
+		for(int i=recentProjectFilePaths.size()-1;i>0;i--) {
+			if(recentProjectFilePaths.get(i).equalsIgnoreCase(absolutePath)) {
+				recentProjectFilePaths.remove(i);
+			}
+		}
+		for(int i=recentProjectFilePaths.size()-1;i>=maxNumberOfEntries;i--) {
+			recentProjectFilePaths.remove(i);
+		}
+		sendMessage(SimpleEvents.MODEL_RECENTPROJECTSFILELISTCHANGED);
 	}
 
 	public File getCueSheetFile() {
@@ -311,6 +344,14 @@ public class AudioCutterModel extends Observable{
 		this.audiodataViewWidth = audiodataViewWidth;
 	}
 
+	public int getSectionTableWidth() {
+		return sectionTableWidth;
+	}
+
+	public void setSectionTableWidth(int sectionTableWidth) {
+		this.sectionTableWidth = sectionTableWidth;
+	}
+
 	public int getCursorPositionSampleNumber() {
 		return cursorPositionSampleNumber;
 	}
@@ -318,6 +359,15 @@ public class AudioCutterModel extends Observable{
 	public void setCursorPositionSampleNumber(int cursorPositionSampleNumber) {
 		this.cursorPositionSampleNumber = cursorPositionSampleNumber;
 		sendMessage(SimpleEvents.MODEL_CURSORCHANGED);
+	}
+
+	public int getMousePositionSampleNumber() {
+		return mousePositionSampleNumber;
+	}
+
+	public void setMousePositionSampleNumber(int mousePositionSampleNumber) {
+		this.mousePositionSampleNumber = mousePositionSampleNumber;
+		sendMessage(SimpleEvents.MODEL_MOUSESAMPLENUMBERCHANGED);
 	}
 
 	public int getPlayPositionSampleNumber() {
@@ -391,6 +441,7 @@ public class AudioCutterModel extends Observable{
 		setProjectFile(null);
 		setMediaFile(null);
 		setAudiodata(null);
+		setCueSheetFile(null);
 		setZoom(0);
 	}
 
@@ -426,6 +477,24 @@ public class AudioCutterModel extends Observable{
 	public void setFrameBounds(Rectangle frameBounds) {
 		this.frameBounds = frameBounds;
 		sendMessage(SimpleEvents.MODEL_FRAMESIZECHANGED);
+	}
+
+	public ArrayList<String> getRecentMediaFilePaths() {
+		return recentMediaFilePaths;
+	}
+
+	public void setRecentMediaFilePaths(ArrayList<String> recentMediaFilePaths) {
+		this.recentMediaFilePaths = recentMediaFilePaths;
+		sendMessage(SimpleEvents.MODEL_RECENTMEDIAFILESLISTCHANGED);
+	}
+
+	public ArrayList<String> getRecentProjectFilePaths() {
+		return recentProjectFilePaths;
+	}
+
+	public void setRecentProjectFilePaths(ArrayList<String> recentProjectFilePaths) {
+		this.recentProjectFilePaths = recentProjectFilePaths;
+		sendMessage(SimpleEvents.MODEL_RECENTPROJECTSFILELISTCHANGED);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,6 +27,8 @@ public class MenubarController implements ActionListener, Observer{
 	private static final String ACTIONCOMMAND__CREATE_CUESHEET =	"createCuesheet";
 	private static final String ACTIONCOMMAND__ABOUT = 				"about";
 	private static final String ACTIONCOMMAND__EXIT = 				"exit";
+	private static final String NAME__RECENTMEDIAFILE = 			"RecentMediaFile";
+	private static final String NAME__RECENTPROJECTFILE = 			"RecentProjectFile";
 
 	private AudioCutterModel model;
 	private AudioCutterController controller;
@@ -41,6 +44,9 @@ public class MenubarController implements ActionListener, Observer{
 
 	private MenuItem menuItem_Autocut;
 	private MenuItem menuItem_CreateCuesheet;
+
+	private Menu menuRecentMediaFiles=new Menu("Recent media files");
+	private Menu menuRecentProjectFiles=new Menu("Recent project files");
 
 	public MenubarController(AudioCutterModel model,AudioCutterController controller,AudioCutterView view) {
 		this.model=model;
@@ -66,9 +72,13 @@ public class MenubarController implements ActionListener, Observer{
 		menuItem_OpenMediaFile.setActionCommand(ACTIONCOMMAND__OPEN_MEDIAFILE);
 		menu.add(menuItem_OpenMediaFile);
 
+		menu.add(menuRecentMediaFiles);
+
 		menuItem_LoadProject=new MenuItem("Open project");
 		menuItem_LoadProject.setActionCommand(ACTIONCOMMAND__OPEN_PROJECT);
 		menu.add(menuItem_LoadProject);
+
+		menu.add(menuRecentProjectFiles);
 
 		menuItem_SaveProjectAs=new MenuItem("Save project as");
 		menuItem_SaveProjectAs.setActionCommand(ACTIONCOMMAND__SAVE_PROJECTAS);
@@ -146,6 +156,16 @@ public class MenubarController implements ActionListener, Observer{
 		}else if(actionCommand.equals(ACTIONCOMMAND__ABOUT)){
 			view.showMessageboxAbout();
 		}
+		Object object=event.getSource();
+		if(object instanceof MenuItem) {
+			MenuItem menuItem=(MenuItem)object;
+			String name=menuItem.getName();
+			if(name.equals(NAME__RECENTMEDIAFILE)) {
+				controller.action_OpenRecentMediaFile(menuItem.getActionCommand());
+			}else if(name.equals(NAME__RECENTPROJECTFILE)) {
+				controller.action_OpenRecentProjectFile(menuItem.getActionCommand());
+			}
+		}
 	}
 
 	@Override
@@ -154,11 +174,17 @@ public class MenubarController implements ActionListener, Observer{
 			refresh();
 		}else if(object==SimpleEvents.MODEL_PROJECTDIRTCHANGED) {
 			refresh();
+		}else if(object==SimpleEvents.MODEL_AUDIOSECTIONSCHANGED) {
+			refresh();
 		}else if(object instanceof StatusMessage) {
 			StatusMessage statusMessage=(StatusMessage)object;
 			if(statusMessage.getType()==StatusMessage.Type.FFMPEGVERSION) {
 				refresh();
 			}
+		}else if(object==SimpleEvents.MODEL_RECENTMEDIAFILESLISTCHANGED) {
+			updateRecentMediaFilesMenu();
+		}else if(object==SimpleEvents.MODEL_RECENTPROJECTSFILELISTCHANGED) {
+			updateRecentProjectFilesMenu();
 		}
 	}
 
@@ -177,6 +203,36 @@ public class MenubarController implements ActionListener, Observer{
 
 		menuItem_Autocut.setEnabled(audiodataAvailable);
 		menuItem_CreateCuesheet.setEnabled(audiodataAvailable);
+		menuRecentMediaFiles.setEnabled(menuRecentMediaFiles.getItemCount()>0);
+		menuRecentProjectFiles.setEnabled(menuRecentProjectFiles.getItemCount()>0);
+	}
+
+	private void updateRecentMediaFilesMenu() {
+		ArrayList<String> recentMediaFilePaths=model.getRecentMediaFilePaths();
+		menuRecentMediaFiles.removeAll();
+		for(int i=0;i<recentMediaFilePaths.size();i++) {
+			String path=recentMediaFilePaths.get(i);
+			MenuItem menuItem=new MenuItem(path);
+			menuItem.setName(NAME__RECENTMEDIAFILE);
+			menuItem.setActionCommand(path);
+			menuItem.addActionListener(this);
+			menuRecentMediaFiles.add(menuItem);
+		}
+		refresh();
+	}
+
+	private void updateRecentProjectFilesMenu() {
+		ArrayList<String> recentProjectFilePaths=model.getRecentProjectFilePaths();
+		menuRecentProjectFiles.removeAll();
+		for(int i=0;i<recentProjectFilePaths.size();i++) {
+			String path=recentProjectFilePaths.get(i);
+			MenuItem menuItem=new MenuItem(path);
+			menuItem.setName(NAME__RECENTPROJECTFILE);
+			menuItem.setActionCommand(path);
+			menuItem.addActionListener(this);
+			menuRecentProjectFiles.add(menuItem);
+		}
+		refresh();
 	}
 
 }
