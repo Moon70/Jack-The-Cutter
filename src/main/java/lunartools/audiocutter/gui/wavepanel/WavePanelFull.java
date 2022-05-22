@@ -36,8 +36,7 @@ public class WavePanelFull extends WavePanel{
 		g.setColor(COLOR_BACKGROUND_WAVE_ZOOM);
 		final int viewStart=waveController.convertSampleNumberToScreenPosition(this,model.getViewStartInSamples());
 		final int viewEnd=waveController.convertSampleNumberToScreenPosition(this,model.getViewEndInSamples());
-		final int scaleHeightHalve=scaleHeight>>1;
-		g.fillRect(viewStart, channel2Bot+scaleHeightHalve, viewEnd-viewStart, scaleHeightHalve);
+		g.fillRect(viewStart, panelHeightWithoutScale, viewEnd-viewStart, scaleHeight);
 		super.drawScale(g);
 	}
 

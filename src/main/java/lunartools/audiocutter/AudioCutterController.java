@@ -34,10 +34,13 @@ import lunartools.progressdialog.ProgressDialog;
 public class AudioCutterController implements Observer{
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterController.class);
 	private static final String SETTING__VIEW_BOUNDS = 				"ViewBounds";
-	private static final String SETTING__VIEW_HORIZONTALDIVIDER =	"HDivider";
+	//	private static final String SETTING__VIEW_HORIZONTALDIVIDER =	"HDivider";
+	private static final String SETTING__VIEW_SECTIONTABLE_WIDTH =	"SectionTableWidth";
 	private static final String SETTING__AUDIOFILE_PATH = 			"AudiofilePath";
 	private static final String SETTING__PROJECTFILE_PATH = 		"ProjectfilePath";
 	private static final String SETTING__FFMPEG_PATH = 				"FFmpegExecutable";
+	private static final String SETTING__RECENT_MEDIA_PATHS = 		"RecentMedia";
+	private static final String SETTING__RECENT_PROJECT_PATHS = 	"RecentProject";
 	private Settings settings;
 	private AudioCutterModel model;
 	private AudioCutterView view;
@@ -50,14 +53,19 @@ public class AudioCutterController implements Observer{
 		settings=new Settings(AudioCutterModel.PROGRAMNAME,AudioCutterModel.determineProgramVersion());
 		model=new AudioCutterModel();
 		model.addObserver(this);
-		String s=settings.getString(SETTING__VIEW_HORIZONTALDIVIDER);
-		model.setHorizontalDividerPosition(Integer.parseInt(s));
-		model.setAudiodataViewWidth(Integer.parseInt(s));
+		int sectionTableWidth=settings.getInt(SETTING__VIEW_SECTIONTABLE_WIDTH);
+		model.setSectionTableWidth(sectionTableWidth);
+		Rectangle frameBounds=fixScreenBounds(settings.getRectangle(SETTING__VIEW_BOUNDS, AudioCutterModel.getDefaultFrameBounds()),AudioCutterModel.getDefaultFrameSize());
+		int horizontalDividerPosition=frameBounds.width-sectionTableWidth;
+		model.setAudiodataViewWidth(horizontalDividerPosition);
+		model.setFrameBounds(frameBounds);
 		statusController=new StatusController(model);
 		view=new AudioCutterView(model,this);
-		view.setBounds(fixScreenBounds(settings.getRectangle(SETTING__VIEW_BOUNDS, AudioCutterModel.getDefaultFrameBounds()),AudioCutterModel.getDefaultFrameSize()));
+		view.setBounds(frameBounds);
 		view.addObserver(this);
-		model.setFFmpegExecutablePath(settings.getString(SETTING__FFMPEG_PATH));
+		model.setFFmpegExecutablePath(settings.getString(SETTING__FFMPEG_PATH,null));
+		model.setRecentMediaFilePaths(settings.getStringlist(SETTING__RECENT_MEDIA_PATHS));
+		model.setRecentProjectFilePaths(settings.getStringlist(SETTING__RECENT_PROJECT_PATHS));
 	}
 
 	private Rectangle fixScreenBounds(Rectangle screenBounds, Dimension defaultFrameSize) {
@@ -162,18 +170,20 @@ public class AudioCutterController implements Observer{
 		}
 		shutdownInProgress=true;
 		settings.setRectangle(SETTING__VIEW_BOUNDS, view.getBounds());
-		settings.set(SETTING__VIEW_HORIZONTALDIVIDER, ""+model.getHorizontalDividerPosition());
+		settings.setInt(SETTING__VIEW_SECTIONTABLE_WIDTH, model.getSectionTableWidth());
 		if(model.hasAudiodata()) {
-			settings.set(SETTING__AUDIOFILE_PATH, model.getMediaFile().getAbsolutePath());
+			settings.setString(SETTING__AUDIOFILE_PATH, model.getMediaFile().getAbsolutePath());
 		}
 		File fileProject=model.getProjectFile();
 		if(fileProject!=null){
-			settings.set(SETTING__PROJECTFILE_PATH, fileProject.getAbsolutePath());
+			settings.setString(SETTING__PROJECTFILE_PATH, fileProject.getAbsolutePath());
 		}
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		if(ffmpegExecutable!=null) {
-			settings.set(SETTING__FFMPEG_PATH, ffmpegExecutable);
+			settings.setString(SETTING__FFMPEG_PATH, ffmpegExecutable);
 		}
+		settings.setStringlist(SETTING__RECENT_MEDIA_PATHS, model.getRecentMediaFilePaths());
+		settings.setStringlist(SETTING__RECENT_PROJECT_PATHS, model.getRecentProjectFilePaths());
 		try {
 			settings.saveSettings();
 		} catch (IOException e) {
@@ -297,7 +307,7 @@ public class AudioCutterController implements Observer{
 		if(currentMediaFile!=null) {
 			fileChooser.setCurrentDirectory(currentMediaFile.getParentFile());
 		}else {
-			String filepath=settings.getString(SETTING__AUDIOFILE_PATH);
+			String filepath=settings.getString(SETTING__AUDIOFILE_PATH,null);
 			if(filepath!=null && filepath.length()>0) {
 				File lastAudioFile=new File(filepath);
 				fileChooser.setCurrentDirectory(lastAudioFile);
@@ -313,6 +323,22 @@ public class AudioCutterController implements Observer{
 		}else if(logger.isTraceEnabled()){
 			logger.trace("Open media dialogue canceled");
 		}
+	}
+
+	public void action_OpenRecentMediaFile(String path) {
+		File mediafile=new File(path);
+		if(!mediafile.exists()) {
+			String message="Recent media file does not exist: "+mediafile;
+			logger.info(message);
+			model.setStatusMessage(new StatusMessage(StatusMessage.Type.INFO,message));
+			return;
+		}
+		if(model.isProjectDirty() && userCanceledUnsavedChangesDialogue()){
+			return;
+		}
+		AudioPlayer.getInstance().action_stop();
+		model.closeProject();
+		model.setMediaFile(mediafile);
 	}
 
 	public void action_OpenProjectFile(){
@@ -332,7 +358,7 @@ public class AudioCutterController implements Observer{
 		if(currentProjectFile!=null) {
 			fileChooser.setCurrentDirectory(currentProjectFile.getParentFile());
 			fileChooser.setSelectedFile(currentProjectFile);
-		}else if(settings.getString(SETTING__PROJECTFILE_PATH)!=null){
+		}else if(settings.containsKey(SETTING__PROJECTFILE_PATH)){
 			File lastProjectFile=new File(settings.getString(SETTING__PROJECTFILE_PATH));
 			fileChooser.setCurrentDirectory(lastProjectFile.getParentFile());
 		}else {
@@ -364,6 +390,20 @@ public class AudioCutterController implements Observer{
 		}
 	}
 
+	public void action_OpenRecentProjectFile(String path){
+		File projectfile=new File(path);
+		if(!projectfile.exists()) {
+			String message="Recent project file does not exist: "+projectfile;
+			logger.info(message);
+			model.setStatusMessage(new StatusMessage(StatusMessage.Type.INFO,message));
+			return;
+		}
+		if(model.isProjectDirty() && userCanceledUnsavedChangesDialogue()){
+			return;
+		}
+		processProjectFile(projectfile);
+	}
+
 	public void processProjectFile(File projectFile) {
 		action_CloseProject();
 		try {
@@ -388,7 +428,7 @@ public class AudioCutterController implements Observer{
 		if(currentProjectFile!=null) {
 			fileChooser.setCurrentDirectory(currentProjectFile.getParentFile());
 			fileChooser.setSelectedFile(currentProjectFile);
-		}else if(settings.getString(SETTING__PROJECTFILE_PATH)!=null){
+		}else if(settings.containsKey(SETTING__PROJECTFILE_PATH)){
 			File lastProjectFile=new File(settings.getString(SETTING__PROJECTFILE_PATH));
 			fileChooser.setCurrentDirectory(lastProjectFile.getParentFile());
 			String mediaFilename=model.getMediaFile().getName();

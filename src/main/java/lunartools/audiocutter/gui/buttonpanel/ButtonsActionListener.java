@@ -12,10 +12,10 @@ public class ButtonsActionListener implements ActionListener{
 	private AudioCutterController controller;
 	private ButtonPanel view;
 
-	public ButtonsActionListener(AudioCutterModel model,AudioCutterController controller,ButtonPanel audioCutterView) {
+	public ButtonsActionListener(AudioCutterModel model,AudioCutterController controller,ButtonPanel view) {
 		this.model=model;
 		this.controller=controller;
-		this.view=audioCutterView;
+		this.view=view;
 	}
 
 	@Override
@@ -30,8 +30,10 @@ public class ButtonsActionListener implements ActionListener{
 		}else if(source==view.jbuttonStop) {
 			AudioPlayer.getInstance().action_stop();
 		}else if(source==view.jbuttonPrev) {
+			view.jbuttonPrev.setSelected(false);
 			AudioPlayer.getInstance().action_PrevSection();
 		}else if(source==view.jbuttonNext) {
+			view.jbuttonNext.setSelected(false);
 			AudioPlayer.getInstance().action_NextSection();
 		}else if(source==view.jbuttonZoomIn) {
 			action_zoomIn();

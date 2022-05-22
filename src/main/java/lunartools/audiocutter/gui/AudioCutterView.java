@@ -3,6 +3,7 @@ package lunartools.audiocutter.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
@@ -17,6 +18,7 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.WindowConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,18 +41,21 @@ public class AudioCutterView extends ObservableJFrame implements Observer{
 	private JSplitPane jSplitPaneHorizontal;
 	private JSplitPane jSplitPaneVertical;
 
-	private final int dividerMin=610;
+	private final int tableSectionWithMin=350;
+	private final int audiodataViewWithMin=530;
+
 
 	public AudioCutterView(AudioCutterModel model,AudioCutterController controller) {
 		super.setTitle(AudioCutterModel.PROGRAMNAME+" "+AudioCutterModel.determineProgramVersion());
 		setLayout(new BorderLayout());
 		setBounds(model.getFrameBounds());
 		setResizable(true);
-		setMinimumSize(new Dimension(1000,500));
+		setMinimumSize(new Dimension(tableSectionWithMin+audiodataViewWithMin,500));
 		this.model=model;
 		this.model.addObserver(this);
 		this.controller=controller;
 
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent event){
 				sendMessage(SimpleEvents.EXIT);
@@ -72,16 +77,28 @@ public class AudioCutterView extends ObservableJFrame implements Observer{
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				int divider=(int)e.getNewValue();
-				if(divider<dividerMin) {
-					divider=dividerMin;
-					jSplitPaneHorizontal.setDividerLocation(dividerMin);
+				if(divider==0) {
+					return;
 				}
-				model.setHorizontalDividerPosition(divider);
+				Rectangle frameBounds=model.getFrameBounds();
+				int tabeleSectionWith=frameBounds.width-divider;
+				if(tabeleSectionWith<tableSectionWithMin) {
+					tabeleSectionWith=tableSectionWithMin;
+					divider=frameBounds.width-tabeleSectionWith;
+					jSplitPaneHorizontal.setDividerLocation(divider);
+				}else if(divider<audiodataViewWithMin) {
+					divider=audiodataViewWithMin;
+					tabeleSectionWith=frameBounds.width-divider;
+					jSplitPaneHorizontal.setDividerLocation(divider);
+
+				}
+				model.setSectionTableWidth(tabeleSectionWith);
 				model.setAudiodataViewWidth(divider);
 			}
 		});
 
 		jSplitPaneHorizontal.setBounds(0, 0,this.getWidth()-24,AudioCutterModel.DEFAULT_FRAME_WIDTH-80);
+
 		jSplitPaneHorizontal.setDividerLocation(model.getHorizontalDividerPosition());
 
 		JPanel panelLeft=new LeftPanel(model,controller);
@@ -148,6 +165,10 @@ public class AudioCutterView extends ObservableJFrame implements Observer{
 		}else if(object==SimpleEvents.MODEL_SELECTEDSECTIONSCHANGED) {
 			refreshGui();
 		}else if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {
+			Rectangle bounds=model.getFrameBounds();
+			int sectionTableWidth=model.getSectionTableWidth();
+			int dividerPosition=bounds.width-sectionTableWidth;
+			jSplitPaneHorizontal.setDividerLocation(dividerPosition);
 			refreshGui();
 		}else if(object instanceof StatusMessage) {
 			StatusMessage statusMessage=(StatusMessage)object;

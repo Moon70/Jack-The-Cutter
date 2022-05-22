@@ -25,10 +25,11 @@ public class LeftPanel extends JPanel implements Observer{
 	private WavePanelFull wavePanelFull;
 	private WavePanelZoom wavePanelZoom;
 	private ScrollbarsPanel scrollbarsPanel;
-	
+
 	private JPanel panelStatus;
-	
+
 	private int marginY=16;
+	private int marginSmallY=8;
 	private int column1X=10;
 
 	public LeftPanel(AudioCutterModel model,AudioCutterController controller) {
@@ -36,7 +37,7 @@ public class LeftPanel extends JPanel implements Observer{
 		model.addObserver(this);
 
 		int y=0;
-		
+
 		buttonPanel=new ButtonPanel(model,controller);
 		buttonPanel.setLocation(column1X, y);
 		add(buttonPanel);
@@ -77,19 +78,19 @@ public class LeftPanel extends JPanel implements Observer{
 		int y=0;
 		buttonPanel.setLocation(column1X, y);
 		y+=buttonPanel.getHeight();
-		
+
 		wavePanelFull.setLocation(column1X, y);
 		y+=wavePanelFull.getHeight()+marginY;
 
 		wavePanelZoom.setLocation(column1X, y);
-		y+=wavePanelZoom.getHeight()+marginY;
+		y+=wavePanelZoom.getHeight()+marginSmallY;
 
 		scrollbarsPanel.setLocation(column1X, y);
-		y+=scrollbarsPanel.getHeight()+marginY;
-		
+		y+=scrollbarsPanel.getHeight()+marginSmallY;
+
 		panelStatus.setLocation(column1X, y);
 	}
-	
+
 	@Override
 	public void update(Observable observable, Object object) {
 		if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {

@@ -67,7 +67,15 @@ public class CutMediaFileWorker extends SwingWorker<Void, Void> {
 				String startposAsString=Calculator.convertNumberOfSamplesToSecondsAsString(start);
 				String endposAsString=Calculator.convertNumberOfSamplesToSecondsAsString(end);
 
-				new CreateSectionsFromMediaService().cutMediaFile(model,mediaFile,fileCut,startposAsString,endposAsString);
+				CreateSectionsFromMediaService createSectionsFromMediaService=new CreateSectionsFromMediaService();
+				createSectionsFromMediaService.cutMediaFile(model,mediaFile,fileCut,startposAsString,endposAsString);
+				String error=createSectionsFromMediaService.getError();
+				if(error!=null) {
+					logger.error("error while cutting media file: "+error);
+					statusMessage=new StatusMessage(StatusMessage.Type.ERROR,error);
+					model.setStatusMessage(statusMessage);
+					break;
+				}
 			}
 
 		} catch (Exception e) {

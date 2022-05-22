@@ -2,6 +2,7 @@ package lunartools.audiocutter.gui.buttonpanel;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -37,11 +38,12 @@ public class ButtonPanel extends JPanel implements Observer{
 		this.setLayout(null);
 
 		ActionListener buttonActionListener=new ButtonsActionListener(model,controller,this);
+		MouseListener buttonMouseListener=new ButtonMouseListener(model,this);
 
 		int buttonWidth=32;
 		int buttonHeight=30;
-		int buttonMargin=8;
-		int groupMargin=80;
+		int buttonMargin=6;
+		int groupMargin=30;
 		int x=0;
 		int y=4;
 
@@ -91,6 +93,7 @@ public class ButtonPanel extends JPanel implements Observer{
 		jbuttonPrev.setIcon(ImageTools.createImageIcon("/icons/Button_previousSection.png"));
 		jbuttonPrev.setToolTipText("goto previous section");
 		jbuttonPrev.addActionListener(buttonActionListener);
+		jbuttonPrev.addMouseListener(buttonMouseListener);
 		jbuttonPrev.setEnabled(false);
 		add(jbuttonPrev);
 
@@ -101,6 +104,7 @@ public class ButtonPanel extends JPanel implements Observer{
 		jbuttonNext.setIcon(ImageTools.createImageIcon("/icons/Button_nextSection.png"));
 		jbuttonNext.setToolTipText("goto next section");
 		jbuttonNext.addActionListener(buttonActionListener);
+		jbuttonNext.addMouseListener(buttonMouseListener);
 		jbuttonNext.setEnabled(false);
 		add(jbuttonNext);
 
