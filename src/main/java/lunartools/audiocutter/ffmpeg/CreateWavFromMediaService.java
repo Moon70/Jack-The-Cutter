@@ -8,23 +8,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.AudioCutterSettings;
 import lunartools.audiocutter.Calculator;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.worker.CreateTempWavFileWorker;
 import lunartools.exec.Exec;
 import lunartools.exec.ExecOutputCallback;
 
 public class CreateWavFromMediaService implements ExecOutputCallback{
 	private static Logger logger = LoggerFactory.getLogger(CreateWavFromMediaService.class);
-	private AudioCutterModel model;
 	private Pattern patternDuration;
 	private Pattern patternProgress;
 	private int mediaDurationInSeconds;
 	private CreateTempWavFileWorker worker;
-	private static final int TIMEOUT_SECONDS=30;
+	private volatile Throwable receivedThrowableFromExec;
 
 	public void createWavFileFromMediaFile(AudioCutterModel model,CreateTempWavFileWorker worker,File mediafile,File wavfile) {
-		this.model=model;
 		this.worker=worker;
 		logger.debug("media file: "+mediafile);
 		logger.debug("wav file: "+wavfile);
@@ -32,23 +30,30 @@ public class CreateWavFromMediaService implements ExecOutputCallback{
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
 		String mediaFilePathWithQuotes="\""+mediafile.getAbsolutePath()+"\"";
 		String wavFilePathWithQuotes="\""+wavfile.getAbsolutePath()+"\"";
-		String parameter=String.format("-hide_banner -y -i %s -ar 44100 %s",mediaFilePathWithQuotes,wavFilePathWithQuotes);
+		String parameter=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PARAMETER);
+		parameter=String.format(parameter,mediaFilePathWithQuotes,wavFilePathWithQuotes);
 		logger.debug("FFmpeg parameter: "+parameter);
 
-		patternDuration=Pattern.compile(".*Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.\\d\\d,.*");
-		patternProgress=Pattern.compile("size=.*time=(\\d\\d):(\\d\\d):(\\d\\d)\\.\\d\\d.*");
+		String sPatternDuration=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PATTERN_DURATION);
+		patternDuration=Pattern.compile(sPatternDuration);
+		String sPatternProgress=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PATTERN_PROGRESS);
+		patternProgress=Pattern.compile(sPatternProgress);
 
 		try {
-			Exec se=new Exec(ffmpegExecutable,parameter,null,this);
-			se.start();
-			se.join(TIMEOUT_SECONDS*1000);
-			if(se.isAlive()) {
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,"there´s something wrong, timeout while talking to FFmpeg"));
+			Exec exec=new Exec(ffmpegExecutable,parameter,null,this);
+			int createWavTimeout=AudioCutterSettings.getSettings().getInt(AudioCutterSettings.FFMPEG_CREATETEMPWAV_TIMEOUT);
+			exec.start();
+			exec.join(createWavTimeout*1000);
+			if(exec.isAlive()) {
+				throw new RuntimeException("there´s something wrong, timeout while talking to FFmpeg");
 			}
 
-			if(se.isError()) {
-				Exception exception=se.getException();
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,exception.getMessage(),exception));
+			if(exec.isError()) {
+				Exception exception=exec.getException();
+				throw new RuntimeException("Error while creating temporary WAV file: "+exception.getMessage(),exception);
+			}
+			if(receivedThrowableFromExec!=null) {
+				throw new RuntimeException("Error while creating temporary WAV file: "+receivedThrowableFromExec.getMessage(),receivedThrowableFromExec);
 			}
 		} catch (Exception e) {
 			logger.warn("received InterruptedException");
@@ -68,7 +73,7 @@ public class CreateWavFromMediaService implements ExecOutputCallback{
 	@Override
 	public void execReceivedThrowable(Throwable throwable) {
 		logger.error("Received throwable from Exec",throwable);
-		model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,throwable.getMessage(),throwable));
+		receivedThrowableFromExec=throwable;
 	}
 
 	private void processOutputFromFFmpeg(String line) {

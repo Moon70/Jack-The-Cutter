@@ -29,7 +29,6 @@ public class CutMediaFileWorker extends SwingWorker<Void, Void> {
 	@Override
 	public Void doInBackground() {
 		logger.debug("cutting media file...");
-		model.setStatusMessage(null);
 		StatusMessage statusMessage=new StatusMessage(StatusMessage.Type.INFO,"ready");
 		controller.setBusy(true);
 		try {
@@ -73,7 +72,6 @@ public class CutMediaFileWorker extends SwingWorker<Void, Void> {
 				if(error!=null) {
 					logger.error("error while cutting media file: "+error);
 					statusMessage=new StatusMessage(StatusMessage.Type.ERROR,error);
-					model.setStatusMessage(statusMessage);
 					break;
 				}
 			}
@@ -83,9 +81,7 @@ public class CutMediaFileWorker extends SwingWorker<Void, Void> {
 			statusMessage=new StatusMessage(StatusMessage.Type.ERROR,e.getMessage());
 		}finally {
 			controller.setBusy(false);
-			if(model.getStatusMessage()==null) {
-				model.setStatusMessage(statusMessage);
-			}
+			model.setStatusMessage(statusMessage);
 		}
 		return null;
 	}

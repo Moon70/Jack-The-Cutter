@@ -2,14 +2,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lunartools</groupId>
 	<artifactId>audiocutter</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<name>AudioCutter</name>
 	<description>GUI for lossless cutting audio files using FFmpeg</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<version_lunartools>1.1.1</version_lunartools>
+		<version_lunartools>1.2.0</version_lunartools>
 		<version_org_junit_jupiter>5.7.1</version_org_junit_jupiter>
 		<version_slf4j>1.7.30</version_slf4j>
 	</properties>

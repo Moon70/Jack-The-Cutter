@@ -33,15 +33,6 @@ import lunartools.progressdialog.ProgressDialog;
 
 public class AudioCutterController implements Observer{
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterController.class);
-	private static final String SETTING__VIEW_BOUNDS = 				"ViewBounds";
-	//	private static final String SETTING__VIEW_HORIZONTALDIVIDER =	"HDivider";
-	private static final String SETTING__VIEW_SECTIONTABLE_WIDTH =	"SectionTableWidth";
-	private static final String SETTING__AUDIOFILE_PATH = 			"AudiofilePath";
-	private static final String SETTING__PROJECTFILE_PATH = 		"ProjectfilePath";
-	private static final String SETTING__FFMPEG_PATH = 				"FFmpegExecutable";
-	private static final String SETTING__RECENT_MEDIA_PATHS = 		"RecentMedia";
-	private static final String SETTING__RECENT_PROJECT_PATHS = 	"RecentProject";
-	private Settings settings;
 	private AudioCutterModel model;
 	private AudioCutterView view;
 	private StatusController statusController;
@@ -50,12 +41,12 @@ public class AudioCutterController implements Observer{
 	private volatile int busyCount;
 
 	public AudioCutterController() {
-		settings=new Settings(AudioCutterModel.PROGRAMNAME,AudioCutterModel.determineProgramVersion());
+		Settings settings=AudioCutterSettings.getSettings();
 		model=new AudioCutterModel();
 		model.addObserver(this);
-		int sectionTableWidth=settings.getInt(SETTING__VIEW_SECTIONTABLE_WIDTH);
+		int sectionTableWidth=settings.getInt(AudioCutterSettings.VIEW_SECTIONTABLE_WIDTH);
 		model.setSectionTableWidth(sectionTableWidth);
-		Rectangle frameBounds=fixScreenBounds(settings.getRectangle(SETTING__VIEW_BOUNDS, AudioCutterModel.getDefaultFrameBounds()),AudioCutterModel.getDefaultFrameSize());
+		Rectangle frameBounds=fixScreenBounds(settings.getRectangle(AudioCutterSettings.VIEW_BOUNDS, AudioCutterModel.getDefaultFrameBounds()),AudioCutterModel.getDefaultFrameSize());
 		int horizontalDividerPosition=frameBounds.width-sectionTableWidth;
 		model.setAudiodataViewWidth(horizontalDividerPosition);
 		model.setFrameBounds(frameBounds);
@@ -63,12 +54,14 @@ public class AudioCutterController implements Observer{
 		view=new AudioCutterView(model,this);
 		view.setBounds(frameBounds);
 		view.addObserver(this);
-		model.setFFmpegExecutablePath(settings.getString(SETTING__FFMPEG_PATH,null));
-		model.setRecentMediaFilePaths(settings.getStringlist(SETTING__RECENT_MEDIA_PATHS));
-		model.setRecentProjectFilePaths(settings.getStringlist(SETTING__RECENT_PROJECT_PATHS));
+		model.setFFmpegExecutablePath(settings.getString(AudioCutterSettings.FFMPEG_PATH,null));
+		model.setRecentMediaFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_MEDIA_PATHS));
+		model.setRecentProjectFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_PROJECT_PATHS));
 	}
 
 	private Rectangle fixScreenBounds(Rectangle screenBounds, Dimension defaultFrameSize) {
+		int centerX=screenBounds.x+screenBounds.width>>1;
+		int centerY=screenBounds.y+screenBounds.height>>1;
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();  
 		GraphicsDevice[] graphicsDevices = graphicsEnvironment.getScreenDevices();
 		int numberOfGraphicsDevices=graphicsDevices.length;
@@ -76,10 +69,10 @@ public class AudioCutterController implements Observer{
 			GraphicsDevice graphicsDevice=graphicsDevices[i];
 			Rectangle graphicsDeviceBounds = graphicsDevice.getDefaultConfiguration().getBounds();
 			if(
-					screenBounds.x>=graphicsDeviceBounds.x &&
-					screenBounds.y>=graphicsDeviceBounds.y &&
-					screenBounds.x+screenBounds.width<=graphicsDeviceBounds.x+graphicsDeviceBounds.width &&
-					screenBounds.y+screenBounds.height<=graphicsDeviceBounds.y+graphicsDeviceBounds.height
+					centerX>=graphicsDeviceBounds.x &&
+					centerY>=graphicsDeviceBounds.y &&
+					centerX<=graphicsDeviceBounds.x+graphicsDeviceBounds.width &&
+					centerY<=graphicsDeviceBounds.y+graphicsDeviceBounds.height
 					) {
 				return screenBounds;
 			}
@@ -169,21 +162,22 @@ public class AudioCutterController implements Observer{
 			return;
 		}
 		shutdownInProgress=true;
-		settings.setRectangle(SETTING__VIEW_BOUNDS, view.getBounds());
-		settings.setInt(SETTING__VIEW_SECTIONTABLE_WIDTH, model.getSectionTableWidth());
+		Settings settings=AudioCutterSettings.getSettings();
+		settings.setRectangle(AudioCutterSettings.VIEW_BOUNDS, view.getBounds());
+		settings.setInt(AudioCutterSettings.VIEW_SECTIONTABLE_WIDTH, model.getSectionTableWidth());
 		if(model.hasAudiodata()) {
-			settings.setString(SETTING__AUDIOFILE_PATH, model.getMediaFile().getAbsolutePath());
+			settings.setString(AudioCutterSettings.AUDIOFILE_PATH, model.getMediaFile().getAbsolutePath());
 		}
 		File fileProject=model.getProjectFile();
 		if(fileProject!=null){
-			settings.setString(SETTING__PROJECTFILE_PATH, fileProject.getAbsolutePath());
+			settings.setString(AudioCutterSettings.PROJECTFILE_PATH, fileProject.getAbsolutePath());
 		}
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		if(ffmpegExecutable!=null) {
-			settings.setString(SETTING__FFMPEG_PATH, ffmpegExecutable);
+			settings.setString(AudioCutterSettings.FFMPEG_PATH, ffmpegExecutable);
 		}
-		settings.setStringlist(SETTING__RECENT_MEDIA_PATHS, model.getRecentMediaFilePaths());
-		settings.setStringlist(SETTING__RECENT_PROJECT_PATHS, model.getRecentProjectFilePaths());
+		settings.setStringlist(AudioCutterSettings.RECENT_MEDIA_PATHS, model.getRecentMediaFilePaths());
+		settings.setStringlist(AudioCutterSettings.RECENT_PROJECT_PATHS, model.getRecentProjectFilePaths());
 		try {
 			settings.saveSettings();
 		} catch (IOException e) {
@@ -307,7 +301,7 @@ public class AudioCutterController implements Observer{
 		if(currentMediaFile!=null) {
 			fileChooser.setCurrentDirectory(currentMediaFile.getParentFile());
 		}else {
-			String filepath=settings.getString(SETTING__AUDIOFILE_PATH,null);
+			String filepath=AudioCutterSettings.getSettings().getString(AudioCutterSettings.AUDIOFILE_PATH,null);
 			if(filepath!=null && filepath.length()>0) {
 				File lastAudioFile=new File(filepath);
 				fileChooser.setCurrentDirectory(lastAudioFile);
@@ -358,8 +352,8 @@ public class AudioCutterController implements Observer{
 		if(currentProjectFile!=null) {
 			fileChooser.setCurrentDirectory(currentProjectFile.getParentFile());
 			fileChooser.setSelectedFile(currentProjectFile);
-		}else if(settings.containsKey(SETTING__PROJECTFILE_PATH)){
-			File lastProjectFile=new File(settings.getString(SETTING__PROJECTFILE_PATH));
+		}else if(AudioCutterSettings.getSettings().containsKey(AudioCutterSettings.PROJECTFILE_PATH)){
+			File lastProjectFile=new File(AudioCutterSettings.getSettings().getString(AudioCutterSettings.PROJECTFILE_PATH));
 			fileChooser.setCurrentDirectory(lastProjectFile.getParentFile());
 		}else {
 			File currentMediaFile=model.getMediaFile();
@@ -428,8 +422,8 @@ public class AudioCutterController implements Observer{
 		if(currentProjectFile!=null) {
 			fileChooser.setCurrentDirectory(currentProjectFile.getParentFile());
 			fileChooser.setSelectedFile(currentProjectFile);
-		}else if(settings.containsKey(SETTING__PROJECTFILE_PATH)){
-			File lastProjectFile=new File(settings.getString(SETTING__PROJECTFILE_PATH));
+		}else if(AudioCutterSettings.getSettings().containsKey(AudioCutterSettings.PROJECTFILE_PATH)){
+			File lastProjectFile=new File(AudioCutterSettings.getSettings().getString(AudioCutterSettings.PROJECTFILE_PATH));
 			fileChooser.setCurrentDirectory(lastProjectFile.getParentFile());
 			String mediaFilename=model.getMediaFile().getName();
 			int p=mediaFilename.lastIndexOf('.');

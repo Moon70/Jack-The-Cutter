@@ -35,8 +35,9 @@ public class StatusController implements Observer{
 				statusPanel.labelStatus.setToolTipText(statusMessage.getMessage());
 				statusPanel.labelStatus.setForeground(Color.RED);
 			}else if(statusMessage.getType()==StatusMessage.Type.FFMPEGVERSION) {
-				statusPanel.labelFFmpegVersionLabel.setVisible(true);
-				statusPanel.labelFFmpegVersion.setText(statusMessage.getMessage());
+				String message=statusMessage.getMessage();
+				statusPanel.labelFFmpegVersionLabel.setVisible(message!=null);
+				statusPanel.labelFFmpegVersion.setText(message);
 			}
 		}
 	}

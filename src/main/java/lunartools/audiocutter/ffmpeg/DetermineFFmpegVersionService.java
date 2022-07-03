@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.AudioCutterSettings;
 import lunartools.audiocutter.worker.DetermineFFmpegVersionWorker;
 import lunartools.exec.Exec;
 import lunartools.exec.ExecOutputCallback;
@@ -17,28 +17,36 @@ public class DetermineFFmpegVersionService implements ExecOutputCallback{
 	private AudioCutterModel model;
 	private Pattern patternVersion;
 	private String version;
-	private static final int TIMEOUT_SECONDS=5;
+	private volatile Throwable receivedThrowableFromExec;
 
 	public void determineFFmpegVersion(AudioCutterModel model,DetermineFFmpegVersionWorker worker) {
 		this.model=model;
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
-		String parameter="-hide_banner -version";
+		String parameter=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PARAMETER);
 		logger.debug("FFmpeg parameter: "+parameter);
 
-		patternVersion=Pattern.compile("(ffmpeg version.*)");
+		String pattern=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PATTERN);
+		patternVersion=Pattern.compile(pattern);
 
 		try {
-			Exec se=new Exec(ffmpegExecutable,parameter,null,this);
-			se.start();
-			se.join(TIMEOUT_SECONDS*1000);
-			if(se.isAlive()) {
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,"there´s something wrong, timeout while talking to FFmpeg"));
+			model.setFFmpegVersion(null);
+			Exec exec=new Exec(ffmpegExecutable,parameter,null,this);
+			int determineVersionTimeout=AudioCutterSettings.getSettings().getInt(AudioCutterSettings.FFMPEG_DETERMINEVERSION_TIMEOUT);
+			exec.start();
+			exec.join(determineVersionTimeout*1000);
+			if(exec.isAlive()) {
+				throw new RuntimeException("there´s something wrong, timeout while talking to FFmpeg");
 			}
-
-			if(se.isError()) {
-				Exception exception=se.getException();
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,exception.getMessage(),exception));
+			if(exec.isError()) {
+				Exception exception=exec.getException();
+				throw new RuntimeException("Error while determining FFmpeg version: "+exception.getMessage(),exception);
+			}
+			if(!model.isFFmpegAvailable()) {
+				throw new RuntimeException("Could not determine FFmpeg version");
+			}
+			if(receivedThrowableFromExec!=null) {
+				throw new RuntimeException("Error while determining FFmpeg version: "+receivedThrowableFromExec.getMessage(),receivedThrowableFromExec);
 			}
 		} catch (InterruptedException e) {
 			logger.warn("received InterruptedException");
@@ -58,7 +66,7 @@ public class DetermineFFmpegVersionService implements ExecOutputCallback{
 	@Override
 	public void execReceivedThrowable(Throwable throwable) {
 		logger.error("Received throwable from Exec",throwable);
-		model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,throwable.getMessage(),throwable));
+		receivedThrowableFromExec=throwable;
 	}
 
 	private void processOutputFromFFmpeg(String line) {

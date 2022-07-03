@@ -7,40 +7,46 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lunartools.Settings;
 import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.AudioCutterSettings;
 import lunartools.exec.Exec;
 import lunartools.exec.ExecOutputCallback;
 
 public class CreateSectionsFromMediaService implements ExecOutputCallback{
 	private static Logger logger = LoggerFactory.getLogger(CreateSectionsFromMediaService.class);
-	private AudioCutterModel model;
 	private Pattern patternOutputFormatError;
-	private static final int TIMEOUT_SECONDS=10;
 	private String error;
+	private volatile Throwable receivedThrowableFromExec;
 
 	public void cutMediaFile(AudioCutterModel model,File mediafile,File sectionfile,String startposAsString,String endposAsString) {
-		this.model=model;
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		logger.debug("media file: "+mediafile);
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
 		String mediaFilePathWithQuotes="\""+mediafile.getAbsolutePath()+"\"";
 		String sectionFilepathWithQuotes="\""+sectionfile.getAbsolutePath()+"\"";
-		String parameter=String.format("-hide_banner -y -i %s -ss %s -to %s -c copy %s",mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
+		Settings settings=AudioCutterSettings.getSettings();
+		String parameter=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PARAMETER);
+		parameter=String.format(parameter,mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
 		logger.debug("FFmpeg parameter: "+parameter);
 
-		patternOutputFormatError=Pattern.compile(".*(Unable to find a suitable output format.*)");
+		String pattern=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PATTERN_OUTPUTFORMATERROR);
+		patternOutputFormatError=Pattern.compile(pattern);
 
 		try {
-			Exec se=new Exec(ffmpegExecutable,parameter,this);
-			se.start();
-			se.join(TIMEOUT_SECONDS*1000);
-			if(se.isAlive()) {
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,"there´s something wrong, timeout while talking to FFmpeg"));
+			Exec exec=new Exec(ffmpegExecutable,parameter,this);
+			int createSectionsTimeout=settings.getInt(AudioCutterSettings.FFMPEG_CREATESECTIONS_TIMEOUT);
+			exec.start();
+			exec.join(createSectionsTimeout*1000);
+			if(exec.isAlive()) {
+				throw new RuntimeException("there´s something wrong, timeout while talking to FFmpeg");
 			}
-			if(se.isError()) {
-				Exception exception=se.getException();
-				model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,exception.getMessage(),exception));
+			if(exec.isError()) {
+				Exception exception=exec.getException();
+				throw new RuntimeException("Error while creating sections: "+exception.getMessage(),exception);
+			}
+			if(receivedThrowableFromExec!=null) {
+				throw new RuntimeException("Error while creating sections: "+receivedThrowableFromExec.getMessage(),receivedThrowableFromExec);
 			}
 		} catch (Exception e) {
 			logger.warn("received InterruptedException");
@@ -60,7 +66,7 @@ public class CreateSectionsFromMediaService implements ExecOutputCallback{
 	@Override
 	public void execReceivedThrowable(Throwable throwable) {
 		logger.error("Received throwable from Exec",throwable);
-		model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,throwable.getMessage(),throwable));
+		receivedThrowableFromExec=throwable;
 	}
 
 	private void processOutputFromFFmpeg(String line) {
