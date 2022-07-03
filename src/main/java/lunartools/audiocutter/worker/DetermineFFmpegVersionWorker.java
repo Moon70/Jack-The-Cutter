@@ -24,8 +24,7 @@ public class DetermineFFmpegVersionWorker extends SwingWorker<Void, Void> {
 
 	@Override
 	public Void doInBackground() {
-		logger.debug("determine FFmpeg version...");
-		model.setStatusMessage(null);
+		logger.debug("determining FFmpeg version...");
 		StatusMessage statusMessage=new StatusMessage(StatusMessage.Type.INFO,"ready");
 		controller.setBusy(true);
 		try {
@@ -47,9 +46,7 @@ public class DetermineFFmpegVersionWorker extends SwingWorker<Void, Void> {
 			statusMessage=new StatusMessage(StatusMessage.Type.ERROR,e.getMessage());
 		}finally {
 			controller.setBusy(false);
-			if(model.getStatusMessage()==null || model.getStatusMessage().getType()==StatusMessage.Type.FFMPEGVERSION) {
-				model.setStatusMessage(statusMessage);
-			}
+			model.setStatusMessage(statusMessage);
 		}
 		return null;
 	}
