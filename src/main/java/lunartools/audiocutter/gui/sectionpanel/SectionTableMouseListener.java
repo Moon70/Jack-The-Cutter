@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class SectionTableMouseListener extends MouseAdapter{
 	private AudioCutterModel model;

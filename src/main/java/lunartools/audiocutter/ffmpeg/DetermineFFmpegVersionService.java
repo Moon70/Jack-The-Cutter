@@ -6,11 +6,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioCutterSettings;
+import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.audiocutter.worker.DetermineFFmpegVersionWorker;
-import lunartools.exec.Exec;
-import lunartools.exec.ExecOutputCallback;
+import lunartools.cli.Exec;
+import lunartools.cli.ExecOutputCallback;
 
 public class DetermineFFmpegVersionService implements ExecOutputCallback{
 	private static Logger logger = LoggerFactory.getLogger(DetermineFFmpegVersionService.class);
@@ -23,16 +23,16 @@ public class DetermineFFmpegVersionService implements ExecOutputCallback{
 		this.model=model;
 		String ffmpegExecutable=model.getFFmpegExecutablePath();
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
-		String parameter=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PARAMETER);
+		String parameter=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PARAMETER);
 		logger.debug("FFmpeg parameter: "+parameter);
 
-		String pattern=AudioCutterSettings.getSettings().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PATTERN);
+		String pattern=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PATTERN);
 		patternVersion=Pattern.compile(pattern);
 
 		try {
 			model.setFFmpegVersion(null);
 			Exec exec=new Exec(ffmpegExecutable,parameter,null,this);
-			int determineVersionTimeout=AudioCutterSettings.getSettings().getInt(AudioCutterSettings.FFMPEG_DETERMINEVERSION_TIMEOUT);
+			int determineVersionTimeout=AudioCutterSettings.getInstance().getInt(AudioCutterSettings.FFMPEG_DETERMINEVERSION_TIMEOUT);
 			exec.start();
 			exec.join(determineVersionTimeout*1000);
 			if(exec.isAlive()) {

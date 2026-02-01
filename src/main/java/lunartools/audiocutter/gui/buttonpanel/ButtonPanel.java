@@ -11,11 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import lunartools.ImageTools;
-import lunartools.audiocutter.AudioCutterController;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.core.AudioCutterController;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public class ButtonPanel extends JPanel implements Observer{
+public class ButtonPanel extends JPanel{
 	private AudioCutterModel model;
 
 	JButton jbuttonPlayCursor;
@@ -177,13 +177,12 @@ public class ButtonPanel extends JPanel implements Observer{
 		setMaximumSize(size.getSize());
 		setPreferredSize(size.getSize());
 
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 
 		//setBackground(new Color(0xccffcc));
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
 			refresh();
 		}else if(object==SimpleEvents.MODEL_ZOOMCHANGED) {

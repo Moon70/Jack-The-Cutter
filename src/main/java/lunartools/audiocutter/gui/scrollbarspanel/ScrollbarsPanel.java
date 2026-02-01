@@ -14,10 +14,10 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public class ScrollbarsPanel extends JPanel implements Observer{
+public class ScrollbarsPanel extends JPanel{
 	private static Logger logger = LoggerFactory.getLogger(ScrollbarsPanel.class);
 	private AudioCutterModel model;
 
@@ -33,7 +33,7 @@ public class ScrollbarsPanel extends JPanel implements Observer{
 
 	public ScrollbarsPanel(AudioCutterModel model) {
 		this.model=model;
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 		this.setLayout(null);
 
 		AdjustmentListener adjustmentlistener=new ScrollbarAdjustmentListener(model,this);
@@ -87,8 +87,7 @@ public class ScrollbarsPanel extends JPanel implements Observer{
 		scrollbarZoom.setBounds(scrollbarZoom.getLocation().x,scrollbarZoom.getLocation().y,getScrollbarWidth(),scrollbarZoom.getHeight());
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_ZOOMRANGECHANGED) {
 			refresh();
 			scrollbarZoom.setValue(model.getZoom());

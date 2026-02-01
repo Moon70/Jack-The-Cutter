@@ -1,6 +1,6 @@
 package lunartools.audiocutter.gui.wavepanel;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class WaveControllerFull extends WaveController {
 

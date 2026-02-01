@@ -2,7 +2,7 @@ package lunartools.audiocutter.gui.wavepanel;
 
 import java.util.HashMap;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class WaveControllerZoom extends WaveController {
 	private HashMap<Integer, Integer> hashmapSectionmarks;

@@ -4,9 +4,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioSection;
-import lunartools.audiocutter.player.AudioPlayer;
+import lunartools.audiocutter.common.model.AudioSectionModel;
+import lunartools.audiocutter.common.service.AudioPlayer;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ButtonMouseListener implements MouseListener{
 	private AudioCutterModel model;
@@ -26,9 +26,9 @@ public class ButtonMouseListener implements MouseListener{
 		Object source=e.getSource();
 		if(source==view.jbuttonPrev) {
 			int cursorPos=model.getCursorPositionSampleNumber();
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
 			for(int i=audioSections.size()-1;i>=0;i--) {
-				AudioSection audioSection=audioSections.get(i);
+				AudioSectionModel audioSection=audioSections.get(i);
 				if(audioSection.getPosition()<cursorPos) {
 					zoomAndPlay(audioSection.getPosition());
 					break;
@@ -36,9 +36,9 @@ public class ButtonMouseListener implements MouseListener{
 			}
 		}else if(source==view.jbuttonNext) {
 			int cursorPos=model.getCursorPositionSampleNumber();
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
 			for(int i=0;i<audioSections.size();i++) {
-				AudioSection audioSection=audioSections.get(i);
+				AudioSectionModel audioSection=audioSections.get(i);
 				if(audioSection.getPosition()>cursorPos) {
 					zoomAndPlay(audioSection.getPosition());
 					break;

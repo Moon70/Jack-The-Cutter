@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.ImageTools;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioSection;
-import lunartools.audiocutter.player.AudioPlayer;
+import lunartools.audiocutter.common.model.AudioSectionModel;
+import lunartools.audiocutter.common.service.AudioPlayer;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 	private static Logger logger = LoggerFactory.getLogger(SectionTablePopupMenu.class);
@@ -73,8 +73,8 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 		int selectedRow=tablePanel.table.getSelectedRow();
 		selectedRow=tablePanel.table.convertRowIndexToModel(selectedRow);
 		if(object==menuitemEditStart) {
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
-			AudioSection audioSection=audioSections.get(selectedRow);
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+			AudioSectionModel audioSection=audioSections.get(selectedRow);
 			int startpositionOfSelectedSection=audioSection.getPosition();
 			int startSelection=startpositionOfSelectedSection-50000;
 			if(startSelection<0) {
@@ -87,8 +87,8 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 			model.setSelectionRangeInSamples(startSelection,endSelection);
 			model.setViewRangeInSamples(startSelection,endSelection);
 		}else if(object==menuitemEditEnd) {
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
-			AudioSection audioSection=audioSections.get(selectedRow+1);
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+			AudioSectionModel audioSection=audioSections.get(selectedRow+1);
 			int startpositionOfSelectedSection=audioSection.getPosition();
 			int startSelection=startpositionOfSelectedSection-50000;
 			if(startSelection<0) {
@@ -103,23 +103,23 @@ public class SectionTablePopupMenu extends JPopupMenu implements ActionListener{
 		}else if(object==menuitemPlay) {
 			AudioPlayer.getInstance().playSection(selectedRow);
 		}else if(object==menuitemSelectAndZoom) {
-			AudioSection audioSection=model.getAudioSection(selectedRow);
-			AudioSection audioSectionNext=model.getAudioSection(selectedRow+1);
+			AudioSectionModel audioSection=model.getAudioSection(selectedRow);
+			AudioSectionModel audioSectionNext=model.getAudioSection(selectedRow+1);
 			if(audioSectionNext==null) {
 				model.setViewRangeInSamples(audioSection.getPosition(),model.getAudiodataLengthInSamples());
 			}else {
 				model.setViewRangeInSamples(audioSection.getPosition(),audioSectionNext.getPosition());
 			}
 		}else if(object==menuitemDeleteLeftCutpoint) {
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
 			audioSections.remove(selectedRow);
 			model.setAudioSections(audioSections);
 			selectedRow=tablePanel.table.convertRowIndexToView(selectedRow-1);
 			tablePanel.table.setRowSelectionInterval(selectedRow, selectedRow);;
 		}else if(object==menuitemDeleteRightCutpoint) {
-			AudioSection selectedAudioSection=model.getAudioSection(selectedRow);
-			AudioSection nextAudioSection=model.getAudioSection(selectedRow+1);
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			AudioSectionModel selectedAudioSection=model.getAudioSection(selectedRow);
+			AudioSectionModel nextAudioSection=model.getAudioSection(selectedRow+1);
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
 			nextAudioSection.setPosition(selectedAudioSection.getPosition());
 			audioSections.remove(selectedRow);
 			model.setAudioSections(audioSections);

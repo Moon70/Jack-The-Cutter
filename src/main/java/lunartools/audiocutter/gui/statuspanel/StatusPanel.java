@@ -14,12 +14,12 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioSection;
-import lunartools.audiocutter.Calculator;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.AudioSectionModel;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.common.ui.util.SampleUtils;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public class StatusPanel extends JPanel implements Observer{
+public class StatusPanel extends JPanel{
 	private static Logger logger = LoggerFactory.getLogger(StatusPanel.class);
 	private AudioCutterModel model;
 
@@ -108,15 +108,14 @@ public class StatusPanel extends JPanel implements Observer{
 		setMaximumSize(new Dimension(parentWidth,y));
 		setPreferredSize(new Dimension(parentWidth,y));
 
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 		//setBackground(new Color(0xffcccc));
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_CURSORCHANGED) {
 			int cursorPositionSampleNumber=model.getCursorPositionSampleNumber();
-			labelCursorTimeIndex.setText(Calculator.convertNumberOfSamplesToHourMinuteSecondString(cursorPositionSampleNumber));
+			labelCursorTimeIndex.setText(SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(cursorPositionSampleNumber));
 		}else if(object==SimpleEvents.MODEL_MOUSESAMPLENUMBERCHANGED) {
 			int mousePositionSampleNumber=model.getMousePositionSampleNumber();
 			if(mousePositionSampleNumber==0) {
@@ -124,15 +123,15 @@ public class StatusPanel extends JPanel implements Observer{
 				labelDistanceTime.setText("");
 				return;
 			}
-			labelMouseTimeIndex.setText(Calculator.convertNumberOfSamplesToHourMinuteSecondString(mousePositionSampleNumber));
-			ArrayList<AudioSection> audioSections=model.getAudioSections();
+			labelMouseTimeIndex.setText(SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(mousePositionSampleNumber));
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
 			labelDistanceTime.setText("");
 			for(int i=audioSections.size()-1;i>=0;i--) {
-				AudioSection audioSection=audioSections.get(i);
+				AudioSectionModel audioSection=audioSections.get(i);
 				int sectionStart=audioSection.getPosition();
 				if(sectionStart<mousePositionSampleNumber) {
 					int delta=mousePositionSampleNumber-sectionStart;
-					labelDistanceTime.setText(Calculator.convertNumberOfSamplesToHourMinuteSecondString(delta));
+					labelDistanceTime.setText(SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(delta));
 					break;
 				}
 			}

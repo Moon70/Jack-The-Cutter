@@ -5,8 +5,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.Calculator;
+import lunartools.audiocutter.common.ui.util.SampleUtils;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public abstract class WaveController implements MouseListener,MouseMotionListener{
 	AudioCutterModel model;

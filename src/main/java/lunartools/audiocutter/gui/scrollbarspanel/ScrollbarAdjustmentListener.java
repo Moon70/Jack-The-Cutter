@@ -4,7 +4,7 @@ import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ScrollbarAdjustmentListener implements AdjustmentListener{
 	private AudioCutterModel model;

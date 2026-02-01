@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ProjectFileFilter extends FileFilter{
 	public static final String FILEEXTENSION=".project".toLowerCase();
@@ -16,7 +16,7 @@ public class ProjectFileFilter extends FileFilter{
 
 	@Override
 	public String getDescription() {
-		return AudioCutterModel.PROGRAMNAME+" project file";
+		return AudioCutterModel.PROGRAM_NAME+" project file";
 	}
 
 }

@@ -11,7 +11,8 @@ import javax.swing.JFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.SwingTools;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class PreferencesController implements ActionListener{
 	private static Logger logger = LoggerFactory.getLogger(PreferencesController.class);
@@ -70,7 +71,7 @@ public class PreferencesController implements ActionListener{
 			fileChooser.setCurrentDirectory(new File(ffmpegExecutable).getParentFile());
 		}
 		fileChooser.setDialogTitle("Select FFmpeg executable");
-		fileChooser.setPreferredSize(new Dimension(800,(int)(800/AudioCutterModel.SECTIOAUREA)));
+		fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
 		if(fileChooser.showOpenDialog(preferencesDialog)==JFileChooser.APPROVE_OPTION) {
 			File file=fileChooser.getSelectedFile();
 			preferencesDialog.textfield.setText(file.getAbsolutePath());

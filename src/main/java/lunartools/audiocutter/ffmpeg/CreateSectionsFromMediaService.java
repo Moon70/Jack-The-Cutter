@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.Settings;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioCutterSettings;
-import lunartools.exec.Exec;
-import lunartools.exec.ExecOutputCallback;
+import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
+import lunartools.cli.Exec;
+import lunartools.cli.ExecOutputCallback;
 
 public class CreateSectionsFromMediaService implements ExecOutputCallback{
 	private static Logger logger = LoggerFactory.getLogger(CreateSectionsFromMediaService.class);
@@ -25,7 +25,7 @@ public class CreateSectionsFromMediaService implements ExecOutputCallback{
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
 		String mediaFilePathWithQuotes="\""+mediafile.getAbsolutePath()+"\"";
 		String sectionFilepathWithQuotes="\""+sectionfile.getAbsolutePath()+"\"";
-		Settings settings=AudioCutterSettings.getSettings();
+		AudioCutterSettings settings=AudioCutterSettings.getInstance();
 		String parameter=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PARAMETER);
 		parameter=String.format(parameter,mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
 		logger.debug("FFmpeg parameter: "+parameter);

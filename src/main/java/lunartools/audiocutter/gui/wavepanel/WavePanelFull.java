@@ -2,7 +2,7 @@ package lunartools.audiocutter.gui.wavepanel;
 
 import java.awt.Graphics;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class WavePanelFull extends WavePanel{
 

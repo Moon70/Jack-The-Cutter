@@ -13,11 +13,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import lunartools.ImageTools;
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.SwingTools;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class PreferencesDialog extends JDialog implements AWTEventListener{
 	private final int dialogWidth=500;
-	private final int dialogHeight=(int)(dialogWidth/AudioCutterModel.SECTIOAUREA);
+	private final int dialogHeight=(int)(dialogWidth/SwingTools.SECTIOAUREA);
 	private PreferencesController preferencesController;
 	
 	JTextField textfield;

@@ -10,16 +10,16 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterController;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.core.AudioCutterController;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public class MediaInfoPanel extends JPanel implements Observer{
+public class MediaInfoPanel extends JPanel{
 	private static Logger logger = LoggerFactory.getLogger(MediaInfoPanel.class);
 	private AudioCutterModel model;
 	private JLabel labelFile;
 
-	public MediaInfoPanel(AudioCutterModel audioCutterModel,AudioCutterController audioCutterController) {
+	public MediaInfoPanel(AudioCutterModel audioCutterModel) {
 		this.model=audioCutterModel;
 		this.setLayout(null);
 
@@ -42,13 +42,12 @@ public class MediaInfoPanel extends JPanel implements Observer{
 
 		y+=lineHeight;
 
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 
 		//setBackground(new Color(0xff99ff));
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_MEDIAFILECHANGED) {
 			File mediafile=model.getMediaFile();
 			labelFile.setText(mediafile==null?"":mediafile.getName());

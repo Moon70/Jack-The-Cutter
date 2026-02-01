@@ -10,15 +10,15 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterController;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.core.AudioCutterController;
+import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.gui.buttonpanel.ButtonPanel;
 import lunartools.audiocutter.gui.scrollbarspanel.ScrollbarsPanel;
 import lunartools.audiocutter.gui.wavepanel.WavePanelFull;
 import lunartools.audiocutter.gui.wavepanel.WavePanelZoom;
 
-public class LeftPanel extends JPanel implements Observer{
+public class LeftPanel extends JPanel{
 	private static Logger logger = LoggerFactory.getLogger(LeftPanel.class);
 
 	private ButtonPanel buttonPanel;
@@ -34,7 +34,7 @@ public class LeftPanel extends JPanel implements Observer{
 
 	public LeftPanel(AudioCutterModel model,AudioCutterController controller) {
 		this.setLayout(null);
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 
 		int y=0;
 
@@ -91,8 +91,7 @@ public class LeftPanel extends JPanel implements Observer{
 		panelStatus.setLocation(column1X, y);
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {
 			refreshLayout();
 		}

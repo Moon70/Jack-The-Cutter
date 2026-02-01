@@ -3,7 +3,7 @@ package lunartools.audiocutter.gui.wavepanel;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class WavePanelZoom extends WavePanel{
 

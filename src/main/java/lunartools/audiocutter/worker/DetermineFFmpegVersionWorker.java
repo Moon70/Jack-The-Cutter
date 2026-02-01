@@ -7,8 +7,8 @@ import javax.swing.SwingWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.audiocutter.AudioCutterController;
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterController;
+import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.ffmpeg.DetermineFFmpegVersionService;
 import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 
@@ -30,7 +30,7 @@ public class DetermineFFmpegVersionWorker extends SwingWorker<Void, Void> {
 		try {
 			String ffmpegExecutablePath=model.getFFmpegExecutablePath();
 			if(ffmpegExecutablePath==null || ffmpegExecutablePath.length()==0) {
-				statusMessage=new StatusMessage(StatusMessage.Type.ERROR,AudioCutterModel.PROGRAMNAME+" needs FFmpeg to process media files, please open preferences and specify 'FFmpeg executable'");
+				statusMessage=new StatusMessage(StatusMessage.Type.ERROR,AudioCutterModel.PROGRAM_NAME+" needs FFmpeg to process media files, please open preferences and specify 'FFmpeg executable'");
 				return null;
 			}
 			File ffmpegExecutable=new File(ffmpegExecutablePath);

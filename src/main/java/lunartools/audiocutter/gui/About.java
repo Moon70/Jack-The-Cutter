@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import lunartools.FileTools;
 import lunartools.ImageTools;
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class About {
 	private static Logger logger = LoggerFactory.getLogger(About.class);
@@ -44,7 +44,7 @@ public class About {
 			editorPane.setEditable(false);
 			editorPane.setBackground(jframe.getBackground());
 
-			JOptionPane.showMessageDialog(jframe, editorPane, "About "+AudioCutterModel.PROGRAMNAME,JOptionPane.INFORMATION_MESSAGE,ImageTools.createImageIcon(RESOURCEPATH_ICON));
+			JOptionPane.showMessageDialog(jframe, editorPane, "About "+AudioCutterModel.PROGRAM_NAME,JOptionPane.INFORMATION_MESSAGE,ImageTools.createImageIcon(RESOURCEPATH_ICON));
 		} catch (Exception e) {
 			logger.error("Error when opening About dialogue",e);
 		}

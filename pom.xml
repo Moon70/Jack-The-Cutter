@@ -9,9 +9,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<version_lunartools>1.2.0</version_lunartools>
-		<version_org_junit_jupiter>5.7.1</version_org_junit_jupiter>
-		<version_slf4j>1.7.30</version_slf4j>
+		<version_lunartools>1.4.0-snapshot</version_lunartools>
+		<version_org_junit_jupiter>5.11.4</version_org_junit_jupiter>
+		<org.slf4j.slf4j-api.version>1.7.36</org.slf4j.slf4j-api.version>
+		<ch.qos.logback.logback-classic.version>1.2.10</ch.qos.logback.logback-classic.version>
+		<ch.qos.logback.logback-core.version>1.2.10</ch.qos.logback.logback-core.version>
 	</properties>
 	<build>
 		<resources>
@@ -64,16 +66,19 @@
 		<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-api</artifactId>
-		    <version>${version_slf4j}</version>
+		    <version>${org.slf4j.slf4j-api.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>${version_slf4j}</version>
-<!-- 
- 		    <scope>provided</scope>
- -->
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>${ch.qos.logback.logback-classic.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-core</artifactId>
+		    <version>${ch.qos.logback.logback-core.version}</version>
 		</dependency>
 		<!-- https://github.com/Moon70/LunarTools/packages -->
 		<dependency>

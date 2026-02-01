@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class TablePanel extends JPanel{
 	private static final int COLUMNWIDTH_TRACKNUMBER = 30;
@@ -42,6 +42,7 @@ public class TablePanel extends JPanel{
 
 			@Override
 			public void valueChanged(ListSelectionEvent e){
+//System.out.println("valueChanged");
 				ListSelectionModel selectionModel=(ListSelectionModel)e.getSource();
 				model.setSelectedAudioSection(selectionModel.getMinSelectionIndex());
 			}

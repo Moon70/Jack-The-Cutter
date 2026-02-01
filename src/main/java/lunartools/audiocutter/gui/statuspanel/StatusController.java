@@ -4,22 +4,21 @@ import java.awt.Color;
 import java.util.Observable;
 import java.util.Observer;
 
-import lunartools.audiocutter.AudioCutterModel;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public class StatusController implements Observer{
+public class StatusController{
 	private StatusPanel statusPanel;
 
 	public StatusController(AudioCutterModel model) {
 		statusPanel=new StatusPanel(model);
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 	}
 
 	public StatusPanel getStatusPanel() {
 		return statusPanel;
 	}
 
-	@Override
-	public void update(Observable observer, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object instanceof StatusMessage) {
 			StatusMessage statusMessage=(StatusMessage)object;
 			if(statusMessage.getType()==StatusMessage.Type.INFO) {

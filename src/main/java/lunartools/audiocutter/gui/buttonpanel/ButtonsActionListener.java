@@ -3,9 +3,9 @@ package lunartools.audiocutter.gui.buttonpanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import lunartools.audiocutter.AudioCutterController;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.player.AudioPlayer;
+import lunartools.audiocutter.common.service.AudioPlayer;
+import lunartools.audiocutter.core.AudioCutterController;
+import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ButtonsActionListener implements ActionListener{
 	private AudioCutterModel model;
@@ -68,7 +68,7 @@ public class ButtonsActionListener implements ActionListener{
 	}
 
 	private void action_cut() {
-		controller.action_CutAtCursorPosition();
+////		controller.action_CutAtCursorPosition();
 	}
 
 }

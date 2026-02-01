@@ -9,12 +9,12 @@ import java.util.Observer;
 import javax.swing.JPanel;
 
 import lunartools.ByteTools;
-import lunartools.audiocutter.AudioCutterModel;
-import lunartools.audiocutter.AudioSection;
-import lunartools.audiocutter.Calculator;
-import lunartools.audiocutter.SimpleEvents;
+import lunartools.audiocutter.common.model.AudioSectionModel;
+import lunartools.audiocutter.common.model.SimpleEvents;
+import lunartools.audiocutter.common.ui.util.SampleUtils;
+import lunartools.audiocutter.core.AudioCutterModel;
 
-public abstract class WavePanel extends JPanel implements Observer{
+public abstract class WavePanel extends JPanel{
 	AudioCutterModel model;
 	WaveController waveController;
 
@@ -49,15 +49,14 @@ public abstract class WavePanel extends JPanel implements Observer{
 		this.model=audioCutterModel;
 		this.setLayout(null);
 		calculateSizes();
-		model.addObserver(this);
+		model.addChangeListener(this::updateModelChanges);
 	}
 
 	abstract int getViewStartInSamples();
 
 	abstract int getViewEndInSamples();
 
-	@Override
-	public void update(Observable observable, Object object) {
+	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {
 			calculateSizes();
 		}
@@ -131,11 +130,11 @@ public abstract class WavePanel extends JPanel implements Observer{
 			g.drawLine(cursorPosPixel, channel1CenterY-(channelHeight>>1), cursorPosPixel, channel2CenterY+(channelHeight>>1));
 		}
 
-		ArrayList<AudioSection> audiosections=model.getAudioSections();
+		ArrayList<AudioSectionModel> audiosections=model.getAudioSections();
 		waveController.resetSectionMarks();
 		if(audiosections!=null && audiosections.size()>1) {
 			for(int i=0;i<audiosections.size();i++) {
-				AudioSection audioSection=audiosections.get(i);
+				AudioSectionModel audioSection=audiosections.get(i);
 				int audioSectionPos=audioSection.getPosition();
 				if(audioSectionPos>=viewStartInSamples && audioSectionPos<=viewEndInSamples) {
 					int sectionPosPixel=waveController.convertSampleNumberToScreenPosition(this, audioSectionPos);
@@ -161,7 +160,7 @@ public abstract class WavePanel extends JPanel implements Observer{
 	void drawSelectedSectionBackground(Graphics g) {
 		int selectedSection=model.getSelectedAudioSection();
 		if(selectedSection>=0) {
-			AudioSection audioSection=model.getAudioSection(selectedSection);
+			AudioSectionModel audioSection=model.getAudioSection(selectedSection);
 			final int sectionStartInSamples=audioSection.getPosition();
 			final int sectionEndInSamples;
 			if(selectedSection==model.getAudioSectionsSize()-1) {
@@ -202,7 +201,7 @@ public abstract class WavePanel extends JPanel implements Observer{
 			if((i%(5*magic))==0) {
 				g.drawLine(i, channel2Bot, i, channel2Bot+24);
 				int posInSamples=waveController.convertScreenPositionToSampleNumber(i);
-				String timestamp=Calculator.convertNumberOfSamplesToHourMinuteSecondString(posInSamples);
+				String timestamp=SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(posInSamples);
 				g.drawString(timestamp, i+4, channel2Bot+22);
 			}else {
 				g.drawLine(i, channel2Bot, i, channel2Bot+4);
