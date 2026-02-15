@@ -1,4 +1,4 @@
-package lunartools.audiocutter.worker;
+package lunartools.audiocutter.core.service;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.core.AudioCutterModel;
-import lunartools.audiocutter.core.service.AutoCutService;
 import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.swing.ProgressProperty;
 import lunartools.swing.ProgressStep;

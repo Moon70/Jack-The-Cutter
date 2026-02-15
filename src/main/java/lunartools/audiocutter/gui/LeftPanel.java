@@ -1,10 +1,12 @@
 package lunartools.audiocutter.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.gui.buttonpanel.ButtonPanel;
 import lunartools.audiocutter.gui.scrollbarspanel.ScrollbarsPanel;
+import lunartools.audiocutter.gui.statuspanel.StatusPanel;
 import lunartools.audiocutter.gui.wavepanel.WavePanelFull;
 import lunartools.audiocutter.gui.wavepanel.WavePanelZoom;
 
@@ -26,80 +29,47 @@ public class LeftPanel extends JPanel{
 	private WavePanelZoom wavePanelZoom;
 	private ScrollbarsPanel scrollbarsPanel;
 
-	private JPanel panelStatus;
-
-	private int marginY=16;
-	private int marginSmallY=8;
-	private int column1X=10;
+	private StatusPanel panelStatus;
 
 	public LeftPanel(AudioCutterModel model,AudioCutterController controller) {
-		this.setLayout(null);
-		model.addChangeListener(this::updateModelChanges);
-
-		int y=0;
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+//		model.addChangeListener(this::updateModelChanges);
 
 		buttonPanel=new ButtonPanel(model,controller);
-		buttonPanel.setLocation(column1X, y);
+		buttonPanel.setAlignmentX(LEFT_ALIGNMENT);
 		add(buttonPanel);
 
-		y+=buttonPanel.getHeight();
-
 		wavePanelFull=new WavePanelFull(model);
+		wavePanelFull.setAlignmentX(LEFT_ALIGNMENT);
 		add(wavePanelFull);
-		wavePanelFull.setLocation(column1X, y);
-
-		y+=wavePanelFull.getHeight()+marginY;
 
 		wavePanelZoom=new WavePanelZoom(model);
+		wavePanelZoom.setAlignmentX(LEFT_ALIGNMENT);
 		add(wavePanelZoom);
-		wavePanelZoom.setLocation(column1X, y);
-
-		y+=wavePanelZoom.getHeight()+marginY;
 
 		scrollbarsPanel=new ScrollbarsPanel(model);
+		scrollbarsPanel.setAlignmentX(LEFT_ALIGNMENT);
 		add(scrollbarsPanel);
-		scrollbarsPanel.setLocation(column1X, y);
-
-		y+=scrollbarsPanel.getHeight()+marginY;
 
 		panelStatus=controller.getStatusController().getStatusPanel();
-		panelStatus.setLocation(column1X, y);
+		//panelStatus=new StatusPanel(model);
+		panelStatus.setAlignmentX(LEFT_ALIGNMENT);
 		add(panelStatus);
-
-		y+=panelStatus.getHeight()+marginY;
-
-		Dimension size=new Dimension(model.getAudiodataViewWidth(),y);
-		setSize(size);
 
 		//setBackground(new Color(0xccffff));
 	}
 
-	public void refreshLayout() {
-		int y=0;
-		buttonPanel.setLocation(column1X, y);
-		y+=buttonPanel.getHeight();
-
-		wavePanelFull.setLocation(column1X, y);
-		y+=wavePanelFull.getHeight()+marginY;
-
-		wavePanelZoom.setLocation(column1X, y);
-		y+=wavePanelZoom.getHeight()+marginSmallY;
-
-		scrollbarsPanel.setLocation(column1X, y);
-		y+=scrollbarsPanel.getHeight()+marginSmallY;
-
-		panelStatus.setLocation(column1X, y);
-	}
-
 	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {
-			refreshLayout();
 		}
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		refreshLayout();
-		super.paint(g);
+	public ButtonPanel getButtonPanel() {
+		return buttonPanel;
 	}
+
+	public StatusPanel getPanelStatus() {
+		return panelStatus;
+	}
+
 }

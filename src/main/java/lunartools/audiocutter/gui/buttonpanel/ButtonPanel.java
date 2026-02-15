@@ -1,6 +1,9 @@
 package lunartools.audiocutter.gui.buttonpanel;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Observable;
@@ -11,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import lunartools.ImageTools;
+import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
@@ -27,7 +31,7 @@ public class ButtonPanel extends JPanel{
 
 	JButton jbuttonZoomIn;
 	JButton jbuttonZoomOut;
-	JButton jbuttonFitSelection;
+	JButton jbuttonZoomSelection;
 	JButton jbuttonFitProject;
 	JToggleButton toggleButtonAmplitudeZoom;
 
@@ -35,151 +39,112 @@ public class ButtonPanel extends JPanel{
 
 	public ButtonPanel(AudioCutterModel model,AudioCutterController controller) {
 		this.model=model;
-		this.setLayout(null);
+		this.setLayout(new FlowLayout(FlowLayout.LEFT,4,2));
 
 		ActionListener buttonActionListener=new ButtonsActionListener(model,controller,this);
 		MouseListener buttonMouseListener=new ButtonMouseListener(model,this);
 
 		int buttonWidth=32;
 		int buttonHeight=30;
-		int buttonMargin=6;
-		int groupMargin=30;
-		int x=0;
-		int y=4;
 
+		Dimension buttonDimension=new Dimension(buttonWidth,buttonHeight);
 		jbuttonPlayCursor=new JButton();
-		jbuttonPlayCursor.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonPlayCursor.setIcon(ImageTools.createImageIcon("/icons/Button_playCursor.png"));
-		jbuttonPlayCursor.setToolTipText("play from cursor position");
-		jbuttonPlayCursor.addActionListener(buttonActionListener);
+		jbuttonPlayCursor.setPreferredSize(buttonDimension);
+		jbuttonPlayCursor.setMinimumSize(buttonDimension);
 		jbuttonPlayCursor.setEnabled(false);
 		add(jbuttonPlayCursor);
 
-
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonPlaySelection=new JButton();
-		jbuttonPlaySelection.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonPlaySelection.setIcon(ImageTools.createImageIcon("/icons/Button_playSelection.png"));
-		jbuttonPlaySelection.setToolTipText("play selection");
-		jbuttonPlaySelection.addActionListener(buttonActionListener);
+		jbuttonPlaySelection.setPreferredSize(buttonDimension);
+		jbuttonPlaySelection.setMinimumSize(buttonDimension);
 		jbuttonPlaySelection.setEnabled(false);
 		add(jbuttonPlaySelection);
 
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonPause=new JButton();
-		jbuttonPause.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonPause.setIcon(ImageTools.createImageIcon("/icons/Button_pause.png"));
-		jbuttonPause.setToolTipText("pause");
-		jbuttonPause.addActionListener(buttonActionListener);
+		jbuttonPause.setPreferredSize(buttonDimension);
+		jbuttonPause.setMinimumSize(buttonDimension);
 		jbuttonPause.setEnabled(false);
 		add(jbuttonPause);
 
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonStop=new JButton();
-		jbuttonStop.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonStop.setIcon(ImageTools.createImageIcon("/icons/Button_stop.png"));
-		jbuttonStop.setToolTipText("stop");
-		jbuttonStop.addActionListener(buttonActionListener);
+		jbuttonStop.setPreferredSize(buttonDimension);
+		jbuttonStop.setMinimumSize(buttonDimension);
 		jbuttonStop.setEnabled(false);
 		add(jbuttonStop);
 
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonPrev=new JButton();
-		jbuttonPrev.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonPrev.setIcon(ImageTools.createImageIcon("/icons/Button_previousSection.png"));
-		jbuttonPrev.setToolTipText("goto previous section");
-		jbuttonPrev.addActionListener(buttonActionListener);
+		jbuttonPrev.setPreferredSize(buttonDimension);
+		jbuttonPrev.setMinimumSize(buttonDimension);
 		jbuttonPrev.addMouseListener(buttonMouseListener);
 		jbuttonPrev.setEnabled(false);
 		add(jbuttonPrev);
 
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonNext=new JButton();
-		jbuttonNext.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonNext.setIcon(ImageTools.createImageIcon("/icons/Button_nextSection.png"));
-		jbuttonNext.setToolTipText("goto next section");
-		jbuttonNext.addActionListener(buttonActionListener);
+		jbuttonNext.setPreferredSize(buttonDimension);
+		jbuttonNext.setMinimumSize(buttonDimension);
 		jbuttonNext.addMouseListener(buttonMouseListener);
 		jbuttonNext.setEnabled(false);
 		add(jbuttonNext);
 
-		x+=buttonWidth+buttonMargin+groupMargin;
-
 		jbuttonZoomIn=new JButton();
-		jbuttonZoomIn.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonZoomIn.setIcon(ImageTools.createImageIcon("/icons/Button_zoomIn.png"));
-		jbuttonZoomIn.setToolTipText("zoom in");
-		jbuttonZoomIn.addActionListener(buttonActionListener);
+		jbuttonZoomIn.setPreferredSize(buttonDimension);
+		jbuttonZoomIn.setMinimumSize(buttonDimension);
 		jbuttonZoomIn.setEnabled(false);
 		add(jbuttonZoomIn);
 
-		x+=buttonWidth+buttonMargin;
-
 		jbuttonZoomOut=new JButton();
-		jbuttonZoomOut.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonZoomOut.setIcon(ImageTools.createImageIcon("/icons/Button_zoomOut.png"));
-		jbuttonZoomOut.setToolTipText("zoom out");
-		jbuttonZoomOut.addActionListener(buttonActionListener);
+		jbuttonZoomOut.setPreferredSize(buttonDimension);
+		jbuttonZoomOut.setMinimumSize(buttonDimension);
 		jbuttonZoomOut.setEnabled(false);
 		add(jbuttonZoomOut);
 
-		x+=buttonWidth+buttonMargin;
-
-		jbuttonFitSelection=new JButton();
-		jbuttonFitSelection.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonFitSelection.setIcon(ImageTools.createImageIcon("/icons/Button_zoomSelection.png"));
-		jbuttonFitSelection.setToolTipText("zoom selection");
-		jbuttonFitSelection.addActionListener(buttonActionListener);
-		jbuttonFitSelection.setEnabled(false);
-		add(jbuttonFitSelection);
-
-		x+=buttonWidth+buttonMargin;
+		jbuttonZoomSelection=new JButton();
+		jbuttonZoomSelection.setPreferredSize(buttonDimension);
+		jbuttonZoomSelection.setMinimumSize(buttonDimension);
+		jbuttonZoomSelection.setEnabled(false);
+		add(jbuttonZoomSelection);
 
 		jbuttonFitProject=new JButton();
-		jbuttonFitProject.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonFitProject.setIcon(ImageTools.createImageIcon("/icons/Button_fitProject.png"));
-		jbuttonFitProject.setToolTipText("fit project");
-		jbuttonFitProject.addActionListener(buttonActionListener);
+		jbuttonFitProject.setPreferredSize(buttonDimension);
+		jbuttonFitProject.setMinimumSize(buttonDimension);
 		jbuttonFitProject.setEnabled(false);
 		add(jbuttonFitProject);
 
-		x+=buttonWidth+buttonMargin;
-
 		toggleButtonAmplitudeZoom=new JToggleButton();
-		toggleButtonAmplitudeZoom.setBounds(x, y, buttonWidth,buttonHeight);
-		toggleButtonAmplitudeZoom.setIcon(ImageTools.createImageIcon("/icons/Button_AmplitudeZoom.png"));
+		toggleButtonAmplitudeZoom.setPreferredSize(buttonDimension);
+		toggleButtonAmplitudeZoom.setMinimumSize(buttonDimension);
 		toggleButtonAmplitudeZoom.setSelectedIcon(ImageTools.createImageIcon("/icons/Button_AmplitudeZoomPressed.png"));
-		toggleButtonAmplitudeZoom.setToolTipText("zoom amplitude");
-		toggleButtonAmplitudeZoom.addActionListener(buttonActionListener);
 		toggleButtonAmplitudeZoom.setEnabled(false);
 		add(toggleButtonAmplitudeZoom);
 
-		x+=buttonWidth+buttonMargin+groupMargin;
-
 		jbuttonCut=new JButton();
-		jbuttonCut.setBounds(x, y, buttonWidth,buttonHeight);
-		jbuttonCut.setIcon(ImageTools.createImageIcon("/icons/ProgramIcon24x24.png"));
-		jbuttonCut.setToolTipText("cut at cursor position");
-		jbuttonCut.addActionListener(buttonActionListener);
+		jbuttonCut.setPreferredSize(buttonDimension);
+		jbuttonCut.setMinimumSize(buttonDimension);
 		jbuttonCut.setEnabled(false);
 		add(jbuttonCut);
 
-		x+=buttonWidth;
-
-		Dimension size=new Dimension(x, buttonHeight+4);
-		setSize(size);
-		setMinimumSize(size.getSize());
-		setMaximumSize(size.getSize());
-		setPreferredSize(size.getSize());
+		Dimension pref = getPreferredSize();
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, pref.height));
+		setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		model.addChangeListener(this::updateModelChanges);
 
 		//setBackground(new Color(0xccffcc));
+	}
+	
+	public void setActionFactory(ActionFactory actionFactory) {
+		jbuttonPlayCursor.setAction(actionFactory.createPlayCursorAction());
+		jbuttonPlaySelection.setAction(actionFactory.createPlaySelectionAction());
+		jbuttonPause.setAction(actionFactory.createPauseAction());
+		jbuttonStop.setAction(actionFactory.createStopAction());
+		jbuttonPrev.setAction(actionFactory.createPreviousAction());
+		jbuttonNext.setAction(actionFactory.createNextAction());
+		jbuttonZoomIn.setAction(actionFactory.createZoomInAction());
+		jbuttonZoomOut.setAction(actionFactory.createZoomOutAction());
+		jbuttonZoomSelection.setAction(actionFactory.createZoomSelectionAction());
+		jbuttonFitProject.setAction(actionFactory.createFitProjectAction());
+		toggleButtonAmplitudeZoom.setAction(actionFactory.createAmplitudeZoomAction());
+		jbuttonCut.setAction(actionFactory.createCutAction());
 	}
 
 	public void updateModelChanges(Object object) {
@@ -212,7 +177,7 @@ public class ButtonPanel extends JPanel{
 		jbuttonPlaySelection.setEnabled(hasSelection);
 		jbuttonPrev.setEnabled(hasSelections);
 		jbuttonNext.setEnabled(hasSelections);
-		jbuttonFitSelection.setEnabled(hasSelection);
+		jbuttonZoomSelection.setEnabled(hasSelection);
 	}
 
 }

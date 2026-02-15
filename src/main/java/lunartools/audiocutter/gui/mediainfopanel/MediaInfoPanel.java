@@ -1,5 +1,9 @@
 package lunartools.audiocutter.gui.mediainfopanel;
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
@@ -21,26 +25,26 @@ public class MediaInfoPanel extends JPanel{
 
 	public MediaInfoPanel(AudioCutterModel audioCutterModel) {
 		this.model=audioCutterModel;
-		this.setLayout(null);
+		//setLayout(null);
+		setLayout(new GridBagLayout());
 
-		int margin=4;
-		int labelX=margin;
-		int labelWidth=35;
-		int fieldX=labelX+labelWidth+margin;
-		//TODO: calculate max fieldWidth
-		int fieldWidth=400;
-		int y=margin;
-		int lineHeight=18;
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
 
+		gbc.gridx = 0;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
 		JLabel label=new JLabel("File:");
-		label.setBounds(labelX,y,labelWidth,lineHeight);
-		add(label);
+		add(label, gbc);
 
+		/* Label 2: stretches to fill remaining width */
+		gbc.gridx = 1;
+		gbc.weightx = 1;          // receives extra horizontal space
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		labelFile=new JLabel();
-		labelFile.setBounds(fieldX,y,fieldWidth,lineHeight);
-		add(labelFile);
-
-		y+=lineHeight;
+		add(labelFile, gbc);
 
 		model.addChangeListener(this::updateModelChanges);
 

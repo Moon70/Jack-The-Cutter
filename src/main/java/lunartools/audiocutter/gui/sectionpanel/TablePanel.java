@@ -3,6 +3,7 @@ package lunartools.audiocutter.gui.sectionpanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,7 +30,7 @@ public class TablePanel extends JPanel{
 	private JScrollPane scrollPane;
 
 	public TablePanel(AudioCutterModel model) {
-		super(new BorderLayout());
+		setLayout(new BorderLayout());
 
 		sectionTableModel=new SectionTableModel(model);
 		table = new JTable(sectionTableModel);
@@ -42,7 +43,6 @@ public class TablePanel extends JPanel{
 
 			@Override
 			public void valueChanged(ListSelectionEvent e){
-//System.out.println("valueChanged");
 				ListSelectionModel selectionModel=(ListSelectionModel)e.getSource();
 				model.setSelectedAudioSection(selectionModel.getMinSelectionIndex());
 			}

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import lunartools.ImageTools;
 import lunartools.ObservableJFrame;
+import lunartools.SwingTools;
 import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.service.AudioPlayer;
@@ -49,43 +50,40 @@ import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.menu.MenuView;
 import lunartools.swing.HasParentFrame;
 
-public class AudioCutterView extends JFrame implements HasParentFrame{
+public class AudioCutterView implements HasParentFrame{
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterView.class);
 
-	private final AudioCutterModel model;
-	private MenuModel menuModel;
-	private AudioCutterController controller;
-	private MenuModel menubarController;
+	private final AudioCutterModel audioCutterModel;
+	private final JFrame jFrame;
+	
+	private LeftPanel panelLeft;
+	
 	private JSplitPane jSplitPaneHorizontal;
 	private JSplitPane jSplitPaneVertical;
 
 	private final int tableSectionWithMin=350;
 	private final int audiodataViewWithMin=530;
 
+	public AudioCutterView(AudioCutterModel audioCutterModel) {
+		this.audioCutterModel=Objects.requireNonNull(audioCutterModel);
+		jFrame = new JFrame(AudioCutterModel.getProgramNameAndVersion());
+		jFrame.setMinimumSize(new Dimension(tableSectionWithMin+audiodataViewWithMin,500));
+		jFrame.setResizable(true);
+		jFrame.setLayout(new BorderLayout());
+		jFrame.setBounds(audioCutterModel.getFrameBounds());
+		jFrame.setIconImages(SwingTools.getDefaultIconImages());
 
-	public AudioCutterView(AudioCutterModel model) {
-		super.setTitle(AudioCutterModel.getProgramNameAndVersion());
-		setLayout(new BorderLayout());
-		setBounds(model.getFrameBounds());
-		setResizable(true);
-		setMinimumSize(new Dimension(tableSectionWithMin+audiodataViewWithMin,500));
-		this.model=Objects.requireNonNull(model);
-		this.model.addChangeListener(this::updateModelChanges);
+		audioCutterModel.addChangeListener(this::updateModelChanges);
 
-		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 //		addWindowListener(new WindowAdapter(){
 //			public void windowClosing(WindowEvent event){
 //				sendMessage(SimpleEvents.EXIT);
 //			}
 //		});
 
-
-
-//		int x=10;
-//		int y=0;
-
 		jSplitPaneHorizontal = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-		add(jSplitPaneHorizontal);
+		jFrame.add(jSplitPaneHorizontal);
 		jSplitPaneHorizontal.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
 
 			@Override
@@ -94,7 +92,7 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 				if(divider==0) {
 					return;
 				}
-				Rectangle frameBounds=model.getFrameBounds();
+				Rectangle frameBounds=audioCutterModel.getFrameBounds();
 				int tabeleSectionWith=frameBounds.width-divider;
 				if(tabeleSectionWith<tableSectionWithMin) {
 					tabeleSectionWith=tableSectionWithMin;
@@ -106,25 +104,23 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 					jSplitPaneHorizontal.setDividerLocation(divider);
 
 				}
-				model.setSectionTableWidth(tabeleSectionWith);
-				model.setAudiodataViewWidth(divider);
+				audioCutterModel.setSectionTableWidth(tabeleSectionWith);
+				audioCutterModel.setAudiodataViewWidth(divider);
 			}
 		});
 
-		jSplitPaneHorizontal.setBounds(0, 0,this.getWidth()-24,AudioCutterModel.DEFAULT_FRAME_WIDTH-80);
+//		jSplitPaneHorizontal.setBounds(0, 0,jFrame.getWidth()-24,AudioCutterModel.DEFAULT_FRAME_WIDTH-80);
 
-		jSplitPaneHorizontal.setDividerLocation(model.getHorizontalDividerPosition());
+		jSplitPaneHorizontal.setDividerLocation(audioCutterModel.getHorizontalDividerPosition());
 
-		setIconImages();
-
-		this.addComponentListener(new ComponentListener() {
+		jFrame.addComponentListener(new ComponentListener() {
 
 			@Override
 			public void componentShown(ComponentEvent e) {}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				model.setFrameBounds(e.getComponent().getBounds());
+				audioCutterModel.setFrameBounds(e.getComponent().getBounds());
 			}
 
 			@Override
@@ -141,7 +137,7 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 	public void setDropTargetHandler(FileDropHandler fileDropHandler) {
 		Objects.requireNonNull(fileDropHandler);
 //		setDropTarget(new AudioCutterDropTarget(model,controller));
-		setDropTarget(new DropTarget(this,new DropTargetAdapter() {
+		jFrame.setDropTarget(new DropTarget(jFrame,new DropTargetAdapter() {
 			
 			@Override
 			public void drop(DropTargetDropEvent evt) {
@@ -154,14 +150,14 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 					}
 					List<File> droppedFiles = (List<File>)object;
 					if(droppedFiles.size()>1) {
-						model.setStatusMessage(new StatusMessage(StatusMessage.Type.WARNING,"only drag single files to Jack, please"));
+						audioCutterModel.setStatusMessage(new StatusMessage(StatusMessage.Type.WARNING,"only drag single files to Jack, please"));
 						return;
 					}
-					if(model.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()){
+					if(audioCutterModel.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()){
 						return;
 					}
 					AudioPlayer.getInstance().action_stop();
-					model.closeProject();
+					audioCutterModel.closeProject();
 					File file=droppedFiles.get(0);
 					fileDropHandler.processDroppedFile(file);
 				} catch (Exception e) {
@@ -172,15 +168,13 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 	}
 	
 	public void temporaryInjectController(AudioCutterController controller) {
-		this.controller=controller;
-		
 
-		JPanel panelLeft=new LeftPanel(model,controller);
+		panelLeft=new LeftPanel(audioCutterModel,controller);
 		panelLeft.setLocation(10, 0);
 		jSplitPaneHorizontal.setLeftComponent(panelLeft);
 
 		jSplitPaneVertical=new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-		jSplitPaneVertical.setDividerLocation(model.getVerticalDividerPosition());
+		jSplitPaneVertical.setDividerLocation(audioCutterModel.getVerticalDividerPosition());
 		jSplitPaneVertical.setEnabled(false);
 		jSplitPaneHorizontal.setRightComponent(jSplitPaneVertical);
 
@@ -188,11 +182,11 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 		int y=0;
 		int marginX=4;
 		int marginY=4;
-		MediaInfoPanel mediaInfoPanel=new MediaInfoPanel(model);
+		MediaInfoPanel mediaInfoPanel=new MediaInfoPanel(audioCutterModel);
 		mediaInfoPanel.setLocation(x+marginX, y+marginY);
 		jSplitPaneVertical.setTopComponent(mediaInfoPanel);
 
-		TablePanel tablePanel=new TablePanel(model);
+		TablePanel tablePanel=new TablePanel(audioCutterModel);
 		tablePanel.setOpaque(true);
 		tablePanel.setLocation(x, y);
 		jSplitPaneVertical.setBottomComponent(tablePanel);
@@ -201,7 +195,7 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 	}
 
 	public void setMenuView(MenuView menuView) {
-		this.setJMenuBar(menuView.getMenuBar());
+		jFrame.setJMenuBar(menuView.getMenuBar());
 	}
 
 	public void updateModelChanges(Object object) {
@@ -222,8 +216,8 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 		}else if(object==SimpleEvents.MODEL_SELECTEDSECTIONSCHANGED) {
 			refreshGui();
 		}else if(object==SimpleEvents.MODEL_FRAMESIZECHANGED) {
-			Rectangle bounds=model.getFrameBounds();
-			int sectionTableWidth=model.getSectionTableWidth();
+			Rectangle bounds=audioCutterModel.getFrameBounds();
+			int sectionTableWidth=audioCutterModel.getSectionTableWidth();
 			int dividerPosition=bounds.width-sectionTableWidth;
 			jSplitPaneHorizontal.setDividerLocation(dividerPosition);
 			refreshGui();
@@ -235,38 +229,22 @@ public class AudioCutterView extends JFrame implements HasParentFrame{
 		}
 	}
 
-//	public void sendMessage(Object message) {
-//		setChanged();
-//		notifyObservers(message);
-//	}
-
 	public void refreshGui() {
-		this.repaint();
+		jFrame.repaint();
 	}
 
 	public void showMessageboxAbout() {
-		About.showAboutDialog(this);
-	}
-
-	private void setIconImages() {
-		try {
-			List<Image> icons=new ArrayList<Image>();
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon64x64.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon56x56.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon48x48.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon40x40.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon32x32.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon24x24.png"));
-			icons.add(ImageTools.createImageFromResource("/icons/ProgramIcon16x16.png"));
-			this.setIconImages(icons);
-		} catch (IOException e) {
-			logger.error("error loading icon image",e);
-		}
+		About.showAboutDialog(jFrame);
 	}
 
 	@Override
 	public JFrame getJFrame() {
-		return this;
+		return jFrame;
 	}
 
+	public LeftPanel getPanelLeft() {
+		return panelLeft;
+	}
+
+	
 }

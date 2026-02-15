@@ -16,15 +16,15 @@ import lunartools.audiocutter.common.ui.CueSheetFileFilter;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.service.AutoCutService;
+import lunartools.audiocutter.core.service.AutoCutWorker;
 import lunartools.audiocutter.core.service.CreateCueSheetService;
+import lunartools.audiocutter.core.service.CreateCueSheetWorker;
 import lunartools.audiocutter.core.service.CutMediaFileService;
+import lunartools.audiocutter.core.service.CutMediaFileWorker;
 import lunartools.audiocutter.core.service.MediaService;
 import lunartools.audiocutter.core.service.OpenMediaWorker;
 import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.projectfile.ProjectFileFilter;
-import lunartools.audiocutter.worker.AutoCutWorker;
-import lunartools.audiocutter.worker.CreateCueSheetWorker;
-import lunartools.audiocutter.worker.CutMediaFileWorker;
 import lunartools.swing.HasParentFrame;
 import lunartools.swing.ProgressDialog;
 
@@ -226,4 +226,8 @@ public class MediaController {
 		ProgressDialog.executeWithProgressDialog(hasParentFrame.getJFrame(),AudioCutterModel.PROGRAM_NAME, "Create CUE sheet",createCueSheetWorker);
 	}
 
+	public void createCutPointAtCursorPosition() {
+		autoCutService.createCutPointAt(audioCutterModel.getCursorPositionSampleNumber());
+	}
+	
 }

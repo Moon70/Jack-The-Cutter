@@ -10,6 +10,8 @@ import javax.swing.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lunartools.ImageTools;
+import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.controller.MediaController;
@@ -163,4 +165,178 @@ public class ActionFactory {
 			}
 		};
 	}
+
+	public Action createPlayCursorAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playCursor.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "play from cursor position");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_playFromCursorPosition();
+			}
+		};
+	}
+
+	public Action createPlaySelectionAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playSelection.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "play selection");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_playSelection();
+			}
+		};
+	}
+
+	public Action createPauseAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_pause.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "pause");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_pause();
+			}
+		};
+	}
+
+	public Action createStopAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_stop.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "stop");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_stop();
+			}
+		};
+	}
+
+	public Action createPreviousAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_previousSection.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "goto previous section");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_PrevSection();
+			}
+		};
+	}
+
+	public Action createNextAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_nextSection.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "goto next section");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioPlayer.getInstance().action_NextSection();
+			}
+		};
+	}
+
+	public Action createZoomInAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomIn.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "zoom in");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.getModel().setZoom(controller.getModel().getZoom()+1);
+			}
+		};
+	}
+
+	public Action createZoomOutAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomOut.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "zoom out");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.getModel().setZoom(controller.getModel().getZoom()-1);
+			}
+		};
+	}
+
+	public Action createZoomSelectionAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "zoom selection");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioCutterModel model=controller.getModel();
+				model.setViewRangeInSamples(model.getSelectionStartInSamples(),model.getSelectionEndInSamples());
+			}
+		};
+	}
+
+	public Action createFitProjectAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_fitProject.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "fit project");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioCutterModel model=controller.getModel();
+				model.setViewRangeInSamples(0,model.getAudiodataLengthInSamples());
+				model.setZoom(0);
+			}
+		};
+	}
+
+	public Action createAmplitudeZoomAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_AmplitudeZoom.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "zoom amplitude");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AudioCutterModel model=controller.getModel();
+				model.setAmplitudeZoom(!model.isAmplitudeZoom());
+			}
+		};
+	}
+
+	public Action createCutAction() {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/ProgramIcon24.png")) {
+			
+			{
+		        putValue(Action.SHORT_DESCRIPTION, "cut at cursor position");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mediaController.createCutPointAtCursorPosition();
+			}
+		};
+	}
+	
+	
 }

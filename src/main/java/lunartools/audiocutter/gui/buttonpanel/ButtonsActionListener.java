@@ -22,31 +22,31 @@ public class ButtonsActionListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object source=e.getSource();
 		if(source==view.jbuttonPlayCursor) {
-			AudioPlayer.getInstance().action_playFromCursorPosition();
+			//AudioPlayer.getInstance().action_playFromCursorPosition();
 		}else if(source==view.jbuttonPlaySelection) {
-			AudioPlayer.getInstance().action_playSelection();
+			//AudioPlayer.getInstance().action_playSelection();
 		}else if(source==view.jbuttonPause) {
-			AudioPlayer.getInstance().action_pause();
+			//AudioPlayer.getInstance().action_pause();
 		}else if(source==view.jbuttonStop) {
-			AudioPlayer.getInstance().action_stop();
+			//AudioPlayer.getInstance().action_stop();
 		}else if(source==view.jbuttonPrev) {
-			view.jbuttonPrev.setSelected(false);
-			AudioPlayer.getInstance().action_PrevSection();
+//			view.jbuttonPrev.setSelected(false);
+//			AudioPlayer.getInstance().action_PrevSection();
 		}else if(source==view.jbuttonNext) {
-			view.jbuttonNext.setSelected(false);
-			AudioPlayer.getInstance().action_NextSection();
+//			view.jbuttonNext.setSelected(false);
+//			AudioPlayer.getInstance().action_NextSection();
 		}else if(source==view.jbuttonZoomIn) {
-			action_zoomIn();
+//			action_zoomIn();
 		}else if(source==view.jbuttonZoomOut) {
-			action_zoomOut();
-		}else if(source==view.jbuttonFitSelection) {
-			action_fitSelection();
+//			action_zoomOut();
+		}else if(source==view.jbuttonZoomSelection) {
+//			action_fitSelection();
 		}else if(source==view.jbuttonFitProject) {
-			action_fitProject();
+//			action_fitProject();
 		}else if(source==view.toggleButtonAmplitudeZoom) {
-			model.setAmplitudeZoom(view.toggleButtonAmplitudeZoom.isSelected());
+//			model.setAmplitudeZoom(view.toggleButtonAmplitudeZoom.isSelected());
 		}else if(source==view.jbuttonCut) {
-			action_cut();
+//			action_cut();
 		}
 	}
 
@@ -68,7 +68,7 @@ public class ButtonsActionListener implements ActionListener{
 	}
 
 	private void action_cut() {
-////		controller.action_CutAtCursorPosition();
+//		controller.action_CutAtCursorPosition();
 	}
 
 }

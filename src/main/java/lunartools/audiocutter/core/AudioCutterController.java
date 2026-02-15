@@ -30,16 +30,17 @@ import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.controller.MediaController;
 import lunartools.audiocutter.core.controller.ProjectController;
+import lunartools.audiocutter.core.service.AutoCutWorker;
+import lunartools.audiocutter.core.service.CreateCueSheetWorker;
+import lunartools.audiocutter.core.service.CutMediaFileWorker;
+import lunartools.audiocutter.core.service.DetermineFFmpegVersionWorker;
 import lunartools.audiocutter.core.service.ProjectService;
 import lunartools.audiocutter.core.view.FileDropHandler;
 import lunartools.audiocutter.gui.statuspanel.StatusController;
 import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.gui.statuspanel.StatusPanel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.audiocutter.projectfile.ProjectFileFilter;
-import lunartools.audiocutter.worker.AutoCutWorker;
-import lunartools.audiocutter.worker.CreateCueSheetWorker;
-import lunartools.audiocutter.worker.CutMediaFileWorker;
-import lunartools.audiocutter.worker.DetermineFFmpegVersionWorker;
 import lunartools.progressdialog.ProgressDialog;
 import lunartools.swing.HasParentFrame;
 
@@ -73,8 +74,9 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		int horizontalDividerPosition=frameBounds.width-sectionTableWidth;
 		model.setAudiodataViewWidth(horizontalDividerPosition);
 		model.setFrameBounds(frameBounds);
-		statusController=new StatusController(model);
-		view.setBounds(frameBounds);
+		statusController=new StatusController(model,new StatusPanel(model));
+//		statusController=new StatusController(model,view.getPanelLeft().getPanelStatus());
+		view.getJFrame().setBounds(frameBounds);
 		model.setFFmpegExecutablePath(settings.getString(AudioCutterSettings.FFMPEG_PATH,null));
 		model.setRecentMediaFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_MEDIA_PATHS));
 		model.setRecentProjectFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_PROJECT_PATHS));
@@ -97,7 +99,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 
 	
 	public void openGUI() {
-		view.setVisible(true);
+		view.getJFrame().setVisible(true);
 		audioPlayer=AudioPlayer.getInstance(model,this);
 		audioPlayer.start();
 		if(model.getStatusMessage()==null) {
@@ -174,7 +176,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		}
 		shutdownInProgress=true;
 		AudioCutterSettings settings=AudioCutterSettings.getInstance();
-		settings.setRectangle(AudioCutterSettings.VIEW_BOUNDS, view.getBounds());
+		settings.setRectangle(AudioCutterSettings.VIEW_BOUNDS, view.getJFrame().getBounds());
 		settings.setInt(AudioCutterSettings.VIEW_SECTIONTABLE_WIDTH, model.getSectionTableWidth());
 		if(model.hasAudiodata()) {
 			settings.setString(AudioCutterSettings.AUDIOFILE_PATH, model.getMediaFile().getAbsolutePath());
@@ -194,8 +196,8 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		} catch (IOException e) {
 			logger.error("error while saving settings",e);
 		}
-		view.setVisible(false);
-		view.dispose();
+		view.getJFrame().setVisible(false);
+		view.getJFrame().dispose();
 	}
 
 	public boolean isShutdownInProgress() {
@@ -229,9 +231,9 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 			busyCount--;
 		}
 		if(busyCount==0) {
-			view.getRootPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			view.getJFrame().getRootPane().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}else {
-			view.getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			view.getJFrame().getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		}
 	}
 
@@ -240,7 +242,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 	}
 
 	public JFrame getJFrame() {
-		return view;
+		return view.getJFrame();
 	}
 
 	public AudioPlayer getAudioPlayer() {

@@ -1,15 +1,17 @@
 package lunartools.audiocutter.gui.scrollbarspanel;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Scrollbar;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.AdjustmentListener;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,71 +22,73 @@ import lunartools.audiocutter.core.AudioCutterModel;
 public class ScrollbarsPanel extends JPanel{
 	private static Logger logger = LoggerFactory.getLogger(ScrollbarsPanel.class);
 	private AudioCutterModel model;
-
-	public Scrollbar scrollbarWave;
-	public Scrollbar scrollbarZoom;
-
-	private int marginX=4;
-	private int marginY=4;
-	private int lineHeight=18;
-	private int column1X=10;
-	private int column1Width=35;
-	private int scrollbarX=column1X+column1Width+marginX;
+	public JScrollBar scrollbarWave;
+	public JScrollBar scrollbarZoom;
 
 	public ScrollbarsPanel(AudioCutterModel model) {
 		this.model=model;
 		model.addChangeListener(this::updateModelChanges);
-		this.setLayout(null);
+		this.setLayout(new GridBagLayout());
+
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.insets = new Insets(4, 4, 4, 4);
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = GridBagConstraints.WEST;
 
 		AdjustmentListener adjustmentlistener=new ScrollbarAdjustmentListener(model,this);
-
-		int y=marginY;
-		int scrollbarWidth=getScrollbarWidth();
-
+		
 		JLabel labelMove=new JLabel("Move");
-		labelMove.setBounds(column1X,y,column1Width,lineHeight);
-		add(labelMove);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.weightx = 0;
+		gridBagConstraints.fill = GridBagConstraints.NONE;
+		add(labelMove, gridBagConstraints);
 
-		scrollbarWave=new Scrollbar(Scrollbar.HORIZONTAL);
-		scrollbarWave.setBounds(scrollbarX,y,scrollbarWidth,lineHeight);
+		scrollbarWave=new JScrollBar(JScrollBar.HORIZONTAL);
 		scrollbarWave.setBackground(Color.DARK_GRAY);
 		scrollbarWave.addAdjustmentListener(adjustmentlistener);
 		scrollbarWave.setEnabled(false);
-		add(scrollbarWave);
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		add(scrollbarWave, gridBagConstraints);
 
-		y+=lineHeight+marginY;
-
+		
+		gridBagConstraints.gridy = 1;
 		JLabel labelZoom=new JLabel("Zoom");
-		labelZoom.setBounds(column1X,y,column1Width,lineHeight);
 		add(labelZoom);
 
-		scrollbarZoom=new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,101);
-		scrollbarZoom.setBounds(scrollbarX,y,scrollbarWidth,lineHeight);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.weightx = 0;
+		gridBagConstraints.fill = GridBagConstraints.NONE;
+		add(labelZoom, gridBagConstraints);
+
+		scrollbarZoom=new JScrollBar(JScrollBar.HORIZONTAL);
 		scrollbarZoom.setBackground(Color.DARK_GRAY);
 		scrollbarZoom.addAdjustmentListener(adjustmentlistener);
 		scrollbarZoom.setEnabled(false);
-		add(scrollbarZoom);
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.weightx = 1;
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		add(scrollbarZoom, gridBagConstraints);
 
-		y+=lineHeight+marginY;
+		
+//		setSize(new Dimension(1000, 50));
+		setAlignmentX(Component.LEFT_ALIGNMENT);
+		//setAlignmentY(Component.TOP_ALIGNMENT);
+		//setMinimumSize(new Dimension(100, 50));
+		setPreferredSize(new Dimension(1000, 50));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
-		Dimension size=new Dimension(model.getAudiodataViewWidth(),y);
-		setSize(size);
 
-		//setBackground(new Color(0xffffcc));
-	}
-
-	private int getScrollbarWidth() {
-		int viewWidth=model.getAudiodataViewWidth();
-		int width=viewWidth-scrollbarX-marginX;
-		return width;
+		//setBackground(new Color(0xccccff));
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		setSize(model.getAudiodataViewWidth(),getHeight());
-		scrollbarWave.setBounds(scrollbarWave.getLocation().x,scrollbarWave.getLocation().y,getScrollbarWidth(),scrollbarWave.getHeight());
-		scrollbarZoom.setBounds(scrollbarZoom.getLocation().x,scrollbarZoom.getLocation().y,getScrollbarWidth(),scrollbarZoom.getHeight());
+		//setSize(model.getAudiodataViewWidth(),getHeight());
+		//scrollbarWave.setBounds(scrollbarWave.getLocation().x,scrollbarWave.getLocation().y,getScrollbarWidth(),scrollbarWave.getHeight());
+		//scrollbarZoom.setBounds(scrollbarZoom.getLocation().x,scrollbarZoom.getLocation().y,getScrollbarWidth(),scrollbarZoom.getHeight());
 	}
 
 	public void updateModelChanges(Object object) {

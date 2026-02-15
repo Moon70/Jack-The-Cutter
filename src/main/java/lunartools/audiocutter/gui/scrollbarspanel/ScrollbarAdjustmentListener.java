@@ -4,6 +4,8 @@ import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+import javax.swing.JScrollBar;
+
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ScrollbarAdjustmentListener implements AdjustmentListener{
@@ -17,7 +19,7 @@ public class ScrollbarAdjustmentListener implements AdjustmentListener{
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		Scrollbar scrollbar=(Scrollbar)e.getSource();
+		JScrollBar scrollbar=(JScrollBar)e.getSource();
 		if(scrollbar==view.scrollbarWave) {
 			int value=scrollbar.getValue();
 			int viewStartInSamples=model.getViewStartInSamples();

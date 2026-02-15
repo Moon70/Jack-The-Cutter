@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.service.DetermineFFmpegVersionWorker;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
-import lunartools.audiocutter.worker.DetermineFFmpegVersionWorker;
 import lunartools.cli.Exec;
 import lunartools.cli.ExecOutputCallback;
 

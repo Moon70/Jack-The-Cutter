@@ -1,13 +1,20 @@
 package lunartools.audiocutter.gui.statuspanel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -32,86 +39,115 @@ public class StatusPanel extends JPanel{
 
 	public StatusPanel(AudioCutterModel model) {
 		this.model=model;
-		this.setLayout(null);
+//		setLayout(null);
+		setLayout(new GridBagLayout());
+		setPreferredSize(new Dimension(0, 50));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		Font fontBold=getFont().deriveFont(Font.BOLD);
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0;
+		
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		int margin=4;
-		int parentWidth=model.getAudiodataViewWidth();
-		int statusLabelX=margin;
-		int statusLabelWidth=60;
-		int statusInfoX=statusLabelX+statusLabelWidth+margin;
-		int statusInfoWidth=parentWidth-statusInfoX-margin;
-		int statusLineHeight=20;
-		int y=0;
 
-		int offsetX=0;
+		/* Row 0: labels 1–6 (three pairs) */
 		JLabel label=new JLabel("Cursor:");
 		label.setFont(fontBold);
-		label.setBounds(statusLabelX+offsetX,y,statusLabelWidth,statusLineHeight);
-		add(label);
-
+		gbc.gridx = 0;
+		add(label, gbc);
+		
 		labelCursorTimeIndex=new JLabel();
-		labelCursorTimeIndex.setBounds(statusInfoX+offsetX,y,statusInfoWidth,statusLineHeight);
-		add(labelCursorTimeIndex);
+		gbc.gridx = 1;
+		add(wrapFixedWidth(labelCursorTimeIndex, 50), gbc);
+		labelCursorTimeIndex.setText("xx:yy");
 
-		offsetX+=150;
+		
 		label=new JLabel("Mouse:");
 		label.setFont(fontBold);
-		label.setBounds(statusLabelX+offsetX,y,statusLabelWidth,statusLineHeight);
-		add(label);
-
+		gbc.gridx = 2;
+		add(label, gbc);
+		
 		labelMouseTimeIndex=new JLabel();
-		labelMouseTimeIndex.setBounds(statusInfoX+offsetX,y,statusInfoWidth,statusLineHeight);
-		add(labelMouseTimeIndex);
+		gbc.gridx = 3;
+		add(wrapFixedWidth(labelMouseTimeIndex, 50), gbc);
 
-		offsetX+=150;
+		
 		label=new JLabel("Distance:");
 		label.setFont(fontBold);
-		label.setBounds(statusLabelX+offsetX,y,statusLabelWidth,statusLineHeight);
 		label.setToolTipText("distance to lefthand cutpoint");
-		add(label);
+		gbc.gridx = 4;
+		add(label, gbc);
 
 		labelDistanceTime=new JLabel();
-		labelDistanceTime.setBounds(statusInfoX+offsetX,y,statusInfoWidth,statusLineHeight);
-		add(labelDistanceTime);
+		gbc.gridx = 5;
+		add(wrapFixedWidth(labelDistanceTime, 50), gbc);
 
-
-		y+=statusLineHeight;
-
+		// Optional spacer column G (can be left empty)
+		gbc.gridx = 6;
+		add(Box.createHorizontalGlue(), gbc);
+		
+		
+		/* Row 1: labels 7–8 */
 		label=new JLabel("Status:");
-		label.setBounds(statusLabelX,y,statusLabelWidth,statusLineHeight);
-		add(label);
-
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		add(label, gbc);
+		
 		labelStatus=new JLabel();
-		labelStatus.setBounds(statusInfoX,y,statusInfoWidth,statusLineHeight);
-		add(labelStatus);
+		gbc.gridx = 1;
+		gbc.gridwidth=6;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		add(labelStatus, gbc);
 
-		y+=statusLineHeight;
-
-
+		
+		/* Row 2: labels 9–10 */
 		labelFFmpegVersionLabel=new JLabel("Using:");
-		labelFFmpegVersionLabel.setBounds(statusLabelX,y,statusLabelWidth,statusLineHeight);
 		labelFFmpegVersionLabel.setForeground(Color.DARK_GRAY);
 		labelFFmpegVersionLabel.setVisible(false);
-		add(labelFFmpegVersionLabel);
+		gbc.gridy = 2;
+		gbc.gridwidth=1;
+		gbc.gridx = 0;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.NONE;
+		add(labelFFmpegVersionLabel, gbc);
 
 		labelFFmpegVersion=new JLabel();
-		labelFFmpegVersion.setBounds(statusInfoX,y,statusInfoWidth,statusLineHeight);
 		labelFFmpegVersion.setForeground(Color.DARK_GRAY);
-		add(labelFFmpegVersion);
+		gbc.gridx = 1;
+		gbc.gridwidth=6;
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		add(labelFFmpegVersion, gbc);
 
-		y+=statusLineHeight;
-
-		setBounds(0, 0, parentWidth, y);
-		setMinimumSize(new Dimension(parentWidth,y));
-		setMaximumSize(new Dimension(parentWidth,y));
-		setPreferredSize(new Dimension(parentWidth,y));
-
+		
 		model.addChangeListener(this::updateModelChanges);
 		//setBackground(new Color(0xffcccc));
 	}
 
+	private JPanel wrapFixedWidth(JLabel label, int width) {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(label, BorderLayout.CENTER);
+//        Dimension fixed = new Dimension(width, label.getPreferredSize().height);
+        FontMetrics fm = label.getFontMetrics(label.getFont());
+        int height = fm.getHeight();
+        Dimension fixed = new Dimension(width, height);
+        wrapper.setPreferredSize(fixed);
+        wrapper.setMinimumSize(fixed);
+        wrapper.setMaximumSize(fixed);
+        return wrapper;
+    }
+	
 	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_CURSORCHANGED) {
 			int cursorPositionSampleNumber=model.getCursorPositionSampleNumber();

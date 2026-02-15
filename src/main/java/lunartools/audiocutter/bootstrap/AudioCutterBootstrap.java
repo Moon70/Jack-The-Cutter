@@ -54,6 +54,8 @@ public class AudioCutterBootstrap {
 		audioCutterView.setMenuView(menuView);
 		new MenuPresenter(audioCutterModel,menuView);
 		
+		audioCutterView.getPanelLeft().getButtonPanel().setActionFactory(actionFactory);
+		
 		audioCutterController.openGUI();
 		
 		logger.info(AudioCutterModel.getProgramNameAndVersion());

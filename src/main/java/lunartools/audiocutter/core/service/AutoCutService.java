@@ -178,7 +178,7 @@ public class AutoCutService {
 			cutpoint.setLevel((int)(silenceValue/finetuneSilenceLengthInFrames));
 	}
 
-	private void createCutPointAt(int sampleNumber) {
+	public void createCutPointAt(int sampleNumber) {
 		ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 		if(audioSections.size()==0) {
 			audioSections.add(new AudioSectionModel(0));

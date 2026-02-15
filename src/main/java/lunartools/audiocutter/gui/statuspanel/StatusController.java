@@ -1,6 +1,7 @@
 package lunartools.audiocutter.gui.statuspanel;
 
 import java.awt.Color;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -9,8 +10,9 @@ import lunartools.audiocutter.core.AudioCutterModel;
 public class StatusController{
 	private StatusPanel statusPanel;
 
-	public StatusController(AudioCutterModel model) {
-		statusPanel=new StatusPanel(model);
+	public StatusController(AudioCutterModel model, StatusPanel statusPanel) {
+//		statusPanel=new StatusPanel(model);
+		this.statusPanel=Objects.requireNonNull(statusPanel);
 		model.addChangeListener(this::updateModelChanges);
 	}
 

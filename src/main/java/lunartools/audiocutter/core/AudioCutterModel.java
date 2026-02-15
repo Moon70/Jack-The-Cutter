@@ -295,7 +295,7 @@ public class AudioCutterModel implements ChangeListenerSupport{
 		if(audioSections==null) {
 			this.audioSections=new ArrayList<>();
 			
-			Thread.dumpStack();
+			//Thread.dumpStack();
 			
 			
 		}else {

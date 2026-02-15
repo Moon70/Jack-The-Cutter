@@ -1,4 +1,4 @@
-package lunartools.audiocutter.worker;
+package lunartools.audiocutter.core.service;
 
 import java.io.File;
 
