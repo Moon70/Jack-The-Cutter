@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.core.model.StatusMessage;
 
 public class AudioPlayer extends Thread{
 	private static Logger logger = LoggerFactory.getLogger(AudioPlayer.class);

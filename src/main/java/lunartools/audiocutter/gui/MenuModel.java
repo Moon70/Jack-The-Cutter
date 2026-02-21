@@ -17,8 +17,8 @@ import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.gui.preferencespanel.PreferencesController;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 
 public class MenuModel implements ActionListener, Observer{
 	private ActionFactory actionFactory;

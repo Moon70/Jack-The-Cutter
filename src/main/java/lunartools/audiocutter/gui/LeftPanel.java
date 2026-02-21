@@ -17,7 +17,7 @@ import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.view.ButtonPanel;
 import lunartools.audiocutter.core.view.ScrollbarsPanel;
-import lunartools.audiocutter.gui.statuspanel.StatusPanel;
+import lunartools.audiocutter.core.view.StatusPanel;
 import lunartools.audiocutter.gui.wavepanel.WavePanelFull;
 import lunartools.audiocutter.gui.wavepanel.WavePanelZoom;
 
@@ -51,8 +51,7 @@ public class LeftPanel extends JPanel{
 		scrollbarsPanel.setAlignmentX(LEFT_ALIGNMENT);
 		add(scrollbarsPanel);
 
-		panelStatus=controller.getStatusController().getStatusPanel();
-		//panelStatus=new StatusPanel(model);
+		panelStatus=new StatusPanel(model);
 		panelStatus.setAlignmentX(LEFT_ALIGNMENT);
 		add(panelStatus);
 

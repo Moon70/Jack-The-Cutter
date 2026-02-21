@@ -19,7 +19,7 @@ import lunartools.ChangeListenerSupport;
 import lunartools.SwingTools;
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.model.SimpleEvents;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.core.model.StatusMessage;
 
 public class AudioCutterModel implements ChangeListenerSupport{
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterModel.class);

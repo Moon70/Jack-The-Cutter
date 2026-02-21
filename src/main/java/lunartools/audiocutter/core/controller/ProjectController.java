@@ -11,9 +11,9 @@ import lunartools.SwingTools;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.service.ProjectException;
 import lunartools.audiocutter.core.service.ProjectService;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.projectfile.ProjectFileFilter;
 
 public class ProjectController {
@@ -72,6 +72,8 @@ public class ProjectController {
 				audioCutterModel.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,"error loading project: "+e.getMessage()));
 				return OpenProjectResult.FAILURE;
 			}
+		}else {
+			return OpenProjectResult.ABORTED;
 		}
 		return OpenProjectResult.SUCCESS;
 	}

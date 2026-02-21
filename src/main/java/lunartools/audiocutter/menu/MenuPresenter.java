@@ -14,7 +14,7 @@ import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.AudioCutterView;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.core.model.StatusMessage;
 
 public class MenuPresenter {
 	private static Logger logger = LoggerFactory.getLogger(MenuPresenter.class);

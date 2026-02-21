@@ -1,85 +1,73 @@
-package lunartools.audiocutter.gui.statuspanel;
+package lunartools.audiocutter.core.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.ui.util.SampleUtils;
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.model.StatusMessage;
 
 public class StatusPanel extends JPanel{
-	private static Logger logger = LoggerFactory.getLogger(StatusPanel.class);
-	private AudioCutterModel model;
+	private final AudioCutterModel audioCutterModel;
+	private final Dimension STATUSPANEL_DIMENSION=new Dimension(Integer.MAX_VALUE, 50);
 
 	JLabel labelStatus;
 	JLabel labelFFmpegVersionLabel;
 	JLabel labelFFmpegVersion;
-	JLabel labelCursorTimeIndex;
-	JLabel labelMouseTimeIndex;
-	JLabel labelDistanceTime;
+	private JLabel labelCursorTimeIndex;
+	private JLabel labelMouseTimeIndex;
+	private JLabel labelDistanceTime;
 
-	public StatusPanel(AudioCutterModel model) {
-		this.model=model;
-//		setLayout(null);
+	public StatusPanel(AudioCutterModel audioCutterModel) {
+		this.audioCutterModel=Objects.requireNonNull(audioCutterModel);
 		setLayout(new GridBagLayout());
-		setPreferredSize(new Dimension(0, 50));
-		setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-		setAlignmentX(Component.LEFT_ALIGNMENT);
+		//setPreferredSize(new Dimension(0, 50));
+		setMaximumSize(STATUSPANEL_DIMENSION);
+		//setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		Font fontBold=getFont().deriveFont(Font.BOLD);
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
-		
-		setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-		setAlignmentX(Component.LEFT_ALIGNMENT);
 
-
-		/* Row 0: labels 1–6 (three pairs) */
 		JLabel label=new JLabel("Cursor:");
 		label.setFont(fontBold);
 		gbc.gridx = 0;
 		add(label, gbc);
-		
+
 		labelCursorTimeIndex=new JLabel();
 		gbc.gridx = 1;
 		add(wrapFixedWidth(labelCursorTimeIndex, 50), gbc);
-		labelCursorTimeIndex.setText("xx:yy");
 
-		
+
 		label=new JLabel("Mouse:");
 		label.setFont(fontBold);
 		gbc.gridx = 2;
 		add(label, gbc);
-		
+
 		labelMouseTimeIndex=new JLabel();
 		gbc.gridx = 3;
 		add(wrapFixedWidth(labelMouseTimeIndex, 50), gbc);
 
-		
+
 		label=new JLabel("Distance:");
 		label.setFont(fontBold);
 		label.setToolTipText("distance to lefthand cutpoint");
@@ -93,16 +81,15 @@ public class StatusPanel extends JPanel{
 		// Optional spacer column G (can be left empty)
 		gbc.gridx = 6;
 		add(Box.createHorizontalGlue(), gbc);
-		
-		
-		/* Row 1: labels 7–8 */
+
+
 		label=new JLabel("Status:");
 		gbc.gridy = 1;
 		gbc.gridx = 0;
 		gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.NONE;
 		add(label, gbc);
-		
+
 		labelStatus=new JLabel();
 		gbc.gridx = 1;
 		gbc.gridwidth=6;
@@ -110,8 +97,7 @@ public class StatusPanel extends JPanel{
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(labelStatus, gbc);
 
-		
-		/* Row 2: labels 9–10 */
+
 		labelFFmpegVersionLabel=new JLabel("Using:");
 		labelFFmpegVersionLabel.setForeground(Color.DARK_GRAY);
 		labelFFmpegVersionLabel.setVisible(false);
@@ -130,37 +116,36 @@ public class StatusPanel extends JPanel{
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(labelFFmpegVersion, gbc);
 
-		
-		model.addChangeListener(this::updateModelChanges);
+
+		audioCutterModel.addChangeListener(this::updateModelChanges);
 		//setBackground(new Color(0xffcccc));
 	}
 
 	private JPanel wrapFixedWidth(JLabel label, int width) {
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(label, BorderLayout.CENTER);
-//        Dimension fixed = new Dimension(width, label.getPreferredSize().height);
-        FontMetrics fm = label.getFontMetrics(label.getFont());
-        int height = fm.getHeight();
-        Dimension fixed = new Dimension(width, height);
-        wrapper.setPreferredSize(fixed);
-        wrapper.setMinimumSize(fixed);
-        wrapper.setMaximumSize(fixed);
-        return wrapper;
-    }
-	
+		JPanel jPanelWrapper = new JPanel(new BorderLayout());
+		jPanelWrapper.add(label, BorderLayout.CENTER);
+		FontMetrics fontMetrics = label.getFontMetrics(label.getFont());
+		int fontHeight = fontMetrics.getHeight();
+		Dimension dimensionFixed = new Dimension(width, fontHeight);
+		jPanelWrapper.setPreferredSize(dimensionFixed);
+		jPanelWrapper.setMinimumSize(dimensionFixed);
+		jPanelWrapper.setMaximumSize(dimensionFixed);
+		return jPanelWrapper;
+	}
+
 	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_CURSORCHANGED) {
-			int cursorPositionSampleNumber=model.getCursorPositionSampleNumber();
+			int cursorPositionSampleNumber=audioCutterModel.getCursorPositionSampleNumber();
 			labelCursorTimeIndex.setText(SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(cursorPositionSampleNumber));
 		}else if(object==SimpleEvents.MODEL_MOUSESAMPLENUMBERCHANGED) {
-			int mousePositionSampleNumber=model.getMousePositionSampleNumber();
+			int mousePositionSampleNumber=audioCutterModel.getMousePositionSampleNumber();
 			if(mousePositionSampleNumber==0) {
 				labelMouseTimeIndex.setText("");
 				labelDistanceTime.setText("");
 				return;
 			}
 			labelMouseTimeIndex.setText(SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(mousePositionSampleNumber));
-			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+			ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 			labelDistanceTime.setText("");
 			for(int i=audioSections.size()-1;i>=0;i--) {
 				AudioSectionModel audioSection=audioSections.get(i);
@@ -171,13 +156,29 @@ public class StatusPanel extends JPanel{
 					break;
 				}
 			}
+		}else if(object instanceof StatusMessage) {
+			processStatusMessageEvent((StatusMessage)object);
 		}
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		setSize(model.getAudiodataViewWidth(),getHeight());
+	private void processStatusMessageEvent(StatusMessage statusMessage) {
+		if(statusMessage.getType()==StatusMessage.Type.INFO) {
+			labelStatus.setText(statusMessage.getMessage());
+			labelStatus.setToolTipText(statusMessage.getMessage());
+			labelStatus.setForeground(Color.BLUE);
+		}else if(statusMessage.getType()==StatusMessage.Type.WARNING) {
+			labelStatus.setText(statusMessage.getMessage());
+			labelStatus.setToolTipText(statusMessage.getMessage());
+			labelStatus.setForeground(Color.MAGENTA);
+		}else if(statusMessage.getType()==StatusMessage.Type.ERROR) {
+			labelStatus.setText(statusMessage.getMessage());
+			labelStatus.setToolTipText(statusMessage.getMessage());
+			labelStatus.setForeground(Color.RED);
+		}else if(statusMessage.getType()==StatusMessage.Type.FFMPEGVERSION) {
+			String message=statusMessage.getMessage();
+			labelFFmpegVersionLabel.setVisible(message!=null);
+			labelFFmpegVersion.setText(message);
+		}
 	}
 
 }

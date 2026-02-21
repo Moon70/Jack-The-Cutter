@@ -40,13 +40,13 @@ import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.view.FileDropHandler;
 import lunartools.audiocutter.gui.About;
 import lunartools.audiocutter.gui.LeftPanel;
 import lunartools.audiocutter.gui.MenuModel;
 import lunartools.audiocutter.gui.mediainfopanel.MediaInfoPanel;
 import lunartools.audiocutter.gui.sectionpanel.TablePanel;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 import lunartools.audiocutter.menu.MenuView;
 import lunartools.swing.HasParentFrame;
 

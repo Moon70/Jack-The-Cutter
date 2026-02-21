@@ -21,7 +21,6 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.Settings;
 import lunartools.SwingTools;
 import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.AudioSectionModel;
@@ -30,15 +29,14 @@ import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.controller.MediaController;
 import lunartools.audiocutter.core.controller.ProjectController;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.service.AutoCutWorker;
 import lunartools.audiocutter.core.service.CreateCueSheetWorker;
 import lunartools.audiocutter.core.service.CutMediaFileWorker;
 import lunartools.audiocutter.core.service.DetermineFFmpegVersionWorker;
 import lunartools.audiocutter.core.service.ProjectService;
 import lunartools.audiocutter.core.view.FileDropHandler;
-import lunartools.audiocutter.gui.statuspanel.StatusController;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
-import lunartools.audiocutter.gui.statuspanel.StatusPanel;
+import lunartools.audiocutter.core.view.StatusPanel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.audiocutter.projectfile.ProjectFileFilter;
 import lunartools.progressdialog.ProgressDialog;
@@ -50,7 +48,6 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 	private AudioCutterView view;
 	private ProjectController projectController;
 	private MediaController mediaController;
-	private StatusController statusController;
 	private AudioPlayer audioPlayer;
 	private volatile boolean shutdownInProgress;
 	private volatile int busyCount;
@@ -74,8 +71,6 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		int horizontalDividerPosition=frameBounds.width-sectionTableWidth;
 		model.setAudiodataViewWidth(horizontalDividerPosition);
 		model.setFrameBounds(frameBounds);
-		statusController=new StatusController(model,new StatusPanel(model));
-//		statusController=new StatusController(model,view.getPanelLeft().getPanelStatus());
 		view.getJFrame().setBounds(frameBounds);
 		model.setFFmpegExecutablePath(settings.getString(AudioCutterSettings.FFMPEG_PATH,null));
 		model.setRecentMediaFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_MEDIA_PATHS));
@@ -218,10 +213,6 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		AudioPlayer.getInstance().action_stop();
 		model.closeProject();
 		model.setMediaFile(mediafile);
-	}
-
-	public StatusController getStatusController() {
-		return statusController;
 	}
 
 	public void setBusy(boolean busy) {

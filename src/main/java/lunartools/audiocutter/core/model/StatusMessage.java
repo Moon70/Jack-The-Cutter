@@ -1,4 +1,4 @@
-package lunartools.audiocutter.gui.statuspanel;
+package lunartools.audiocutter.core.model;
 
 public class StatusMessage {
 	public enum Type{INFO,WARNING,ERROR,FFMPEGVERSION}

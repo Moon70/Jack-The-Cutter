@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.ffmpeg.DetermineFFmpegVersionService;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
 
 public class DetermineFFmpegVersionWorker extends SwingWorker<Void, Void> {
 	private static Logger logger = LoggerFactory.getLogger(DetermineFFmpegVersionWorker.class);

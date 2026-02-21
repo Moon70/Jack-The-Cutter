@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.core.AudioCutterModel;
-import lunartools.audiocutter.gui.statuspanel.StatusMessage;
+import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.swing.ProgressProperty;
 import lunartools.swing.ProgressStep;
 
