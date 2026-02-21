@@ -42,11 +42,11 @@ import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.view.FileDropHandler;
+import lunartools.audiocutter.core.view.MediaInfoPanel;
+import lunartools.audiocutter.core.view.sectionpanel.SectionPanel;
 import lunartools.audiocutter.gui.About;
 import lunartools.audiocutter.gui.LeftPanel;
 import lunartools.audiocutter.gui.MenuModel;
-import lunartools.audiocutter.gui.mediainfopanel.MediaInfoPanel;
-import lunartools.audiocutter.gui.sectionpanel.TablePanel;
 import lunartools.audiocutter.menu.MenuView;
 import lunartools.swing.HasParentFrame;
 
@@ -57,6 +57,7 @@ public class AudioCutterView implements HasParentFrame{
 	private final JFrame jFrame;
 	
 	private LeftPanel panelLeft;
+	private SectionPanel sectionPanel;
 	
 	private JSplitPane jSplitPaneHorizontal;
 	private JSplitPane jSplitPaneVertical;
@@ -186,10 +187,10 @@ public class AudioCutterView implements HasParentFrame{
 		mediaInfoPanel.setLocation(x+marginX, y+marginY);
 		jSplitPaneVertical.setTopComponent(mediaInfoPanel);
 
-		TablePanel tablePanel=new TablePanel(audioCutterModel);
-		tablePanel.setOpaque(true);
-		tablePanel.setLocation(x, y);
-		jSplitPaneVertical.setBottomComponent(tablePanel);
+		sectionPanel=new SectionPanel(audioCutterModel);
+		sectionPanel.setOpaque(true);
+		sectionPanel.setLocation(x, y);
+		jSplitPaneVertical.setBottomComponent(sectionPanel);
 
 		refreshGui();
 	}
@@ -244,6 +245,10 @@ public class AudioCutterView implements HasParentFrame{
 
 	public LeftPanel getPanelLeft() {
 		return panelLeft;
+	}
+
+	public SectionPanel getSectionPanel() {
+		return sectionPanel;
 	}
 
 	

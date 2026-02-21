@@ -1,8 +1,7 @@
-package lunartools.audiocutter.gui.sectionpanel;
+package lunartools.audiocutter.core.view.sectionpanel;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Objects;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -16,7 +15,7 @@ import lunartools.audiocutter.core.AudioCutterModel;
 
 public class SectionTableModel extends AbstractTableModel{
 	private static Logger logger = LoggerFactory.getLogger(SectionTableModel.class);
-	private AudioCutterModel model;
+	private final AudioCutterModel audioCutterModel;
 
 	private static final String[] COLUMNNAMES = {
 			"#",
@@ -26,7 +25,7 @@ public class SectionTableModel extends AbstractTableModel{
 	};
 
 	public SectionTableModel(AudioCutterModel audioCutterModel) {
-		this.model=audioCutterModel;
+		this.audioCutterModel=Objects.requireNonNull(audioCutterModel);
 		audioCutterModel.addChangeListener(this::updateModelChanges);
 	}
 
@@ -35,7 +34,7 @@ public class SectionTableModel extends AbstractTableModel{
 	}
 
 	public int getRowCount() {
-		ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+		ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 		return audioSections==null?0:audioSections.size();
 	}
 
@@ -44,7 +43,7 @@ public class SectionTableModel extends AbstractTableModel{
 	}
 
 	public Object getValueAt(int row, int column) {
-		AudioSectionModel audioSection=model.getAudioSections().get(row);
+		AudioSectionModel audioSection=audioCutterModel.getAudioSections().get(row);
 		switch(column) {
 		case 0:
 			return ""+(row<9?"0"+(row+1):(row+1));
@@ -54,10 +53,10 @@ public class SectionTableModel extends AbstractTableModel{
 			return SampleUtils.convertNumberOfSamplesToHourMinuteSecondFractionString(audioSection.getPosition());
 		case 3:
 			int end;
-			if(model.getAudioSections().size()-1>row) {
-				end=model.getAudioSections().get(row+1).getPosition();
+			if(audioCutterModel.getAudioSections().size()-1>row) {
+				end=audioCutterModel.getAudioSections().get(row+1).getPosition();
 			}else {
-				end=model.getAudiodataLengthInSamples();
+				end=audioCutterModel.getAudiodataLengthInSamples();
 			}
 			return SampleUtils.convertNumberOfSamplesToHourMinuteSecondString(end-audioSection.getPosition());
 		}
@@ -73,11 +72,11 @@ public class SectionTableModel extends AbstractTableModel{
 	}
 
 	public void setValueAt(Object value, int row, int column) {
-		ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+		ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 		AudioSectionModel audioSection=audioSections.get(row);
 		if(audioSection.getName()==null || !audioSection.getName().equals(value)) {
 			audioSection.setName((String)value);
-			model.setProjectDirty(true);
+			audioCutterModel.setProjectDirty(true);
 		}
 		fireTableCellUpdated(row, column);
 	}

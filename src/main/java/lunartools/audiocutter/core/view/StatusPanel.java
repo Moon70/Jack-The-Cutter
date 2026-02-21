@@ -25,12 +25,12 @@ public class StatusPanel extends JPanel{
 	private final AudioCutterModel audioCutterModel;
 	private final Dimension STATUSPANEL_DIMENSION=new Dimension(Integer.MAX_VALUE, 50);
 
-	JLabel labelStatus;
-	JLabel labelFFmpegVersionLabel;
-	JLabel labelFFmpegVersion;
-	private JLabel labelCursorTimeIndex;
-	private JLabel labelMouseTimeIndex;
-	private JLabel labelDistanceTime;
+	private final JLabel labelStatus;
+	private final JLabel labelFFmpegVersionLabel;
+	private final JLabel labelFFmpegVersion;
+	private final JLabel labelCursorTimeIndex;
+	private final JLabel labelMouseTimeIndex;
+	private final JLabel labelDistanceTime;
 
 	public StatusPanel(AudioCutterModel audioCutterModel) {
 		this.audioCutterModel=Objects.requireNonNull(audioCutterModel);

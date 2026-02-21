@@ -55,7 +55,9 @@ public class AudioCutterBootstrap {
 		new MenuPresenter(audioCutterModel,menuView);
 		
 		audioCutterView.getPanelLeft().getButtonPanel().setActionFactory(actionFactory);
-		
+
+		//TODO: This chaining is needed while refactoring, fix that
+		audioCutterView.getSectionPanel().getSectionTableMouseListener().getSectionTablePopupMenu().setActionFactory(actionFactory);;
 		audioCutterController.openGUI();
 		
 		logger.info(AudioCutterModel.getProgramNameAndVersion());

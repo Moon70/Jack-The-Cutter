@@ -2,15 +2,18 @@ package lunartools.audiocutter.common.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JTable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.ImageTools;
+import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
@@ -334,6 +337,160 @@ public class ActionFactory {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mediaController.createCutPointAtCursorPosition();
+			}
+		};
+	}
+	
+	public Action createPopupPlayAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Play.png")) {
+			
+			{
+				putValue(Action.NAME, "play");
+		        putValue(Action.SHORT_DESCRIPTION, "play section");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioPlayer.getInstance().playSection(contextRow);
+			}
+		};
+	}
+	
+	public Action createPopupSelectAndZoomAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
+			
+			{
+				putValue(Action.NAME, "zoom");
+		        putValue(Action.SHORT_DESCRIPTION, "zoom section");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+		        AudioCutterModel audioCutterModel=controller.getModel();
+				AudioSectionModel audioSection=audioCutterModel.getAudioSection(contextRow);
+				AudioSectionModel audioSectionNext=audioCutterModel.getAudioSection(contextRow+1);
+				if(audioSectionNext==null) {
+					audioCutterModel.setViewRangeInSamples(audioSection.getPosition(),audioCutterModel.getAudiodataLengthInSamples());
+				}else {
+					audioCutterModel.setViewRangeInSamples(audioSection.getPosition(),audioSectionNext.getPosition());
+				}
+			}
+		};
+	}
+	
+	public Action createPopupEditStartPositionAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditStartPos.png")) {
+			
+			{
+				putValue(Action.NAME, "edit start position");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+		        AudioCutterModel audioCutterModel=controller.getModel();
+				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
+				AudioSectionModel audioSection=audioSections.get(contextRow);
+				int startpositionOfSelectedSection=audioSection.getPosition();
+				int startSelection=startpositionOfSelectedSection-50000;
+				if(startSelection<0) {
+					startSelection=0;
+				}
+				int endSelection=startpositionOfSelectedSection+50000;
+				if(endSelection>audioCutterModel.getAudiodataLengthInSamples()) {
+					endSelection=audioCutterModel.getAudiodataLengthInSamples();
+				}
+				audioCutterModel.setSelectionRangeInSamples(startSelection,endSelection);
+				audioCutterModel.setViewRangeInSamples(startSelection,endSelection);
+			}
+		};
+	}
+	
+	public Action createPopupEditEndPositionAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditEndPos.png")) {
+			
+			{
+				putValue(Action.NAME, "edit end position");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+		        AudioCutterModel audioCutterModel=controller.getModel();
+				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
+				AudioSectionModel audioSection=audioSections.get(contextRow+1);
+				int startpositionOfSelectedSection=audioSection.getPosition();
+				int startSelection=startpositionOfSelectedSection-50000;
+				if(startSelection<0) {
+					startSelection=0;
+				}
+				int endSelection=startpositionOfSelectedSection+50000;
+				if(endSelection>audioCutterModel.getAudiodataLengthInSamples()) {
+					endSelection=audioCutterModel.getAudiodataLengthInSamples();
+				}
+				audioCutterModel.setSelectionRangeInSamples(startSelection,endSelection);
+				audioCutterModel.setViewRangeInSamples(startSelection,endSelection);
+			}
+		};
+	}
+	
+	public Action createPopupDeleteLeftCutpointAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteLeftCutpoint.png")) {
+			
+			{
+				putValue(Action.NAME, "delete left cutpoint");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+		        AudioCutterModel audioCutterModel=controller.getModel();
+				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
+				audioSections.remove(contextRow);
+				audioCutterModel.setAudioSections(audioSections);
+				contextRow=jTable.convertRowIndexToView(contextRow-1);
+				jTable.setRowSelectionInterval(contextRow, contextRow);;
+			}
+		};
+	}
+	
+	public Action createPopupDeleteRightCutpointAction(JTable jTable) {
+		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteRightCutpoint.png")) {
+			
+			{
+				putValue(Action.NAME, "delete right cutpoint");
+		    }
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int contextRow = jTable.getSelectedRow();
+		        if (contextRow < 0) return;
+
+		        //int modelRow = table.convertRowIndexToModel(contextRow);
+		        AudioCutterModel audioCutterModel=controller.getModel();
+				AudioSectionModel selectedAudioSection=audioCutterModel.getAudioSection(contextRow);
+				AudioSectionModel nextAudioSection=audioCutterModel.getAudioSection(contextRow+1);
+				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
+				nextAudioSection.setPosition(selectedAudioSection.getPosition());
+				audioSections.remove(contextRow);
+				audioCutterModel.setAudioSections(audioSections);
 			}
 		};
 	}
