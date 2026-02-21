@@ -1,4 +1,4 @@
-package lunartools.audiocutter.gui.buttonpanel;
+package lunartools.audiocutter.core.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
