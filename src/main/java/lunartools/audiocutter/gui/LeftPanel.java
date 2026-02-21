@@ -35,7 +35,7 @@ public class LeftPanel extends JPanel{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 //		model.addChangeListener(this::updateModelChanges);
 
-		buttonPanel=new ButtonPanel(model,controller);
+		buttonPanel=new ButtonPanel(model);
 		buttonPanel.setAlignmentX(LEFT_ALIGNMENT);
 		add(buttonPanel);
 
