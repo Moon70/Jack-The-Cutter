@@ -16,7 +16,7 @@ import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ScrollbarsPanel extends JPanel{
 	private final AudioCutterModel audioCutterModel;
-	private final JScrollBar scrollbarWave;
+	private final JScrollBar scrollbarMove;
 	private final JScrollBar scrollbarZoom;
 	private final Dimension SCROLLBARSPANEL_DIMENSION=new Dimension(Integer.MAX_VALUE, 50);
 
@@ -35,11 +35,11 @@ public class ScrollbarsPanel extends JPanel{
 		gridBagConstraints.fill = GridBagConstraints.NONE;
 		add(labelMove, gridBagConstraints);
 
-		scrollbarWave=new JScrollBar(JScrollBar.HORIZONTAL);
-		scrollbarWave.setBackground(Color.DARK_GRAY);
-		scrollbarWave.setMinimum(0);
-		scrollbarWave.addAdjustmentListener(e -> {
-			int value=scrollbarWave.getValue();
+		scrollbarMove=new JScrollBar(JScrollBar.HORIZONTAL);
+		scrollbarMove.setBackground(Color.DARK_GRAY);
+		scrollbarMove.setMinimum(0);
+		scrollbarMove.addAdjustmentListener(e -> {
+			int value=scrollbarMove.getValue();
 			int viewStartInSamples=audioCutterModel.getViewStartInSamples();
 			int viewEndInSamples=audioCutterModel.getViewEndInSamples();
 			int delta=viewEndInSamples-viewStartInSamples;
@@ -48,7 +48,7 @@ public class ScrollbarsPanel extends JPanel{
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		add(scrollbarWave, gridBagConstraints);
+		add(scrollbarMove, gridBagConstraints);
 
 
 		JLabel labelZoom=new JLabel("Zoom");
@@ -94,25 +94,26 @@ public class ScrollbarsPanel extends JPanel{
 
 	public void refresh() {
 		if(!audioCutterModel.hasAudiodata()) {
-			scrollbarWave.setEnabled(false);
+			scrollbarMove.setEnabled(false);
 			scrollbarZoom.setEnabled(false);
 			return;
 		}
-		scrollbarWave.setEnabled(true);
+		scrollbarMove.setEnabled(true);
 		scrollbarZoom.setEnabled(true);
 
 		int viewStartInSamples=audioCutterModel.getViewStartInSamples();
 		int viewEndInSamples=audioCutterModel.getViewEndInSamples();
-		int delta=viewEndInSamples-viewStartInSamples;
+		int deltaViewInSamples=viewEndInSamples-viewStartInSamples;
 
-		scrollbarWave.setBlockIncrement(delta>>1);
-		scrollbarWave.setUnitIncrement(delta>>3);
+		scrollbarMove.setBlockIncrement(deltaViewInSamples>>1);
+		scrollbarMove.setUnitIncrement(deltaViewInSamples>>3);
 
-		int deltaSelection=audioCutterModel.getSelectionEndInSamples()-audioCutterModel.getSelectionEndInSamples();
-
-		scrollbarWave.setValue(viewStartInSamples);
-		scrollbarWave.setVisibleAmount((int)deltaSelection);
-		scrollbarWave.setMaximum(audioCutterModel.getAudiodataLengthInSamples()-delta);
+		scrollbarMove.setValues(
+				viewStartInSamples,   // value
+			    deltaViewInSamples,  // extent
+			    0,   // minimum
+			    audioCutterModel.getAudiodataLengthInSamples()  // maximum
+			);
 	}
 
 }
