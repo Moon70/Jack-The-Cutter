@@ -299,9 +299,6 @@ public class AudioCutterModel implements ChangeListenerSupport{
 			
 			
 		}else {
-for(AudioSectionModel audioSectionModel:audioSections) {
-	System.out.println(audioSectionModel);
-}
 			this.audioSections = audioSections;
 			boolean oldDirt=projectIsDirty;
 			projectIsDirty=true;

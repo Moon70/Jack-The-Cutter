@@ -1,29 +1,14 @@
-package lunartools.audiocutter.gui;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.util.Observable;
-import java.util.Observer;
+package lunartools.audiocutter.core.view;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lunartools.audiocutter.common.model.SimpleEvents;
-import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
-import lunartools.audiocutter.core.view.ButtonPanel;
-import lunartools.audiocutter.core.view.ScrollbarsPanel;
-import lunartools.audiocutter.core.view.StatusPanel;
 import lunartools.audiocutter.gui.wavepanel.WavePanelFull;
 import lunartools.audiocutter.gui.wavepanel.WavePanelZoom;
 
 public class LeftPanel extends JPanel{
-	private static Logger logger = LoggerFactory.getLogger(LeftPanel.class);
-
 	private ButtonPanel buttonPanel;
 	private WavePanelFull wavePanelFull;
 	private WavePanelZoom wavePanelZoom;
@@ -31,7 +16,7 @@ public class LeftPanel extends JPanel{
 
 	private StatusPanel panelStatus;
 
-	public LeftPanel(AudioCutterModel model,AudioCutterController controller) {
+	public LeftPanel(AudioCutterModel model) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 //		model.addChangeListener(this::updateModelChanges);
 

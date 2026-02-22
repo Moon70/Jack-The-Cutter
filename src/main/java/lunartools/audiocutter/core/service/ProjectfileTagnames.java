@@ -1,4 +1,4 @@
-package lunartools.audiocutter.projectfile;
+package lunartools.audiocutter.core.service;
 
 public interface ProjectfileTagnames {
 

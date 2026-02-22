@@ -1,4 +1,4 @@
-package lunartools.audiocutter.menu;
+package lunartools.audiocutter.core.view;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -153,6 +153,11 @@ public class MenuView {
 
 	public JMenuItem getMenuFileItemCutMediaFile() {
 		return menuFileItemCutMediaFile;
+	}
+
+	//TODO: temporary while refactoring
+	public ActionFactory getActionFactory() {
+		return actionFactory;
 	}
 	
 }

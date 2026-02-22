@@ -35,7 +35,7 @@ public class SectionTablePopupMenu extends JPopupMenu{
 
 	public void setActionFactory(ActionFactory actionFactory) {
 		menuitemPlay.setAction(actionFactory.createPopupPlayAction(jTable));
-		menuitemSelectAndZoom.setAction(actionFactory.createPopupSelectAndZoomAction(jTable));
+		menuitemSelectAndZoom.setAction(actionFactory.createPopupZoomSectionAction(jTable));
 		menuitemEditStart.setAction(actionFactory.createPopupEditStartPositionAction(jTable));
 		menuitemEditEnd.setAction(actionFactory.createPopupEditEndPositionAction(jTable));
 		menuitemDeleteLeftCutpoint.setAction(actionFactory.createPopupDeleteLeftCutpointAction(jTable));

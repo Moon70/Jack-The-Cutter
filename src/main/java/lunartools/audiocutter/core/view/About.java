@@ -1,4 +1,4 @@
-package lunartools.audiocutter.gui;
+package lunartools.audiocutter.core.view;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class About {
 	public static void showAboutDialog(JFrame jframe) {
 		try {
 			InputStream inputStream = About.class.getResourceAsStream(RESOURCEPATH_HTML);
-			StringBuffer html=FileTools.getStringBufferFromInputStream(inputStream, StandardCharsets.UTF_8.name());
+			StringBuffer html=FileTools.readInputStreamToStringBuffer(inputStream, StandardCharsets.UTF_8.name());
 			JEditorPane editorPane = new JEditorPane("text/html", html.toString());
 			editorPane.addHyperlinkListener(new HyperlinkListener(){
 				@Override

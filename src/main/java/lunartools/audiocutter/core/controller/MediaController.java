@@ -14,6 +14,7 @@ import lunartools.SwingTools;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.CueSheetFileFilter;
 import lunartools.audiocutter.common.ui.Dialogs;
+import lunartools.audiocutter.common.util.ProjectFileFilter;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.service.AutoCutService;
@@ -24,7 +25,6 @@ import lunartools.audiocutter.core.service.CutMediaFileService;
 import lunartools.audiocutter.core.service.CutMediaFileWorker;
 import lunartools.audiocutter.core.service.MediaService;
 import lunartools.audiocutter.core.service.OpenMediaWorker;
-import lunartools.audiocutter.projectfile.ProjectFileFilter;
 import lunartools.swing.HasParentFrame;
 import lunartools.swing.ProgressDialog;
 

@@ -8,14 +8,14 @@ import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.AudioCutterView;
 import lunartools.audiocutter.core.controller.MediaController;
+import lunartools.audiocutter.core.controller.MenuPresenter;
 import lunartools.audiocutter.core.controller.ProjectController;
 import lunartools.audiocutter.core.service.AutoCutService;
 import lunartools.audiocutter.core.service.CreateCueSheetService;
 import lunartools.audiocutter.core.service.CutMediaFileService;
 import lunartools.audiocutter.core.service.MediaService;
 import lunartools.audiocutter.core.service.ProjectService;
-import lunartools.audiocutter.menu.MenuPresenter;
-import lunartools.audiocutter.menu.MenuView;
+import lunartools.audiocutter.core.view.MenuView;
 
 public class AudioCutterBootstrap {
 	private static Logger logger = LoggerFactory.getLogger(AudioCutterBootstrap.class);
@@ -47,7 +47,6 @@ public class AudioCutterBootstrap {
 				mediaController
 				);
 		audioCutterView.setDropTargetHandler(audioCutterController);
-		audioCutterView.temporaryInjectController(audioCutterController);
 		
 		ActionFactory actionFactory=new ActionFactory(audioCutterController,projectController,mediaController);
 		MenuView menuView = new MenuView(actionFactory);

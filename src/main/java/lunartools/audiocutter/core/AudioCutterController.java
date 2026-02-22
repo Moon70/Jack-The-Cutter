@@ -27,6 +27,7 @@ import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
+import lunartools.audiocutter.common.util.ProjectFileFilter;
 import lunartools.audiocutter.core.controller.MediaController;
 import lunartools.audiocutter.core.controller.ProjectController;
 import lunartools.audiocutter.core.model.StatusMessage;
@@ -38,7 +39,6 @@ import lunartools.audiocutter.core.service.ProjectService;
 import lunartools.audiocutter.core.view.FileDropHandler;
 import lunartools.audiocutter.core.view.StatusPanel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
-import lunartools.audiocutter.projectfile.ProjectFileFilter;
 import lunartools.progressdialog.ProgressDialog;
 import lunartools.swing.HasParentFrame;
 

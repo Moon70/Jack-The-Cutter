@@ -82,9 +82,7 @@ public class SectionTableModel extends AbstractTableModel{
 	}
 
 	public void updateModelChanges(Object object) {
-//System.out.println("updateModelChanges");
 		if(object==SimpleEvents.MODEL_MEDIAFILECHANGED) {
-//System.out.println("fireTableDataChanged");
 			fireTableDataChanged();
 		}
 	}

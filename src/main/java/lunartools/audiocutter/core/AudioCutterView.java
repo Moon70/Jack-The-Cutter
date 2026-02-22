@@ -1,9 +1,7 @@
 package lunartools.audiocutter.core;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -13,41 +11,29 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.ImageTools;
-import lunartools.ObservableJFrame;
 import lunartools.SwingTools;
-import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
 import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.view.FileDropHandler;
+import lunartools.audiocutter.core.view.LeftPanel;
 import lunartools.audiocutter.core.view.MediaInfoPanel;
+import lunartools.audiocutter.core.view.MenuView;
 import lunartools.audiocutter.core.view.sectionpanel.SectionPanel;
-import lunartools.audiocutter.gui.About;
-import lunartools.audiocutter.gui.LeftPanel;
-import lunartools.audiocutter.gui.MenuModel;
-import lunartools.audiocutter.menu.MenuView;
 import lunartools.swing.HasParentFrame;
 
 public class AudioCutterView implements HasParentFrame{
@@ -55,10 +41,10 @@ public class AudioCutterView implements HasParentFrame{
 
 	private final AudioCutterModel audioCutterModel;
 	private final JFrame jFrame;
-	
+
 	private LeftPanel panelLeft;
 	private SectionPanel sectionPanel;
-	
+
 	private JSplitPane jSplitPaneHorizontal;
 	private JSplitPane jSplitPaneVertical;
 
@@ -77,15 +63,33 @@ public class AudioCutterView implements HasParentFrame{
 		audioCutterModel.addChangeListener(this::updateModelChanges);
 
 		jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-//		addWindowListener(new WindowAdapter(){
-//			public void windowClosing(WindowEvent event){
-//				sendMessage(SimpleEvents.EXIT);
-//			}
-//		});
+		//		addWindowListener(new WindowAdapter(){
+		//			public void windowClosing(WindowEvent event){
+		//				sendMessage(SimpleEvents.EXIT);
+		//			}
+		//		});
 
 		jSplitPaneHorizontal = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
+		panelLeft=new LeftPanel(audioCutterModel);
+		panelLeft.setLocation(10, 0);
+		jSplitPaneHorizontal.setLeftComponent(panelLeft);
+		
+		jSplitPaneVertical=new JSplitPane( JSplitPane.VERTICAL_SPLIT );
+		MediaInfoPanel mediaInfoPanel=new MediaInfoPanel(audioCutterModel);
+		jSplitPaneVertical.setTopComponent(mediaInfoPanel);
+
+		sectionPanel=new SectionPanel(audioCutterModel);
+		sectionPanel.setOpaque(true);
+		jSplitPaneVertical.setBottomComponent(sectionPanel);
+
+		jSplitPaneVertical.setDividerLocation(audioCutterModel.getVerticalDividerPosition());
+		jSplitPaneVertical.setEnabled(false);
+		jSplitPaneHorizontal.setRightComponent(jSplitPaneVertical);
+
+		
 		jFrame.add(jSplitPaneHorizontal);
 		jSplitPaneHorizontal.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
+
 
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
@@ -110,8 +114,6 @@ public class AudioCutterView implements HasParentFrame{
 			}
 		});
 
-//		jSplitPaneHorizontal.setBounds(0, 0,jFrame.getWidth()-24,AudioCutterModel.DEFAULT_FRAME_WIDTH-80);
-
 		jSplitPaneHorizontal.setDividerLocation(audioCutterModel.getHorizontalDividerPosition());
 
 		jFrame.addComponentListener(new ComponentListener() {
@@ -134,12 +136,12 @@ public class AudioCutterView implements HasParentFrame{
 
 		refreshGui();
 	}
-	
+
 	public void setDropTargetHandler(FileDropHandler fileDropHandler) {
 		Objects.requireNonNull(fileDropHandler);
-//		setDropTarget(new AudioCutterDropTarget(model,controller));
+		//		setDropTarget(new AudioCutterDropTarget(model,controller));
 		jFrame.setDropTarget(new DropTarget(jFrame,new DropTargetAdapter() {
-			
+
 			@Override
 			public void drop(DropTargetDropEvent evt) {
 				try {
@@ -166,33 +168,6 @@ public class AudioCutterView implements HasParentFrame{
 				}
 			}
 		}));
-	}
-	
-	public void temporaryInjectController(AudioCutterController controller) {
-
-		panelLeft=new LeftPanel(audioCutterModel,controller);
-		panelLeft.setLocation(10, 0);
-		jSplitPaneHorizontal.setLeftComponent(panelLeft);
-
-		jSplitPaneVertical=new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-		jSplitPaneVertical.setDividerLocation(audioCutterModel.getVerticalDividerPosition());
-		jSplitPaneVertical.setEnabled(false);
-		jSplitPaneHorizontal.setRightComponent(jSplitPaneVertical);
-
-		int x=0;
-		int y=0;
-		int marginX=4;
-		int marginY=4;
-		MediaInfoPanel mediaInfoPanel=new MediaInfoPanel(audioCutterModel);
-		mediaInfoPanel.setLocation(x+marginX, y+marginY);
-		jSplitPaneVertical.setTopComponent(mediaInfoPanel);
-
-		sectionPanel=new SectionPanel(audioCutterModel);
-		sectionPanel.setOpaque(true);
-		sectionPanel.setLocation(x, y);
-		jSplitPaneVertical.setBottomComponent(sectionPanel);
-
-		refreshGui();
 	}
 
 	public void setMenuView(MenuView menuView) {
@@ -234,10 +209,6 @@ public class AudioCutterView implements HasParentFrame{
 		jFrame.repaint();
 	}
 
-	public void showMessageboxAbout() {
-		About.showAboutDialog(jFrame);
-	}
-
 	@Override
 	public JFrame getJFrame() {
 		return jFrame;
@@ -251,5 +222,4 @@ public class AudioCutterView implements HasParentFrame{
 		return sectionPanel;
 	}
 
-	
 }

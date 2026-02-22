@@ -19,7 +19,6 @@ import lunartools.FileTools;
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
-import lunartools.audiocutter.projectfile.ProjectfileTagnames;
 
 public class ProjectService implements ProjectfileTagnames{
 	private static Logger logger = LoggerFactory.getLogger(ProjectService.class);

@@ -10,11 +10,11 @@ import javax.swing.JOptionPane;
 import lunartools.SwingTools;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
+import lunartools.audiocutter.common.util.ProjectFileFilter;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.model.StatusMessage;
 import lunartools.audiocutter.core.service.ProjectException;
 import lunartools.audiocutter.core.service.ProjectService;
-import lunartools.audiocutter.projectfile.ProjectFileFilter;
 
 public class ProjectController {
 	private final AudioCutterModel audioCutterModel;
@@ -83,7 +83,7 @@ public class ProjectController {
 			return OpenProjectResult.ABORTED;
 		}
 		AudioPlayer.getInstance().action_stop();
-		//projectService.closeProject();
+		projectService.closeProject();
 		try {
 			projectService.openProject(file);
 		} catch (ProjectException e) {

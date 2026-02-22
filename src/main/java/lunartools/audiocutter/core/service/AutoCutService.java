@@ -121,7 +121,6 @@ public class AutoCutService {
 		for(;index>=0;index--,offsetSub-=4,offsetAdd-=4) {
 			if((index & 0x7fffff)==0) {
 				currentProgressStep=((long)(totalSamples-index)*totalProgressSteps)/totalSamples;
-				System.out.println(index+"\t"+currentProgressStep+"\t"+(index*totalProgressSteps)+"\t"+(bytes.length/4));
 				progressStepListener.stepDone((int)currentProgressStep, totalProgressSteps, null);
 			}
 			average=(int)(sample/silenceLengthInFrames/2);

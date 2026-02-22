@@ -9,9 +9,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JTable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lunartools.ImageTools;
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.service.AudioPlayer;
@@ -23,11 +20,10 @@ import lunartools.audiocutter.core.controller.ProjectController.OpenProjectResul
 import lunartools.audiocutter.gui.preferencespanel.PreferencesController;
 
 public class ActionFactory {
-	private static Logger logger = LoggerFactory.getLogger(ActionFactory.class);
 	private final AudioCutterController controller;
 	private final ProjectController projectController;
 	private final MediaController mediaController;
-	
+
 	public ActionFactory(
 			AudioCutterController audioCutterController,
 			ProjectController projectController,
@@ -51,15 +47,15 @@ public class ActionFactory {
 
 	public Action createOpenRecentProjectFileAction(File file) {
 		return new AbstractAction(file.getName()) {
-			
+
 			{
 				putValue(SHORT_DESCRIPTION, file.getAbsolutePath());
 			}
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(projectController.openProjectWithConfirmation(file)==OpenProjectResult.SUCCESS) {
-					mediaController.openMediaFileWithConfirmation(controller.getModel().getMediaFile());
+					mediaController.openMediaFile(controller.getModel().getMediaFile());
 				}
 			}
 		};
@@ -103,11 +99,11 @@ public class ActionFactory {
 
 	public Action createOpenRecentMediaFileAction(File file) {
 		return new AbstractAction(file.getName()) {
-			
+
 			{
 				putValue(SHORT_DESCRIPTION, file.getAbsolutePath());
 			}
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mediaController.openMediaFileWithConfirmation(file);
@@ -132,7 +128,7 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createAutoCutAction() {
 		return new AbstractAction("Auto cut") {
 			@Override
@@ -141,7 +137,7 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createOpenPreferencesAction() {
 		return new AbstractAction("Preferences") {
 			@Override
@@ -171,11 +167,11 @@ public class ActionFactory {
 
 	public Action createPlayCursorAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playCursor.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "play from cursor position");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "play from cursor position");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_playFromCursorPosition();
@@ -185,11 +181,11 @@ public class ActionFactory {
 
 	public Action createPlaySelectionAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playSelection.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "play selection");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "play selection");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_playSelection();
@@ -199,11 +195,11 @@ public class ActionFactory {
 
 	public Action createPauseAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_pause.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "pause");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "pause");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_pause();
@@ -213,11 +209,11 @@ public class ActionFactory {
 
 	public Action createStopAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_stop.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "stop");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "stop");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_stop();
@@ -227,11 +223,11 @@ public class ActionFactory {
 
 	public Action createPreviousAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_previousSection.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "goto previous section");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "goto previous section");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_PrevSection();
@@ -241,11 +237,11 @@ public class ActionFactory {
 
 	public Action createNextAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_nextSection.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "goto next section");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "goto next section");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioPlayer.getInstance().action_NextSection();
@@ -255,11 +251,11 @@ public class ActionFactory {
 
 	public Action createZoomInAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomIn.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "zoom in");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "zoom in");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.getModel().setZoom(controller.getModel().getZoom()+1);
@@ -269,11 +265,11 @@ public class ActionFactory {
 
 	public Action createZoomOutAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomOut.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "zoom out");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "zoom out");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.getModel().setZoom(controller.getModel().getZoom()-1);
@@ -283,11 +279,11 @@ public class ActionFactory {
 
 	public Action createZoomSelectionAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "zoom selection");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "zoom selection");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioCutterModel model=controller.getModel();
@@ -298,11 +294,11 @@ public class ActionFactory {
 
 	public Action createFitProjectAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_fitProject.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "fit project");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "fit project");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioCutterModel model=controller.getModel();
@@ -314,11 +310,11 @@ public class ActionFactory {
 
 	public Action createAmplitudeZoomAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_AmplitudeZoom.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "zoom amplitude");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "zoom amplitude");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AudioCutterModel model=controller.getModel();
@@ -329,52 +325,52 @@ public class ActionFactory {
 
 	public Action createCutAction() {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/ProgramIcon24.png")) {
-			
+
 			{
-		        putValue(Action.SHORT_DESCRIPTION, "cut at cursor position");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "cut at cursor position");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mediaController.createCutPointAtCursorPosition();
 			}
 		};
 	}
-	
+
 	public Action createPopupPlayAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Play.png")) {
-			
+
 			{
 				putValue(Action.NAME, "play");
-		        putValue(Action.SHORT_DESCRIPTION, "play section");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "play section");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
+				//int modelRow = table.convertRowIndexToModel(contextRow);
 				AudioPlayer.getInstance().playSection(contextRow);
 			}
 		};
 	}
-	
-	public Action createPopupSelectAndZoomAction(JTable jTable) {
+
+	public Action createPopupZoomSectionAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
-			
+
 			{
 				putValue(Action.NAME, "zoom");
-		        putValue(Action.SHORT_DESCRIPTION, "zoom section");
-		    }
-			
+				putValue(Action.SHORT_DESCRIPTION, "zoom section");
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
-		        AudioCutterModel audioCutterModel=controller.getModel();
+				//int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioCutterModel audioCutterModel=controller.getModel();
 				AudioSectionModel audioSection=audioCutterModel.getAudioSection(contextRow);
 				AudioSectionModel audioSectionNext=audioCutterModel.getAudioSection(contextRow+1);
 				if(audioSectionNext==null) {
@@ -385,21 +381,21 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createPopupEditStartPositionAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditStartPos.png")) {
-			
+
 			{
 				putValue(Action.NAME, "edit start position");
-		    }
-			
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
-		        AudioCutterModel audioCutterModel=controller.getModel();
+				//int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioCutterModel audioCutterModel=controller.getModel();
 				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 				AudioSectionModel audioSection=audioSections.get(contextRow);
 				int startpositionOfSelectedSection=audioSection.getPosition();
@@ -416,21 +412,21 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createPopupEditEndPositionAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditEndPos.png")) {
-			
+
 			{
 				putValue(Action.NAME, "edit end position");
-		    }
-			
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
-		        AudioCutterModel audioCutterModel=controller.getModel();
+				//int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioCutterModel audioCutterModel=controller.getModel();
 				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 				AudioSectionModel audioSection=audioSections.get(contextRow+1);
 				int startpositionOfSelectedSection=audioSection.getPosition();
@@ -447,21 +443,21 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createPopupDeleteLeftCutpointAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteLeftCutpoint.png")) {
-			
+
 			{
 				putValue(Action.NAME, "delete left cutpoint");
-		    }
-			
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
-		        AudioCutterModel audioCutterModel=controller.getModel();
+				//int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioCutterModel audioCutterModel=controller.getModel();
 				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
 				audioSections.remove(contextRow);
 				audioCutterModel.setAudioSections(audioSections);
@@ -470,21 +466,21 @@ public class ActionFactory {
 			}
 		};
 	}
-	
+
 	public Action createPopupDeleteRightCutpointAction(JTable jTable) {
 		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteRightCutpoint.png")) {
-			
+
 			{
 				putValue(Action.NAME, "delete right cutpoint");
-		    }
-			
+			}
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int contextRow = jTable.getSelectedRow();
-		        if (contextRow < 0) return;
+				if (contextRow < 0) return;
 
-		        //int modelRow = table.convertRowIndexToModel(contextRow);
-		        AudioCutterModel audioCutterModel=controller.getModel();
+				//int modelRow = table.convertRowIndexToModel(contextRow);
+				AudioCutterModel audioCutterModel=controller.getModel();
 				AudioSectionModel selectedAudioSection=audioCutterModel.getAudioSection(contextRow);
 				AudioSectionModel nextAudioSection=audioCutterModel.getAudioSection(contextRow+1);
 				ArrayList<AudioSectionModel> audioSections=audioCutterModel.getAudioSections();
@@ -494,6 +490,6 @@ public class ActionFactory {
 			}
 		};
 	}
-	
-	
+
+
 }

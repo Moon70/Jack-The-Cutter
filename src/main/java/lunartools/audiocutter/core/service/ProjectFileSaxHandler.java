@@ -7,7 +7,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import lunartools.audiocutter.common.model.AudioSectionModel;
-import lunartools.audiocutter.projectfile.ProjectfileTagnames;
 
 public class ProjectFileSaxHandler extends DefaultHandler implements ProjectfileTagnames{
 	private String audioFilePath;
