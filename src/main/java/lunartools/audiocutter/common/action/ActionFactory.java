@@ -9,9 +9,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JTable;
 
-import lunartools.ImageTools;
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.service.AudioPlayer;
+import lunartools.audiocutter.common.ui.IconProvider;
+import lunartools.audiocutter.common.ui.Icons;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.controller.MediaController;
@@ -46,9 +47,10 @@ public class ActionFactory {
 	}
 
 	public Action createOpenRecentProjectFileAction(File file) {
-		return new AbstractAction(file.getName()) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.RECENT_PROJECT_FILE,AbstractAction.class)) {
 
 			{
+				putValue(NAME, file.getName());
 				putValue(SHORT_DESCRIPTION, file.getAbsolutePath());
 			}
 
@@ -98,9 +100,10 @@ public class ActionFactory {
 	}
 
 	public Action createOpenRecentMediaFileAction(File file) {
-		return new AbstractAction(file.getName()) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.RECENT_MEDIA_FILE,AbstractAction.class)) {
 
 			{
+				putValue(NAME, file.getName());
 				putValue(SHORT_DESCRIPTION, file.getAbsolutePath());
 			}
 
@@ -166,7 +169,7 @@ public class ActionFactory {
 	}
 
 	public Action createPlayCursorAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playCursor.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.PLAY_CURSOR,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "play from cursor position");
@@ -180,7 +183,7 @@ public class ActionFactory {
 	}
 
 	public Action createPlaySelectionAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_playSelection.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.PLAY_SELECTION,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "play selection");
@@ -194,7 +197,7 @@ public class ActionFactory {
 	}
 
 	public Action createPauseAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_pause.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.PAUSE,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "pause");
@@ -208,7 +211,7 @@ public class ActionFactory {
 	}
 
 	public Action createStopAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_stop.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.STOP,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "stop");
@@ -222,7 +225,7 @@ public class ActionFactory {
 	}
 
 	public Action createPreviousAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_previousSection.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.PREV_SECTION,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "goto previous section");
@@ -236,7 +239,7 @@ public class ActionFactory {
 	}
 
 	public Action createNextAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_nextSection.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.NEXT_SECTION,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "goto next section");
@@ -250,7 +253,7 @@ public class ActionFactory {
 	}
 
 	public Action createZoomInAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomIn.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.ZOOM_IN,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "zoom in");
@@ -264,7 +267,7 @@ public class ActionFactory {
 	}
 
 	public Action createZoomOutAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomOut.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.ZOOM_OUT,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "zoom out");
@@ -278,7 +281,7 @@ public class ActionFactory {
 	}
 
 	public Action createZoomSelectionAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.ZOOM_SELECTION,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "zoom selection");
@@ -293,10 +296,10 @@ public class ActionFactory {
 	}
 
 	public Action createFitProjectAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_fitProject.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.FIT_TO_WINDOW,AbstractAction.class)) {
 
 			{
-				putValue(Action.SHORT_DESCRIPTION, "fit project");
+				putValue(Action.SHORT_DESCRIPTION, "fit to window");
 			}
 
 			@Override
@@ -309,7 +312,7 @@ public class ActionFactory {
 	}
 
 	public Action createAmplitudeZoomAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_AmplitudeZoom.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.AMPLITUDE_ZOOM,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "zoom amplitude");
@@ -324,7 +327,7 @@ public class ActionFactory {
 	}
 
 	public Action createCutAction() {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/ProgramIcon24.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.ADD_CUT_POINT,AbstractAction.class)) {
 
 			{
 				putValue(Action.SHORT_DESCRIPTION, "cut at cursor position");
@@ -338,11 +341,10 @@ public class ActionFactory {
 	}
 
 	public Action createPopupPlayAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Play.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.PLAY_CURSOR,AbstractAction.class)) {
 
 			{
-				putValue(Action.NAME, "play");
-				putValue(Action.SHORT_DESCRIPTION, "play section");
+				putValue(Action.NAME, "play section");
 			}
 
 			@Override
@@ -357,11 +359,10 @@ public class ActionFactory {
 	}
 
 	public Action createPopupZoomSectionAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/Button_zoomSelection.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.ZOOM_SELECTION,AbstractAction.class)) {
 
 			{
-				putValue(Action.NAME, "zoom");
-				putValue(Action.SHORT_DESCRIPTION, "zoom section");
+				putValue(Action.NAME, "zoom section");
 			}
 
 			@Override
@@ -383,7 +384,7 @@ public class ActionFactory {
 	}
 
 	public Action createPopupEditStartPositionAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditStartPos.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.EDIT_START,AbstractAction.class)) {
 
 			{
 				putValue(Action.NAME, "edit start position");
@@ -414,7 +415,7 @@ public class ActionFactory {
 	}
 
 	public Action createPopupEditEndPositionAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/EditEndPos.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.EDIT_END,AbstractAction.class)) {
 
 			{
 				putValue(Action.NAME, "edit end position");
@@ -445,7 +446,7 @@ public class ActionFactory {
 	}
 
 	public Action createPopupDeleteLeftCutpointAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteLeftCutpoint.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.DELETE_LEFT_CUTPOINT,AbstractAction.class)) {
 
 			{
 				putValue(Action.NAME, "delete left cutpoint");
@@ -468,7 +469,7 @@ public class ActionFactory {
 	}
 
 	public Action createPopupDeleteRightCutpointAction(JTable jTable) {
-		return new AbstractAction(null,ImageTools.createImageIcon("/icons/DeleteRightCutpoint.png")) {
+		return new AbstractAction(null,IconProvider.getFlatSvgIcon(Icons.DELETE_RIGHT_CUTPOINT,AbstractAction.class)) {
 
 			{
 				putValue(Action.NAME, "delete right cutpoint");

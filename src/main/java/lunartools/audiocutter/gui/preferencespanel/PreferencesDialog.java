@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 
 import lunartools.ImageTools;
 import lunartools.SwingTools;
+import lunartools.audiocutter.common.ui.IconProvider;
+import lunartools.audiocutter.common.ui.Icons;
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class PreferencesDialog extends JDialog implements AWTEventListener{
@@ -64,7 +66,7 @@ public class PreferencesDialog extends JDialog implements AWTEventListener{
 
 		buttonSelectFfmpegExe=new JButton();
 		buttonSelectFfmpegExe.setBounds(column3X, y, column3W, lineHeight);
-		buttonSelectFfmpegExe.setIcon(ImageTools.createImageIcon("/icons/Open16.gif"));
+		buttonSelectFfmpegExe.setIcon(IconProvider.getFlatSvgIcon(Icons.FOLDER_OPEN,buttonSelectFfmpegExe));
 		buttonSelectFfmpegExe.setBorder(null);
 		buttonSelectFfmpegExe.setContentAreaFilled(false);
 		buttonSelectFfmpegExe.addActionListener(preferencesController);

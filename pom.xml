@@ -2,18 +2,24 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lunartools</groupId>
 	<artifactId>audiocutter</artifactId>
-	<version>0.4.0-SNAPSHOT</version>
+	<version>0.5.0-SNAPSHOT</version>
 	<name>AudioCutter</name>
 	<description>GUI for lossless cutting audio files using FFmpeg</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<version_lunartools>1.4.0-snapshot</version_lunartools>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<java.release.version>11</java.release.version>
+		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<org.codehaus.mojo.build-helper-maven-plugin.version>3.5.0</org.codehaus.mojo.build-helper-maven-plugin.version>
 		<version_org_junit_jupiter>5.11.4</version_org_junit_jupiter>
 		<org.slf4j.slf4j-api.version>1.7.36</org.slf4j.slf4j-api.version>
 		<ch.qos.logback.logback-classic.version>1.2.10</ch.qos.logback.logback-classic.version>
 		<ch.qos.logback.logback-core.version>1.2.10</ch.qos.logback.logback-core.version>
+		<com.formdev.flatlaf.version>3.6.2</com.formdev.flatlaf.version>
+		<com.formdev.flatlaf-extras.version>3.6.2</com.formdev.flatlaf-extras.version>
+		<org.apache.commons-commons-text.version>1.15.0</org.apache.commons-commons-text.version>
+		<version_lunartools>1.4.0-snapshot</version_lunartools>
 	</properties>
 	<build>
 		<resources>
@@ -35,6 +41,31 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<release>${java.release.version}</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${org.codehaus.mojo.build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>add-timestamp</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<name>build.timestamp</name>
+							<pattern>yyyy-MM-dd HH:mm:ss</pattern>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -80,6 +111,18 @@
 		    <artifactId>logback-core</artifactId>
 		    <version>${ch.qos.logback.logback-core.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>${com.formdev.flatlaf.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf-extras -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-extras</artifactId>
+			<version>${com.formdev.flatlaf-extras.version}</version>
+		</dependency>
 		<!-- https://github.com/Moon70/LunarTools/packages -->
 		<dependency>
 			<groupId>lunartools</groupId>
@@ -90,7 +133,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.9</version>
+			<version>${org.apache.commons-commons-text.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
 		<dependency>

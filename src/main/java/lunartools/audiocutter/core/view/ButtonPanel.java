@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
-import lunartools.ImageTools;
 import lunartools.audiocutter.common.action.ActionFactory;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.AudioCutterModel;
@@ -51,7 +50,6 @@ public class ButtonPanel extends JPanel{
 		toggleButtonAmplitudeZoom=new JToggleButton();
 		toggleButtonAmplitudeZoom.setPreferredSize(BUTTON_DIMENSION);
 		toggleButtonAmplitudeZoom.setMinimumSize(BUTTON_DIMENSION);
-		toggleButtonAmplitudeZoom.setSelectedIcon(ImageTools.createImageIcon("/icons/Button_AmplitudeZoomPressed.png"));
 		add(toggleButtonAmplitudeZoom);
 
 		add(jbuttonCut=createJButton());
