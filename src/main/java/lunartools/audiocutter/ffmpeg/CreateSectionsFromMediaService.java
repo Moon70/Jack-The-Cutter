@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.Settings;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.cli.Exec;
+import lunartools.cli.ExecHelper;
 import lunartools.cli.ExecOutputCallback;
 
 public class CreateSectionsFromMediaService implements ExecOutputCallback{
@@ -27,14 +27,13 @@ public class CreateSectionsFromMediaService implements ExecOutputCallback{
 		String sectionFilepathWithQuotes="\""+sectionfile.getAbsolutePath()+"\"";
 		AudioCutterSettings settings=AudioCutterSettings.getInstance();
 		String parameter=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PARAMETER);
-		parameter=String.format(parameter,mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
-		logger.debug("FFmpeg parameter: "+parameter);
 
 		String pattern=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PATTERN_OUTPUTFORMATERROR);
 		patternOutputFormatError=Pattern.compile(pattern);
 
+		String[] commandArray=ExecHelper.createCmdArray(ffmpegExecutable, parameter, mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
 		try {
-			Exec exec=new Exec(ffmpegExecutable,parameter,this);
+			Exec exec=new Exec(commandArray,this);
 			int createSectionsTimeout=settings.getInt(AudioCutterSettings.FFMPEG_CREATESECTIONS_TIMEOUT);
 			exec.start();
 			exec.join(createSectionsTimeout*1000);

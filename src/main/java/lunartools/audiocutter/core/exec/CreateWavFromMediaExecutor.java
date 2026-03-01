@@ -11,6 +11,7 @@ import lunartools.audiocutter.common.ui.util.SampleUtils;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.cli.Exec;
+import lunartools.cli.ExecHelper;
 import lunartools.cli.ExecOutputCallback;
 import lunartools.swing.ProgressStepListener;
 
@@ -35,18 +36,15 @@ public class CreateWavFromMediaExecutor implements ExecOutputCallback{
 		logger.debug("wav file: "+wavfile);
 		String ffmpegExecutable=audioCutterModel.getFFmpegExecutablePath();
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
-		String mediaFilePathWithQuotes="\""+mediafile.getAbsolutePath()+"\"";
-		String wavFilePathWithQuotes="\""+wavfile.getAbsolutePath()+"\"";
 		String ffmpegParameter=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PARAMETER);
-		ffmpegParameter=String.format(ffmpegParameter,mediaFilePathWithQuotes,wavFilePathWithQuotes);
-		logger.debug("FFmpeg parameter: "+ffmpegParameter);
 
 		String durationPattern=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PATTERN_DURATION);
 		patternDuration=Pattern.compile(durationPattern);
 		String progressPattern=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_CREATETEMPWAV_PATTERN_PROGRESS);
 		patternProgress=Pattern.compile(progressPattern);
 
-		Exec exec=new Exec(ffmpegExecutable,ffmpegParameter,null,this);
+		String[] commandArray=ExecHelper.createCmdArray(ffmpegExecutable, ffmpegParameter, mediafile.getAbsolutePath(),wavfile.getAbsolutePath());
+		Exec exec=new Exec(commandArray,this);
 		int createWavTimeout=AudioCutterSettings.getInstance().getInt(AudioCutterSettings.FFMPEG_CREATETEMPWAV_TIMEOUT);
 		exec.start();
 		try {

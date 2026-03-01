@@ -1,5 +1,6 @@
 package lunartools.cli;
 
+import java.io.IOException;
 import java.io.Reader;
 
 class LineReaderThread extends Thread{
@@ -20,7 +21,15 @@ class LineReaderThread extends Thread{
 		try {
 			line=new StringBuffer();
 			while(((c=reader.read()) != -1)) {
-				if(c==10 || c==13) {
+				if (c == '\r') {
+					c=reader.read();
+					if(c==-1 || c=='\n') {
+						lineCallback.lineReceivedFromOutputReader(line.toString());
+						line=new StringBuffer();
+						continue;
+					}
+				}
+				if (c == '\n'){
 					lineCallback.lineReceivedFromOutputReader(line.toString());
 					line=new StringBuffer();
 				}else {
@@ -30,9 +39,16 @@ class LineReaderThread extends Thread{
 					break;
 				}
 			}
+			if(line.length()>0) {
+				lineCallback.lineReceivedFromOutputReader(line.toString());
+			}
 		} catch (Exception exception) {
-			exec.exception=exception;
+			exec.setException(exception);
 			lineCallback.throwableReceivedFromOutputReader(exception);
+		}finally {
+			try {
+				reader.close();
+			} catch (IOException ignored) {}
 		}
 	}
 

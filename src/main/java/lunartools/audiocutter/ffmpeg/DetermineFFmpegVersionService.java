@@ -10,6 +10,7 @@ import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.service.DetermineFFmpegVersionWorker;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.cli.Exec;
+import lunartools.cli.ExecHelper;
 import lunartools.cli.ExecOutputCallback;
 
 public class DetermineFFmpegVersionService implements ExecOutputCallback{
@@ -29,9 +30,10 @@ public class DetermineFFmpegVersionService implements ExecOutputCallback{
 		String pattern=AudioCutterSettings.getInstance().getStringNotNull(AudioCutterSettings.FFMPEG_DETERMINEVERSION_PATTERN);
 		patternVersion=Pattern.compile(pattern);
 
+		String[] commandArray=ExecHelper.createCmdArray(ffmpegExecutable,parameter);
 		try {
 			model.setFFmpegVersion(null);
-			Exec exec=new Exec(ffmpegExecutable,parameter,null,this);
+			Exec exec=new Exec(commandArray,this);
 			int determineVersionTimeout=AudioCutterSettings.getInstance().getInt(AudioCutterSettings.FFMPEG_DETERMINEVERSION_TIMEOUT);
 			exec.start();
 			exec.join(determineVersionTimeout*1000);

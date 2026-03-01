@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
 import lunartools.cli.Exec;
+import lunartools.cli.ExecHelper;
 import lunartools.cli.ExecOutputCallback;
 
 public class CutMediaFileExecutor implements ExecOutputCallback{
@@ -28,17 +29,14 @@ public class CutMediaFileExecutor implements ExecOutputCallback{
 		logger.debug("media file: "+mediafile);
 		String ffmpegExecutable=audioCutterModel.getFFmpegExecutablePath();
 		logger.debug("FFmpeg executable: "+ffmpegExecutable);
-		String mediaFilePathWithQuotes="\""+mediafile.getAbsolutePath()+"\"";
-		String sectionFilepathWithQuotes="\""+sectionfile.getAbsolutePath()+"\"";
 		AudioCutterSettings settings=AudioCutterSettings.getInstance();
 		String ffmpegParameter=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PARAMETER);
-		ffmpegParameter=String.format(ffmpegParameter,mediaFilePathWithQuotes,startposAsString,endposAsString,sectionFilepathWithQuotes);
-		logger.debug("FFmpeg parameter: "+ffmpegParameter);
 
 		String pattern=settings.getStringNotNull(AudioCutterSettings.FFMPEG_CREATESECTIONS_PATTERN_OUTPUTFORMATERROR);
 		patternOutputFormatError=Pattern.compile(pattern);
 
-		Exec exec=new Exec(ffmpegExecutable,ffmpegParameter,this);
+		String[] commandArray=ExecHelper.createCmdArray(ffmpegExecutable,ffmpegParameter, mediafile.getAbsolutePath(),startposAsString,endposAsString,sectionfile.getAbsolutePath());
+		Exec exec=new Exec(commandArray,this);
 		int createSectionsTimeout=settings.getInt(AudioCutterSettings.FFMPEG_CREATESECTIONS_TIMEOUT);
 		exec.start();
 		try {

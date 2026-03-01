@@ -2,50 +2,47 @@ package lunartools.cli;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Objects;
 
 public class Exec extends Thread{
-	private String program;
-	private String parameter;
+	private String[] cmdArray;
 	private final ExecOutputCallback execOutputCallback;
 	private String characterEncoding;
-	public LineReaderThread outputReaderThread;
-	public LineReaderThread errorReaderThread;
-	Exception exception;
+	private LineReaderThread outputReaderThread;
+	private LineReaderThread errorReaderThread;
+	private volatile Exception exception;
+	private volatile int exitCode=-1;
 
-	public Exec(String program, String parameter,ExecOutputCallback lineCallback) {
-		program=program.trim();
-		if(program.contains(" ") && !program.startsWith("\"")) {
-			this.program="\""+program+"\"";
-		}else {
-			this.program=program;
-		}
-		this.parameter=parameter;
+	public Exec(String[] cmdArray,ExecOutputCallback lineCallback) {
+		this.cmdArray=Objects.requireNonNull(cmdArray);
 		this.execOutputCallback=lineCallback;
 	}
 
-	public Exec(String program, String parameter,String characterEncoding,ExecOutputCallback lineCallback) {
-		this(program,parameter,lineCallback);
-		this.characterEncoding=characterEncoding;
+	public Exec(String[] cmdArray, String characterEncoding,ExecOutputCallback lineCallback) {
+		this(cmdArray,lineCallback);
+		this.characterEncoding=Objects.requireNonNull(characterEncoding);
+		try {
+			Charset.forName(characterEncoding);
+		} catch (UnsupportedCharsetException e) {
+		    throw new IllegalArgumentException("Invalid character encoding: " + characterEncoding, e);
+		}
 	}
 
 	@Override
 	public void run() {
+		Process process=null;
 		try {
-			Process pid;
-			BufferedReader outputLineReader;
-			BufferedReader errorLineReader;
-			if(parameter==null || parameter.length()==0) {
-				pid=Runtime.getRuntime().exec(program);
-			}else {
-				pid=Runtime.getRuntime().exec(program+" "+parameter);
-			}
-			if(characterEncoding==null) {
-				outputLineReader=new BufferedReader(new InputStreamReader(pid.getInputStream()));
-				errorLineReader=new BufferedReader(new InputStreamReader(pid.getErrorStream()));
-			}else {
-				outputLineReader=new BufferedReader(new InputStreamReader(pid.getInputStream(),characterEncoding));
-				errorLineReader=new BufferedReader(new InputStreamReader(pid.getErrorStream(),characterEncoding));
-			}
+			process=Runtime.getRuntime().exec(cmdArray);
+			BufferedReader outputLineReader=characterEncoding==null
+					?new BufferedReader(new InputStreamReader(process.getInputStream()))
+					:new BufferedReader(new InputStreamReader(process.getInputStream(),characterEncoding));
+
+			BufferedReader errorLineReader=characterEncoding==null
+					?new BufferedReader(new InputStreamReader(process.getErrorStream()))
+					:new BufferedReader(new InputStreamReader(process.getErrorStream(),characterEncoding));
+
 			outputReaderThread=new LineReaderThread(outputLineReader,new LineReaderCallback() {
 
 				@Override
@@ -76,22 +73,28 @@ public class Exec extends Thread{
 
 			outputReaderThread.start();
 			errorReaderThread.start();
-
-			try {
-				while(outputReaderThread.isAlive() || errorReaderThread.isAlive()) {
+			exitCode = process.waitFor();
+			while(outputReaderThread.isAlive() || errorReaderThread.isAlive()) {
+				try {
+					outputReaderThread.join(100);
+					errorReaderThread.join(100);
 					if(this.isInterrupted()) {
 						outputReaderThread.interrupt();
 						errorReaderThread.interrupt();
 						return;
 					}
+				}catch(InterruptedException e){
+					outputReaderThread.interrupt();
+					errorReaderThread.interrupt();
+					Thread.currentThread().interrupt();
 				}
-			} finally {
-				pid.destroy();
-				outputLineReader.close();
-				errorLineReader.close();
 			}
 		} catch (Exception e) {
 			exception=e;
+		} finally {
+			if(process!=null && Thread.currentThread().isInterrupted()) {
+				process.destroy();
+			}
 		}
 	}
 
@@ -99,6 +102,10 @@ public class Exec extends Thread{
 		return exception!=null;
 	}
 
+	void setException(Exception exception) {
+		this.exception=exception;
+	}
+	
 	public Exception getException() {
 		return exception;
 	}
