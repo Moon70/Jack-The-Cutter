@@ -29,6 +29,7 @@ public class AudioPlayer extends Thread{
 	private volatile int position;
 	private boolean isPlaying;
 	private boolean isPause;
+	private final Object playLock = new Object();
 
 	public static AudioPlayer getInstance(AudioCutterModel model,AudioCutterController controller) {
 		if(instance==null) {
@@ -47,80 +48,100 @@ public class AudioPlayer extends Thread{
 	private AudioPlayer(AudioCutterModel model,AudioCutterController controller) {
 		this.model=model;
 		this.controller=controller;
+		setPriority(Thread.MAX_PRIORITY);
 	}
 
 	public void action_playFromCursorPosition() {
-		audiodata=model.getAudiodata();
-		position=model.getCursorPositionSampleNumber()<<2;
-		control_lastByte=audiodata.length-1;
-		control_play=true;
-		isPause=false;
+		synchronized (playLock) {
+			audiodata=model.getAudiodata();
+			position=model.getCursorPositionSampleNumber()<<2;
+			control_lastByte=audiodata.length-1;
+			control_play=true;
+			isPause=false;
+			playLock.notifyAll();
+		}
 	}
 
 	public void action_playSelection() {
-		audiodata=model.getAudiodata();
-		position=model.getSelectionStartInSamples()<<2;
-		control_lastByte=model.getSelectionEndInSamples()<<2;
-		control_play=true;
-		isPause=false;
+		synchronized (playLock) {
+			audiodata=model.getAudiodata();
+			position=model.getSelectionStartInSamples()<<2;
+			control_lastByte=model.getSelectionEndInSamples()<<2;
+			control_play=true;
+			isPause=false;
+			playLock.notifyAll();
+		}
 	}
 
 	public void playSection(int audiosectionIndex) {
-		audiodata=model.getAudiodata();
-		AudioSectionModel audioSection=model.getAudioSection(audiosectionIndex);
-		position=audioSection.getPosition()<<2;
-		control_lastByte=model.getAudiodataLengthInSamples()<<2;
-		control_play=true;
-		isPause=false;
+		synchronized (playLock) {
+			audiodata=model.getAudiodata();
+			AudioSectionModel audioSection=model.getAudioSection(audiosectionIndex);
+			position=audioSection.getPosition()<<2;
+			control_lastByte=model.getAudiodataLengthInSamples()<<2;
+			control_play=true;
+			isPause=false;
+			playLock.notifyAll();
+		}
 	}
 
 	public void action_pause() {
-		isPause=!isPause;
+		synchronized (playLock) {
+			isPause=!isPause;
+			playLock.notifyAll();
+		}
 	}
 
 	public void action_stop() {
-		control_play=false;
-		isPause=false;
-		model.setPlayPositionSampleNumber(0);
+		synchronized (playLock) {
+			control_play=false;
+			isPause=false;
+			model.setPlayPositionSampleNumber(0);
+			playLock.notifyAll();
+		}
 	}
 
 	public void action_PrevSection() {
-		ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
-		for(int i=audioSections.size()-1;i>0;i--) {
-			AudioSectionModel audioSection=audioSections.get(i);
-			if((position>>2)>audioSection.getPosition()) {
-				int cursor=position=audioSections.get(i-1).getPosition();
-				model.setCursorPositionSampleNumber(cursor);
-				position=cursor<<2;
-				break;
+		synchronized (playLock) {
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+			for(int i=audioSections.size()-1;i>0;i--) {
+				AudioSectionModel audioSection=audioSections.get(i);
+				if((position>>2)>audioSection.getPosition()) {
+					int cursor=position=audioSections.get(i-1).getPosition();
+					model.setCursorPositionSampleNumber(cursor);
+					position=cursor<<2;
+					break;
+				}
 			}
+			playLock.notifyAll();
 		}
 	}
 
 	public void action_NextSection() {
-		ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
-		for(int i=0;i<audioSections.size();i++) {
-			AudioSectionModel audioSection=audioSections.get(i);
-			if((position>>2)<audioSection.getPosition()) {
-				int cursor=audioSection.getPosition();
-				position=cursor<<2;
-				model.setCursorPositionSampleNumber(cursor);
-				break;
+		synchronized (playLock) {
+			ArrayList<AudioSectionModel> audioSections=model.getAudioSections();
+			for(int i=0;i<audioSections.size();i++) {
+				AudioSectionModel audioSection=audioSections.get(i);
+				if((position>>2)<audioSection.getPosition()) {
+					int cursor=audioSection.getPosition();
+					position=cursor<<2;
+					model.setCursorPositionSampleNumber(cursor);
+					break;
+				}
 			}
+			playLock.notifyAll();
 		}
 	}
 
 	@Override
 	public void run() {
-		super.run();
-		final int framesize=4096;
-		AudioFormat format=new AudioFormat((float) 44100.0,16,2,true,false);
+		final int bufferSize=16384;
+		AudioFormat format=new AudioFormat(44100.0f,16,2,true,false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		SourceDataLine sourceDataLineOutput;
 		try {
 			sourceDataLineOutput = (SourceDataLine) AudioSystem.getLine(info);
-			final int bufferSize=model.getAudioPlayerBufferSize();
-			sourceDataLineOutput.open(format,bufferSize);
+			sourceDataLineOutput.open(format,65536);
 			sourceDataLineOutput.start();
 		} catch (LineUnavailableException e) {
 			String message="error creating audio player";
@@ -128,8 +149,18 @@ public class AudioPlayer extends Thread{
 			model.setStatusMessage(new StatusMessage(StatusMessage.Type.ERROR,message+": "+e.getMessage()));
 			return;
 		}
-		byte[] buffer;
+
 		while(!controller.isShutdownInProgress()) {
+			synchronized (playLock) {
+				while ((!control_play || isPause || audiodata == null) && !controller.isShutdownInProgress()) {
+					try {
+						playLock.wait();
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+			}
+
 			if(control_play && !isPause && audiodata!=null) {
 				if(!isPlaying) {
 					sourceDataLineOutput.start();
@@ -137,16 +168,16 @@ public class AudioPlayer extends Thread{
 				}
 				model.setPlayPositionSampleNumber(position>>2);
 				try {
-					int endRange=position+framesize;
+					int endRange=position+bufferSize;
 					if(endRange>control_lastByte) {
 						endRange=control_lastByte & 0xfffffffc;
 						control_play=false;
 					}
 					if(position<endRange) {
-						buffer=Arrays.copyOfRange(audiodata, position, endRange);
-						sourceDataLineOutput.write(buffer, 0, buffer.length);
+						int len=endRange-position;
+						sourceDataLineOutput.write(audiodata, position, len);
+						position+=len;
 					}
-					position+=framesize;
 				} catch (ArrayIndexOutOfBoundsException e) {
 					e.printStackTrace();
 					action_stop();
@@ -158,11 +189,11 @@ public class AudioPlayer extends Thread{
 					sourceDataLineOutput.stop();
 					audiodata=null;
 				}
-				try {
-					sleep(200);
-				} catch (InterruptedException e) {
-					return;
-				}
+				//				try {
+				//					sleep(200);
+				//				} catch (InterruptedException e) {
+				//					return;
+				//				}
 			}
 		}
 	}
