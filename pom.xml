@@ -7,17 +7,15 @@
 	<description>GUI for lossless cutting audio files using FFmpeg</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>11</maven.compiler.target>
-		<maven.compiler.source>11</maven.compiler.source>
 		<java.release.version>11</java.release.version>
-		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<org.codehaus.mojo.build-helper-maven-plugin.version>3.5.0</org.codehaus.mojo.build-helper-maven-plugin.version>
-		<version_org_junit_jupiter>5.11.4</version_org_junit_jupiter>
-		<org.slf4j.slf4j-api.version>1.7.36</org.slf4j.slf4j-api.version>
-		<ch.qos.logback.logback-classic.version>1.2.10</ch.qos.logback.logback-classic.version>
-		<ch.qos.logback.logback-core.version>1.2.10</ch.qos.logback.logback-core.version>
-		<com.formdev.flatlaf.version>3.6.2</com.formdev.flatlaf.version>
-		<com.formdev.flatlaf-extras.version>3.6.2</com.formdev.flatlaf-extras.version>
+		<org.junit.jupiter.junit-jupiter.version>6.0.3</org.junit.jupiter.junit-jupiter.version>
+		<org.slf4j.slf4j-api.version>2.0.17</org.slf4j.slf4j-api.version>
+		<ch.qos.logback.logback-classic.version>1.5.32</ch.qos.logback.logback-classic.version>
+		<ch.qos.logback.logback-core.version>1.5.32</ch.qos.logback.logback-core.version>
+		<com.formdev.flatlaf.version>3.7</com.formdev.flatlaf.version>
+		<com.formdev.flatlaf-extras.version>3.7</com.formdev.flatlaf-extras.version>
 		<org.apache.commons-commons-text.version>1.15.0</org.apache.commons-commons-text.version>
 		<version_lunartools>1.4.0-snapshot</version_lunartools>
 	</properties>
@@ -28,7 +26,7 @@
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>project.properties</include>
-					<include>About_AudioCutter.html</include>
+					<include>About_Jack-The-Cutter.html</include>
 				</includes>
 			</resource>
 			<resource>
@@ -36,7 +34,7 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>project.properties</exclude>
-					<exclude>About_AudioCutter.html</exclude>
+					<exclude>About_Jack-The-Cutter.html</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -62,6 +60,7 @@
 						<configuration>
 							<name>build.timestamp</name>
 							<pattern>yyyy-MM-dd HH:mm:ss</pattern>
+							<timeZone>Europe/Berlin</timeZone>
 						</configuration>
 					</execution>
 				</executions>
@@ -139,7 +138,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${version_org_junit_jupiter}</version>
+			<version>${org.junit.jupiter.junit-jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
