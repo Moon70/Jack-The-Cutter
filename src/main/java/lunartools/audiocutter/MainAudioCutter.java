@@ -3,6 +3,7 @@ package lunartools.audiocutter;
 import java.util.Objects;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,10 @@ public class MainAudioCutter {
 
 	public static void main(String[] args) {
 		FlatLightLaf.setup();
-		SwingUtilities.invokeLater(() -> {
+		UIManager.put("ScrollBar.width", 16);
+        UIManager.put("ScrollBar.thumbArc", 12);
+        UIManager.put("ScrollBar.trackArc", 12);
+        SwingUtilities.invokeLater(() -> {
 			try{
 				AudioCutterBootstrap.start();
 			}catch(Throwable e){

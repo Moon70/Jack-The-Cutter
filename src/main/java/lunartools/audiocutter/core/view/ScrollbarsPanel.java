@@ -36,7 +36,6 @@ public class ScrollbarsPanel extends JPanel{
 		add(labelMove, gridBagConstraints);
 
 		scrollbarMove=new JScrollBar(JScrollBar.HORIZONTAL);
-		scrollbarMove.setBackground(Color.DARK_GRAY);
 		scrollbarMove.setMinimum(0);
 		scrollbarMove.addAdjustmentListener(e -> {
 			int value=scrollbarMove.getValue();
@@ -59,7 +58,6 @@ public class ScrollbarsPanel extends JPanel{
 		add(labelZoom, gridBagConstraints);
 
 		scrollbarZoom=new JScrollBar(JScrollBar.HORIZONTAL);
-		scrollbarZoom.setBackground(Color.DARK_GRAY);
 		scrollbarZoom.setMinimum(AudioCutterModel.ZOOM_MIN);
 		scrollbarZoom.setMaximum(AudioCutterModel.ZOOM_MAX);
 		scrollbarZoom.setVisibleAmount(1);

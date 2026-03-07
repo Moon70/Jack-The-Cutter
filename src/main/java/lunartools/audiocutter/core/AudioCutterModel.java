@@ -256,7 +256,7 @@ public class AudioCutterModel implements ChangeListenerSupport{
 		calculateZoom(viewStartInSamples,viewEndInSamples);
 		this.viewStartInSamples = viewStartInSamples;
 		this.viewEndInSamples = viewEndInSamples;
-		notifyListeners(SimpleEvents.MODEL_ZOOMRANGECHANGED);
+		notifyListeners(SimpleEvents.MODEL_SELECTIONCHANGED);
 	}
 
 	public int getSelectionStartInSamples() {
