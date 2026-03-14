@@ -1,33 +1,34 @@
-package lunartools.audiocutter.gui.wavepanel;
+package lunartools.audiocutter.core.controller;
 
 import java.util.HashMap;
 
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.view.AWavePanel;
 
 public class WaveControllerZoom extends WaveController {
 	private HashMap<Integer, Integer> hashmapSectionmarks;
 
-	public WaveControllerZoom(AudioCutterModel model,WavePanel view) {
+	public WaveControllerZoom(AudioCutterModel model,AWavePanel view) {
 		super(model,view);
 	}
 
 	@Override
-	int getViewStartInSamples() {
-		return model.getViewStartInSamples();
+	public int getViewStartInSamples() {
+		return audioCutterModel.getViewStartInSamples();
 	}
 
 	@Override
-	int getViewEndInSamples() {
-		return model.getViewEndInSamples();
+	public int getViewEndInSamples() {
+		return audioCutterModel.getViewEndInSamples();
 	}
 
 	@Override
-	protected void resetSectionMarks() {
+	public void resetSectionMarks() {
 		hashmapSectionmarks=new HashMap<Integer, Integer>();
 	}
 
 	@Override
-	protected void addSectionMark(int audioSection, int sectionPosPixel) {
+	public void addSectionMark(int audioSection, int sectionPosPixel) {
 		hashmapSectionmarks.put(sectionPosPixel-2,audioSection);
 		hashmapSectionmarks.put(sectionPosPixel-1,audioSection);
 		hashmapSectionmarks.put(sectionPosPixel,audioSection);

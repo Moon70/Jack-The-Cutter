@@ -1,7 +1,6 @@
 package lunartools.audiocutter.common.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -49,6 +48,7 @@ public class AudioPlayer extends Thread{
 		this.model=model;
 		this.controller=controller;
 		setPriority(Thread.MAX_PRIORITY);
+		setDaemon(true);
 	}
 
 	public void action_playFromCursorPosition() {

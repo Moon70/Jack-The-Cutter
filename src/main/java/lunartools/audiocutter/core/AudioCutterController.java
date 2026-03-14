@@ -125,7 +125,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 			model.setViewRangeInSamples(0,audiodataLengthInSamples);
 			return;
 		}
-		int viewWidth=model.getAudiodataViewWidth();
+		int viewWidth=view.getPanelLeft().getWidth();
 		int viewStartInSamples=model.getViewStartInSamples();
 		int viewEndInSamples=model.getViewEndInSamples();
 		int viewDeltaInSamples=viewEndInSamples-viewStartInSamples;

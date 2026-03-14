@@ -1,7 +1,6 @@
 package lunartools.audiocutter.infrastructure.config;
 
 import lunartools.AbstractSettings;
-import lunartools.Settings;
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class AudioCutterSettings extends AbstractSettings{

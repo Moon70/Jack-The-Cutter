@@ -1,57 +1,58 @@
-package lunartools.audiocutter.gui.wavepanel;
+package lunartools.audiocutter.core.controller;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import lunartools.audiocutter.common.ui.util.SampleUtils;
 import lunartools.audiocutter.core.AudioCutterModel;
+import lunartools.audiocutter.core.view.AWavePanel;
+import lunartools.audiocutter.core.view.WavePanelZoom;
 
 public abstract class WaveController implements MouseListener,MouseMotionListener{
-	AudioCutterModel model;
-	WavePanel view;
+	AudioCutterModel audioCutterModel;
+	AWavePanel wavePanel;
 
 	private boolean createSelection;
 	private int selectedSection=-1;
 	private boolean moveSectionPosition;
 	private int selectionBegin;
 
-	public WaveController(AudioCutterModel model,WavePanel view) {
-		this.model=model;
-		this.view=view;
+	public WaveController(AudioCutterModel audioCutterModel,AWavePanel wavePanel) {
+		this.audioCutterModel=audioCutterModel;
+		this.wavePanel=wavePanel;
 	}
 
-	abstract int getViewStartInSamples();
+	public abstract int getViewStartInSamples();
 
-	abstract int getViewEndInSamples();
+	public abstract int getViewEndInSamples();
 
-	abstract void resetSectionMarks();
+	public abstract void resetSectionMarks();
 
-	abstract void addSectionMark(int i, int sectionPosPixel);
+	public abstract void addSectionMark(int i, int sectionPosPixel);
 
 	abstract int getSelectedSection(int sectionPosPixel);
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(!model.hasAudiodata()) {
+		if(!audioCutterModel.hasAudiodata()) {
 			return;
 		}
 		int sampleNumber=convertScreenPositionToSampleNumber(e.getX());
 		if(e.getClickCount()==2) {
-			int selectionStartInSamples=model.getSelectionStartInSamples();
-			int selectionEndInSamples=model.getSelectionEndInSamples();
+			int selectionStartInSamples=audioCutterModel.getSelectionStartInSamples();
+			int selectionEndInSamples=audioCutterModel.getSelectionEndInSamples();
 			if(selectionStartInSamples<=sampleNumber && selectionEndInSamples>=sampleNumber) {
 				zoomSelection();
 			}
 		}else {
-			model.setCursorPositionSampleNumber(sampleNumber);
+			audioCutterModel.setCursorPositionSampleNumber(sampleNumber);
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(!model.hasAudiodata()) {
+		if(!audioCutterModel.hasAudiodata()) {
 			return;
 		}
 		createSelection=false;
@@ -60,14 +61,14 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(!model.hasAudiodata()) {
+		if(!audioCutterModel.hasAudiodata()) {
 			return;
 		}
 		int sampleNumber=convertScreenPositionToSampleNumber(e.getX());
 		if(sampleNumber<0) {
 			sampleNumber=0;
-		}else if(sampleNumber>=model.getAudiodataLengthInSamples()-1) {
-			sampleNumber=model.getAudiodataLengthInSamples()-1;
+		}else if(sampleNumber>=audioCutterModel.getAudiodataLengthInSamples()-1) {
+			sampleNumber=audioCutterModel.getAudiodataLengthInSamples()-1;
 		}
 		if(!(createSelection | moveSectionPosition)) {
 			if(selectedSection!=-1) {
@@ -79,12 +80,12 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 		}
 		if(createSelection) {
 			if(selectionBegin<sampleNumber) {
-				model.setSelectionRangeInSamples(selectionBegin, sampleNumber);
+				audioCutterModel.setSelectionRangeInSamples(selectionBegin, sampleNumber);
 			}else {
-				model.setSelectionRangeInSamples(sampleNumber,selectionBegin);
+				audioCutterModel.setSelectionRangeInSamples(sampleNumber,selectionBegin);
 			}
 		}else if(moveSectionPosition) {
-			model.setAudioSectionPosition(selectedSection, sampleNumber);
+			audioCutterModel.setAudioSectionPosition(selectedSection, sampleNumber);
 		}
 	}
 
@@ -93,7 +94,7 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		model.setMousePositionSampleNumber(0);
+		audioCutterModel.setMousePositionSampleNumber(0);
 	}
 
 	@Override
@@ -101,60 +102,60 @@ public abstract class WaveController implements MouseListener,MouseMotionListene
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if(!model.hasAudiodata()) {
+		if(!audioCutterModel.hasAudiodata()) {
 			return;
 		}
 		if(e.getSource() instanceof WavePanelZoom) {
 			selectedSection=getSelectedSection(e.getX());
 			if(selectedSection!=-1) {
-				view.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				wavePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}else {
 				selectedSection=-1;
-				view.setCursor(Cursor.getDefaultCursor());
+				wavePanel.setCursor(Cursor.getDefaultCursor());
 			}
 		}
 		int sampleNumber=convertScreenPositionToSampleNumber(e.getX());
-		model.setMousePositionSampleNumber(sampleNumber);
+		audioCutterModel.setMousePositionSampleNumber(sampleNumber);
 
 	}
 
-	int convertScreenPositionToSampleNumber(int pixel) {
+	public int convertScreenPositionToSampleNumber(int pixel) {
 		int viewStartInSamples=getViewStartInSamples();
 		int viewEndInSamples=getViewEndInSamples();
 		int delta=viewEndInSamples-viewStartInSamples;
-		double pixelFactor=(double)delta/(double)model.getAudiodataViewWidth();
+		double pixelFactor=(double)delta/(double)wavePanel.getWidth();
 		int result=viewStartInSamples+(int)(pixelFactor*pixel);
 		return result;
 	}
 
-	int convertSampleNumberToScreenPosition(WavePanel wavePanel, int samples) {
-		int viewStartInSamples=wavePanel.getViewStartInSamples();
-		int viewEndInSamples=wavePanel.getViewEndInSamples();
+	public int convertSampleNumberToScreenPosition(int samples) {
+		int viewStartInSamples=getViewStartInSamples();
+		int viewEndInSamples=getViewEndInSamples();
 		int samplesInView=viewEndInSamples-viewStartInSamples;
-		double pixelFactor=(double)samplesInView/(double)wavePanel.model.getAudiodataViewWidth();
+		double pixelFactor=(double)samplesInView/(double)wavePanel.getWidth();
 		int result=(int)((samples-viewStartInSamples)/pixelFactor);
 		return result;
 	}
 
 	private void zoomSelection() {
-		int selectionStartInSamplesCopy=model.getSelectionStartInSamples();
-		int selectionEndInSamplesCopy=model.getSelectionEndInSamples();
+		int selectionStartInSamplesCopy=audioCutterModel.getSelectionStartInSamples();
+		int selectionEndInSamplesCopy=audioCutterModel.getSelectionEndInSamples();
 
 		int delta=selectionEndInSamplesCopy-selectionStartInSamplesCopy;
 
-		int audiodataLengthInSamples=model.getAudiodataLengthInSamples();
-		int rangeMax=audiodataLengthInSamples-(model.getAudiodataViewWidth()>>2);//maximum zoom means 1 sample takes 4 pixel on screen
+		int audiodataLengthInSamples=audioCutterModel.getAudiodataLengthInSamples();
+		int rangeMax=audiodataLengthInSamples-(wavePanel.getWidth()>>2);//maximum zoom means 1 sample takes 4 pixel on screen
 		for(int i=AudioCutterModel.ZOOM_MIN;i<=AudioCutterModel.ZOOM_MAX;i++) {
 			int zoom=AudioCutterModel.ZOOM_MAX-i;
 			zoom=zoom*zoom;
 			double zoomFactor=(double)zoom/AudioCutterModel.ZOOM_MAX;
 			int viewDeltaNew=(int)(zoomFactor*rangeMax/(double)AudioCutterModel.ZOOM_MAX);
 			if(delta>=viewDeltaNew) {
-				model.setZoom(i);
+				audioCutterModel.setZoom(i);
 				break;
 			}
 		}
-		model.setViewRangeInSamples(selectionStartInSamplesCopy, selectionEndInSamplesCopy);
+		audioCutterModel.setViewRangeInSamples(selectionStartInSamplesCopy, selectionEndInSamplesCopy);
 	}
 
 }
