@@ -64,7 +64,7 @@ public class ProjectController {
 						);
 				return OpenProjectResult.FAILURE;
 			}
-			AudioPlayer.getInstance().action_stop();
+			AudioPlayer.getInstance().stopAudioPlayback();
 			projectService.closeProject();
 			try {
 				projectService.openProject(choosenProjectFile);
@@ -82,7 +82,7 @@ public class ProjectController {
 		if(projectService.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()){
 			return OpenProjectResult.ABORTED;
 		}
-		AudioPlayer.getInstance().action_stop();
+		AudioPlayer.getInstance().stopAudioPlayback();
 		projectService.closeProject();
 		try {
 			projectService.openProject(file);

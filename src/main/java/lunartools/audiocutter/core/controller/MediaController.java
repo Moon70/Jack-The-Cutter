@@ -85,7 +85,7 @@ public class MediaController {
 
 	public void openMediaFile(File file) {
 		if(isOpenMediaFileValid(file)) {
-			AudioPlayer.getInstance().action_stop();
+			AudioPlayer.getInstance().stopAudioPlayback();
 			OpenMediaWorker openMediaWorker=new OpenMediaWorker(audioCutterModel, mediaService, file);
 			ProgressDialog.executeWithProgressDialog(hasParentFrame.getJFrame(),AudioCutterModel.PROGRAM_NAME,"Processing media file",openMediaWorker);
 		}

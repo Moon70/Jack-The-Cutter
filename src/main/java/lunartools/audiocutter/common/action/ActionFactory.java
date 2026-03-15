@@ -177,7 +177,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_playFromCursorPosition();
+				AudioPlayer.getInstance().playFromCursorPosition();
 			}
 		};
 	}
@@ -191,7 +191,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_playSelection();
+				AudioPlayer.getInstance().playSelection();
 			}
 		};
 	}
@@ -205,7 +205,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_pause();
+				AudioPlayer.getInstance().pauseAudioPlayback();
 			}
 		};
 	}
@@ -219,7 +219,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_stop();
+				AudioPlayer.getInstance().stopAudioPlayback();
 			}
 		};
 	}
@@ -233,7 +233,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_PrevSection();
+				AudioPlayer.getInstance().playPrevSection();
 			}
 		};
 	}
@@ -247,7 +247,7 @@ public class ActionFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AudioPlayer.getInstance().action_NextSection();
+				AudioPlayer.getInstance().playNextSection();
 			}
 		};
 	}

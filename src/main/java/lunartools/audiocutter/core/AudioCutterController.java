@@ -95,8 +95,6 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 	
 	public void openGUI() {
 		view.getJFrame().setVisible(true);
-		audioPlayer=AudioPlayer.getInstance(model,this);
-		audioPlayer.start();
 		if(model.getStatusMessage()==null) {
 			model.setStatusMessage(new StatusMessage(StatusMessage.Type.INFO,"ready"));
 		}
@@ -210,7 +208,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		if(model.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()){
 			return;
 		}
-		AudioPlayer.getInstance().action_stop();
+		AudioPlayer.getInstance().stopAudioPlayback();
 		model.closeProject();
 		model.setMediaFile(mediafile);
 	}

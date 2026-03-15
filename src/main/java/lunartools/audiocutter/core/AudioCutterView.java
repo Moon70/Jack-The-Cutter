@@ -159,7 +159,7 @@ public class AudioCutterView implements HasParentFrame{
 					if(audioCutterModel.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()){
 						return;
 					}
-					AudioPlayer.getInstance().action_stop();
+					AudioPlayer.getInstance().stopAudioPlayback();
 					audioCutterModel.closeProject();
 					File file=droppedFiles.get(0);
 					fileDropHandler.processDroppedFile(file);

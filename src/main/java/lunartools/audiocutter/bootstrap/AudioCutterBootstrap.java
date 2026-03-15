@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.audiocutter.common.action.ActionFactory;
+import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.core.AudioCutterController;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.AudioCutterView;
@@ -57,8 +58,10 @@ public class AudioCutterBootstrap {
 
 		//TODO: This chaining is needed while refactoring, fix that
 		audioCutterView.getSectionPanel().getSectionTableMouseListener().getSectionTablePopupMenu().setActionFactory(actionFactory);;
-		audioCutterController.openGUI();
+
+		AudioPlayer.initialize(audioCutterModel, audioCutterController);
 		
+		audioCutterController.openGUI();
 		logger.info(AudioCutterModel.getProgramNameAndVersion());
 	}
 
