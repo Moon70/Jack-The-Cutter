@@ -5,12 +5,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +24,14 @@ public class AudioCutterModel implements ChangeListenerSupport{
 	private static final String PROGRAM_NAME_AND_VERSION=PROGRAM_NAME+" "+PROGRAM_VERSION;
 	private final List<ChangeListener> listeners = new ArrayList<>();
 
-	
+
 	public static final int DEFAULT_FRAME_WIDTH=1290;
 	public static final int DEFAULT_FRAME_HEIGHT=(int)(DEFAULT_FRAME_WIDTH/SwingTools.SECTIOAUREA);
 	private Rectangle frameBounds=new Rectangle(0,0,DEFAULT_FRAME_WIDTH,DEFAULT_FRAME_HEIGHT);
 	private int verticalDividerPosition=24;
 
 	public static final int ZOOM_MIN=0;
-	public static final int ZOOM_MAX=100;
+	public static final int ZOOM_MAX=300;
 
 	private String ffmpegExecutablePath;
 	private String ffmpegVersion;
@@ -69,8 +65,6 @@ public class AudioCutterModel implements ChangeListenerSupport{
 
 	private int zoom;
 
-	int audioPlayerBufferSize=4096*2;
-
 	private boolean amplitudeZoom;
 
 	private int selectedSection=-1;
@@ -89,7 +83,7 @@ public class AudioCutterModel implements ChangeListenerSupport{
 	public List<ChangeListener> getListeners() {
 		return listeners;
 	}
-	
+
 	public int getHorizontalDividerPosition() {
 		return frameBounds.width-sectionTableWidth;
 	}
@@ -238,25 +232,63 @@ public class AudioCutterModel implements ChangeListenerSupport{
 		return viewStartInSamples;
 	}
 
-	public void setViewStartInSamples(int viewStartInSamples) {
-		this.viewStartInSamples = viewStartInSamples;
-		notifyListeners(SimpleEvents.MODEL_ZOOMRANGECHANGED);
-	}
-
 	public int getViewEndInSamples() {
 		return viewEndInSamples;
 	}
 
-	public void setViewEndInSamples(int viewEndInSamples) {
-		this.viewEndInSamples = viewEndInSamples;
-		notifyListeners(SimpleEvents.MODEL_ZOOMRANGECHANGED);
-	}
-
 	public void setViewRangeInSamples(int viewStartInSamples,int viewEndInSamples) {
-		calculateZoom(viewStartInSamples,viewEndInSamples);
 		this.viewStartInSamples = viewStartInSamples;
 		this.viewEndInSamples = viewEndInSamples;
-		notifyListeners(SimpleEvents.MODEL_SELECTIONCHANGED);
+		notifyListeners(SimpleEvents.MODEL_ZOOMRANGECHANGED);
+		calculateZoomFromRange();
+	}
+
+	private void calculateZoomFromRange() {
+		if(audiodata==null) {
+			return;
+		}
+		int visibleSamples=viewEndInSamples-viewStartInSamples;
+		double samplesZoomedOut = getAudiodataLengthInSamples();
+		double samplesZoomedIn  = audiodataViewWidth/2;
+
+		double zoomDouble=100.0*Math.log((double)visibleSamples/samplesZoomedOut) / Math.log((double)samplesZoomedIn/samplesZoomedOut);
+		this.zoom=Math.max(0,Math.min(100,(int)Math.round(zoomDouble)));
+		notifyListeners(SimpleEvents.MODEL_ZOOMFACTORCHANGED);
+	}
+
+	public int getZoom() {
+		return zoom;
+	}
+
+	public void setZoom(int zoom) {
+		this.zoom = zoom;
+		notifyListeners(SimpleEvents.MODEL_ZOOMFACTORCHANGED);
+		calculateRangeFromZoom();
+	}
+
+	private void calculateRangeFromZoom() {
+		if(audiodata==null) {
+			return;
+		}
+		int audioDataLength=getAudiodataLengthInSamples();
+		int center=viewStartInSamples+(viewEndInSamples-viewStartInSamples)/2;
+		if(zoom==ZOOM_MIN) {
+			this.viewStartInSamples=0;
+			this.viewEndInSamples=audioDataLength;
+		}else if(zoom==ZOOM_MAX){
+			this.viewStartInSamples=center-audiodataViewWidth/4;
+			this.viewEndInSamples=center+audiodataViewWidth/4;
+		}else {
+			double samplesZoomedOut=audioDataLength;
+			double samplesZoomedIn=audiodataViewWidth/2;
+			double exponent=(double)zoom/ZOOM_MAX;
+			int visibleSamples=(int)(samplesZoomedOut*Math.pow(samplesZoomedIn/samplesZoomedOut,exponent));
+			int startSample=center-visibleSamples/2;
+			int endSample=center+visibleSamples/2;
+			this.viewStartInSamples=Math.max(startSample,0);
+			this.viewEndInSamples=Math.min(endSample,audioDataLength);
+		}
+		notifyListeners(SimpleEvents.MODEL_ZOOMRANGECHANGED);
 	}
 
 	public int getSelectionStartInSamples() {
@@ -294,10 +326,10 @@ public class AudioCutterModel implements ChangeListenerSupport{
 	public void setAudioSections(ArrayList<AudioSectionModel> audioSections) {
 		if(audioSections==null) {
 			this.audioSections=new ArrayList<>();
-			
+
 			//Thread.dumpStack();
-			
-			
+
+
 		}else {
 			this.audioSections = audioSections;
 			boolean oldDirt=projectIsDirty;
@@ -385,47 +417,13 @@ public class AudioCutterModel implements ChangeListenerSupport{
 		}
 	}
 
-	public int getZoom() {
-		return zoom;
-	}
-
-	public void setZoom(int zoom) {
-		this.zoom = zoom;
-		notifyListeners(SimpleEvents.MODEL_ZOOMCHANGED);
-	}
-
-	public int getAudioPlayerBufferSize() {
-		return audioPlayerBufferSize;
-	}
-
-	public void setAudioPlayerBufferSize(int audioPlayerBufferSize) {
-		this.audioPlayerBufferSize = audioPlayerBufferSize;
-		notifyListeners(SimpleEvents.MODEL_AUDIOPLAYERBUFFERSIZECHANGED);
-	}
-
 	public boolean isAmplitudeZoom() {
 		return amplitudeZoom;
 	}
 
 	public void setAmplitudeZoom(boolean amplitudeZoom) {
 		this.amplitudeZoom = amplitudeZoom;
-		notifyListeners(SimpleEvents.MODEL_ZOOMCHANGED);
-	}
-
-	private void calculateZoom(int viewStartInSamples,int viewEndInSamples) {
-		int delta=viewEndInSamples-viewStartInSamples;
-
-		int rangeMax=getAudiodataLengthInSamples()-(getAudiodataViewWidth()>>2);//maximum zoom means 1 sample takes 4 pixel on screen
-		for(int i=AudioCutterModel.ZOOM_MIN;i<=AudioCutterModel.ZOOM_MAX;i++) {
-			int zoom=AudioCutterModel.ZOOM_MAX-i;
-			zoom=zoom*zoom;
-			double zoomFactor=(double)zoom/AudioCutterModel.ZOOM_MAX;
-			int viewDeltaNew=(int)(zoomFactor*rangeMax/(double)AudioCutterModel.ZOOM_MAX);
-			if(delta>=viewDeltaNew) {
-				this.zoom=i;
-				break;
-			}
-		}
+		notifyListeners(SimpleEvents.MODEL_AMPLITUDEZOOMCHANGED);
 	}
 
 	public void closeProject() {

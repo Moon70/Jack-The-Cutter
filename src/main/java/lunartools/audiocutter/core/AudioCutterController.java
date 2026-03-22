@@ -1,45 +1,30 @@
 package lunartools.audiocutter.core;
 
 import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.SwingTools;
-import lunartools.audiocutter.common.action.ActionFactory;
-import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.service.AudioPlayer;
 import lunartools.audiocutter.common.ui.Dialogs;
-import lunartools.audiocutter.common.util.ProjectFileFilter;
 import lunartools.audiocutter.core.controller.MediaController;
 import lunartools.audiocutter.core.controller.ProjectController;
 import lunartools.audiocutter.core.model.StatusMessage;
-import lunartools.audiocutter.core.service.AutoCutWorker;
-import lunartools.audiocutter.core.service.CreateCueSheetWorker;
-import lunartools.audiocutter.core.service.CutMediaFileWorker;
 import lunartools.audiocutter.core.service.DetermineFFmpegVersionWorker;
-import lunartools.audiocutter.core.service.ProjectService;
 import lunartools.audiocutter.core.view.FileDropHandler;
-import lunartools.audiocutter.core.view.StatusPanel;
+import lunartools.audiocutter.core.view.ScrollbarsPanel;
 import lunartools.audiocutter.infrastructure.config.AudioCutterSettings;
-import lunartools.progressdialog.ProgressDialog;
 import lunartools.swing.HasParentFrame;
 
 public class AudioCutterController implements HasParentFrame,FileDropHandler{
@@ -51,6 +36,8 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 	private AudioPlayer audioPlayer;
 	private volatile boolean shutdownInProgress;
 	private volatile int busyCount;
+	private boolean disableScrollbarMoveEvent;
+	private boolean disableScrollbarZoomEvent;
 
 	public AudioCutterController(
 			AudioCutterModel model,
@@ -62,7 +49,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		this.view=Objects.requireNonNull(view);
 		this.projectController=Objects.requireNonNull(projectController);
 		this.mediaController=Objects.requireNonNull(mediaController);
-		
+
 		AudioCutterSettings settings=AudioCutterSettings.getInstance();
 		this.model.addChangeListener(this::updateModelChanges);
 		int sectionTableWidth=settings.getInt(AudioCutterSettings.VIEW_SECTIONTABLE_WIDTH);
@@ -75,12 +62,34 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		model.setFFmpegExecutablePath(settings.getString(AudioCutterSettings.FFMPEG_PATH,null));
 		model.setRecentMediaFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_MEDIA_PATHS));
 		model.setRecentProjectFilePaths(settings.getStringlist(AudioCutterSettings.RECENT_PROJECT_PATHS));
-		
+
 		view.getJFrame().addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent event){
 				exit();
 			}
 		});
+
+		ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
+		JScrollBar scrollbarMove=scrollbarsPanel.getScrollbarMove();
+		scrollbarMove.addAdjustmentListener(e -> {
+			if(disableScrollbarMoveEvent) {
+				return;
+			}
+			int value=scrollbarMove.getValue();
+			int viewStartInSamples=model.getViewStartInSamples();
+			int viewEndInSamples=model.getViewEndInSamples();
+			int delta=viewEndInSamples-viewStartInSamples;
+			model.setViewRangeInSamples(value, value+delta);
+		});
+
+		JScrollBar scrollbarZoom=scrollbarsPanel.getScrollbarZoom();
+		scrollbarZoom.addAdjustmentListener(e -> {
+			if(disableScrollbarZoomEvent) {
+				return;
+			}
+			model.setZoom(e.getValue());
+		});
+
 	}
 
 	@Override
@@ -92,7 +101,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		}
 	}
 
-	
+
 	public void openGUI() {
 		view.getJFrame().setVisible(true);
 		if(model.getStatusMessage()==null) {
@@ -104,63 +113,43 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		if(object==SimpleEvents.EXIT) {
 			exit();
 		}else if(object==SimpleEvents.MODEL_MEDIAFILECHANGED) {
-//			action_ReadMediaFile();
+			//			action_ReadMediaFile();
+		}else if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
+			//			updateScrollbarMoveValues();
+			view.getPanelLeft().getScrollbarsPanel().updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_FFMPEGEXECUTABLESELECTED) {
 			DetermineFFmpegVersionWorker worker=new DetermineFFmpegVersionWorker(model,this);
 			worker.execute();
-		}else if(object==SimpleEvents.MODEL_ZOOMCHANGED){
-			calculateZoom();
-			view.refreshGui();
+		}else if(object==SimpleEvents.MODEL_ZOOMRANGECHANGED) {
+			ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
+			scrollbarsPanel.updateEnabledState();
+
+			JScrollBar scrollbarMove=scrollbarsPanel.getScrollbarMove();
+			int zoomViewStartSample=model.getViewStartInSamples();
+			int zoomViewEndSample=model.getViewEndInSamples();
+			int value=zoomViewStartSample;
+			int extent=zoomViewEndSample-zoomViewStartSample;
+			int min=0;
+			int max=model.getAudiodataLengthInSamples();
+
+			try {
+				disableScrollbarMoveEvent=true;
+				scrollbarMove.setValues(value, extent, min, max);
+			} finally {
+				disableScrollbarMoveEvent=false;
+			}
+		}else if(object==SimpleEvents.MODEL_ZOOMFACTORCHANGED){
+			ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
+			JScrollBar scrollbarZoom=scrollbarsPanel.getScrollbarZoom();
+			try {
+				disableScrollbarZoomEvent=true;
+				scrollbarZoom.setValue(model.getZoom());
+			} finally {
+				disableScrollbarZoomEvent=false;
+			}
 		}else if(object==SimpleEvents.MODEL_PROJECTDIRTCHANGED){
 			view.refreshGui();
 		}
-	}
-
-	private void calculateZoom() {
-		int zoom=model.getZoom();
-		int audiodataLengthInSamples=model.getAudiodataLengthInSamples();
-		if(zoom==0) {
-			model.setViewRangeInSamples(0,audiodataLengthInSamples);
-			return;
-		}
-		int viewWidth=view.getPanelLeft().getWidth();
-		int viewStartInSamples=model.getViewStartInSamples();
-		int viewEndInSamples=model.getViewEndInSamples();
-		int viewDeltaInSamples=viewEndInSamples-viewStartInSamples;
-		int rangeMax=audiodataLengthInSamples-(viewWidth>>2);//maximum zoom means 1 sample takes 4 pixel on screen
-
-		zoom=AudioCutterModel.ZOOM_MAX-zoom;
-		zoom=zoom*zoom;
-		double zoomFactor=(double)zoom/AudioCutterModel.ZOOM_MAX;
-
-		int cursor=model.getCursorPositionSampleNumber();
-		int viewDeltaNew=(int)(zoomFactor*rangeMax/(double)AudioCutterModel.ZOOM_MAX);
-		viewDeltaNew+=viewWidth>>2;//zooming to 1 sample makes no sense, add viewWidth/4 so that on maximum zoom 1 sample takes 4 pixel on screen
-
-		int deltaDelta=viewDeltaInSamples-viewDeltaNew;
-		viewStartInSamples+=deltaDelta>>1;
-		viewEndInSamples-=deltaDelta>>1;
-		if(viewStartInSamples<0) {
-			viewStartInSamples=0;
-		}
-		if(viewEndInSamples>=audiodataLengthInSamples) {
-			viewEndInSamples=audiodataLengthInSamples-1;
-		}
-
-		if(cursor!=0) {
-			viewDeltaNew=viewEndInSamples-viewStartInSamples;
-			viewStartInSamples=cursor-(viewDeltaNew>>1);
-			viewEndInSamples=cursor+(viewDeltaNew>>1);
-
-		}
-		if(viewStartInSamples<0) {
-			viewEndInSamples-=viewStartInSamples;
-			viewStartInSamples=0;
-		}
-		if(viewEndInSamples>=audiodataLengthInSamples) {
-			viewEndInSamples=audiodataLengthInSamples-1;
-		}
-		model.setViewRangeInSamples(viewStartInSamples,viewEndInSamples);
 	}
 
 	public void exit() {

@@ -58,7 +58,7 @@ public class ButtonPanel extends JPanel{
 		setMaximumSize(new Dimension(Integer.MAX_VALUE, pref.height));
 		setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		refresh();
+		updateEnabledState();
 		audioCutterModel.addChangeListener(this::updateModelChanges);
 
 		//setBackground(new Color(0xccffcc));
@@ -84,24 +84,22 @@ public class ButtonPanel extends JPanel{
 		jbuttonFitProject.setAction(actionFactory.createFitProjectAction());
 		toggleButtonAmplitudeZoom.setAction(actionFactory.createAmplitudeZoomAction());
 		jbuttonCut.setAction(actionFactory.createCutAction());
-		refresh();
+		updateEnabledState();
 	}
 
 	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
-			refresh();
-		}else if(object==SimpleEvents.MODEL_ZOOMCHANGED) {
-			refresh();
-		}else if(object==SimpleEvents.MODEL_ZOOMRANGECHANGED) {
-			refresh();
+			updateEnabledState();
+		}else if(object==SimpleEvents.MODEL_ZOOMFACTORCHANGED) {
+			updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_SELECTIONCHANGED) {
-			refresh();
+			updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_AUDIOSECTIONSCHANGED) {
-			refresh();
+			updateEnabledState();
 		}
 	}
 
-	private void refresh() {
+	private void updateEnabledState() {
 		boolean hasAudiodata=model.hasAudiodata();
 		boolean hasSelections=model.hasAudioSections();
 		boolean hasSelection=model.hasSelection();

@@ -11,7 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
-import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class ScrollbarsPanel extends JPanel{
@@ -37,13 +36,6 @@ public class ScrollbarsPanel extends JPanel{
 
 		scrollbarMove=new JScrollBar(JScrollBar.HORIZONTAL);
 		scrollbarMove.setMinimum(0);
-		scrollbarMove.addAdjustmentListener(e -> {
-			int value=scrollbarMove.getValue();
-			int viewStartInSamples=audioCutterModel.getViewStartInSamples();
-			int viewEndInSamples=audioCutterModel.getViewEndInSamples();
-			int delta=viewEndInSamples-viewStartInSamples;
-			audioCutterModel.setViewRangeInSamples(value, value+delta);
-		});
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -58,39 +50,23 @@ public class ScrollbarsPanel extends JPanel{
 		add(labelZoom, gridBagConstraints);
 
 		scrollbarZoom=new JScrollBar(JScrollBar.HORIZONTAL);
-		scrollbarZoom.setMinimum(AudioCutterModel.ZOOM_MIN);
-		scrollbarZoom.setMaximum(AudioCutterModel.ZOOM_MAX);
-		scrollbarZoom.setVisibleAmount(1);
-		scrollbarZoom.addAdjustmentListener(e -> {
-			audioCutterModel.setZoom(e.getValue());
-		});
+		int value=0;
+		int extent=0;
+		scrollbarZoom.setValues(value, extent, AudioCutterModel.ZOOM_MIN, AudioCutterModel.ZOOM_MAX);
+
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.weightx = 1;
 		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		add(scrollbarZoom, gridBagConstraints);
 
-		//setAlignmentX(Component.LEFT_ALIGNMENT);
-		//setPreferredSize(new Dimension(1000, 50));
 		setMaximumSize(SCROLLBARSPANEL_DIMENSION);
 
-		refresh();
-		audioCutterModel.addChangeListener(this::updateModelChanges);
+		updateEnabledState();
 
 		//setBackground(new Color(0xccccff));
 	}
 
-	public void updateModelChanges(Object object) {
-		if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
-			refresh();
-		}else if(object==SimpleEvents.MODEL_ZOOMRANGECHANGED) {
-			refresh();
-			scrollbarZoom.setValue(audioCutterModel.getZoom());
-		}else if(object==SimpleEvents.MODEL_ZOOMCHANGED) {
-			scrollbarZoom.setValue(audioCutterModel.getZoom());
-		}
-	}
-
-	public void refresh() {
+	public void updateEnabledState() {
 		if(!audioCutterModel.hasAudiodata()) {
 			scrollbarMove.setEnabled(false);
 			scrollbarZoom.setEnabled(false);
@@ -98,20 +74,14 @@ public class ScrollbarsPanel extends JPanel{
 		}
 		scrollbarMove.setEnabled(true);
 		scrollbarZoom.setEnabled(true);
+	}
 
-		int viewStartInSamples=audioCutterModel.getViewStartInSamples();
-		int viewEndInSamples=audioCutterModel.getViewEndInSamples();
-		int deltaViewInSamples=viewEndInSamples-viewStartInSamples;
+	public JScrollBar getScrollbarMove() {
+		return scrollbarMove;
+	}
 
-		scrollbarMove.setBlockIncrement(deltaViewInSamples>>1);
-		scrollbarMove.setUnitIncrement(deltaViewInSamples>>3);
-
-		scrollbarMove.setValues(
-				viewStartInSamples,   // value
-			    deltaViewInSamples,  // extent
-			    0,   // minimum
-			    audioCutterModel.getAudiodataLengthInSamples()  // maximum
-			);
+	public JScrollBar getScrollbarZoom() {
+		return scrollbarZoom;
 	}
 
 }

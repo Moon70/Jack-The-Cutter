@@ -177,12 +177,12 @@ public class AudioCutterView implements HasParentFrame{
 	public void updateModelChanges(Object object) {
 		if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
 			refreshGui();
-		}else if(object==SimpleEvents.MODEL_ZOOMCHANGED) {
-			refreshGui();
+		}else if(object==SimpleEvents.MODEL_ZOOMFACTORCHANGED) {
+			jFrame.repaint();
 		}else if(object==SimpleEvents.MODEL_SELECTIONCHANGED) {
 			refreshGui();
 		}else if(object==SimpleEvents.MODEL_ZOOMRANGECHANGED) {
-			refreshGui();
+			jFrame.repaint();
 		}else if(object==SimpleEvents.MODEL_CURSORCHANGED) {
 			refreshGui();
 		}else if(object==SimpleEvents.MODEL_PLAYCURSORCHANGED) {

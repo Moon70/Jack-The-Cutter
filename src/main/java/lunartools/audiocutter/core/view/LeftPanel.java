@@ -35,6 +35,10 @@ public class LeftPanel extends JPanel{
 		return buttonPanel;
 	}
 
+	public ScrollbarsPanel getScrollbarsPanel() {
+		return scrollbarsPanel;
+	}
+
 	public StatusPanel getPanelStatus() {
 		return panelStatus;
 	}
