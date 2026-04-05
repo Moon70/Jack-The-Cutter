@@ -1,5 +1,11 @@
-Jack-The-Cutter
-==
+#Jack-The-Cutter
+
+![GitHub release](https://img.shields.io/github/v/release/Moon70/Jack-The-Cutter)
+![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
+![FlatLaf](https://img.shields.io/badge/FlatLaf-v3.6.2-blue)
+![Java](https://img.shields.io/badge/Java-11-blue)
+![Maven](https://img.shields.io/badge/Build-Maven-blue)
+![SourceForge Downloads](https://img.shields.io/sourceforge/dt/jack-the-cutter?label=SourceForge%20Downloads)
 
 Jack-The-Cutter is a FFmpeg frontend to lossless cut audio files.
 
@@ -34,10 +40,7 @@ For more infos please visit [Jack-The-Cutter wiki](https://github.com/Moon70/Jac
 
 
 
-![](Jack-The-Cutter_screenshot.jpg)
+![](readme/Jack-The-Cutter_screenshot.jpg)
 
 
 [![Download Jack-The-Cutter](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/jack-the-cutter/files/latest/download)
-
-
-[![Download Jack-The-Cutter](https://img.shields.io/sourceforge/dt/jack-the-cutter.svg)](https://sourceforge.net/projects/jack-the-cutter/files/latest/download)

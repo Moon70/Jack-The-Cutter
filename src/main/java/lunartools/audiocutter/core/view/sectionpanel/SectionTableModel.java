@@ -5,16 +5,12 @@ import java.util.Objects;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lunartools.audiocutter.common.model.AudioSectionModel;
 import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.common.ui.util.SampleUtils;
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class SectionTableModel extends AbstractTableModel{
-	private static Logger logger = LoggerFactory.getLogger(SectionTableModel.class);
 	private final AudioCutterModel audioCutterModel;
 
 	private static final String[] COLUMNNAMES = {
@@ -63,7 +59,7 @@ public class SectionTableModel extends AbstractTableModel{
 		throw new RuntimeException("Illegal column: "+column);
 	}
 
-	public Class getColumnClass(int c) {
+	public Class<?> getColumnClass(int c) {
 		return String.class;
 	}
 

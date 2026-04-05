@@ -40,6 +40,5 @@ public class WavePanelZoom extends AWavePanel{
 
 			g.setColor(ColorManager.wave());
 		}
-
 	}
 }

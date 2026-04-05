@@ -34,27 +34,27 @@ public class WavTools {
 		header[OFFSET_FORMAT_MARKER+2]='t';
 		header[OFFSET_FORMAT_MARKER+3]=' ';
 
-		ByteTools.lWriteLongwordToBytearray(header, OFFSET_FORMAT_LENGTH, 16);
+		ByteTools.putLongWordAtPositionLittleEndian(16, header, OFFSET_FORMAT_LENGTH);
 
-		ByteTools.lWriteWordToBytearray(header, OFFSET_FORMAT_TYPE, 1);
+		ByteTools.putWordAtPositionLittleEndian(1, header, OFFSET_FORMAT_TYPE);
 
-		ByteTools.lWriteWordToBytearray(header, OFFSET_NUMBER_OF_CHANNELS, 2);
+		ByteTools.putWordAtPositionLittleEndian(2, header, OFFSET_NUMBER_OF_CHANNELS);
 
-		ByteTools.lWriteLongwordToBytearray(header, OFFSET_SAMPLE_RATE, 44100);
+		ByteTools.putLongWordAtPositionLittleEndian(44100, header, OFFSET_SAMPLE_RATE);
 
-		ByteTools.lWriteLongwordToBytearray(header, OFFSET_BYTE_RATE, 176400);
+		ByteTools.putLongWordAtPositionLittleEndian(176400, header, OFFSET_BYTE_RATE);
 
-		ByteTools.lWriteWordToBytearray(header, OFFSET_BLOCK_ALIGN, 4);
+		ByteTools.putWordAtPositionLittleEndian(4, header, OFFSET_BLOCK_ALIGN);
 
-		ByteTools.lWriteWordToBytearray(header, OFFSET_BITS_PER_SAMPLE, 16);
+		ByteTools.putWordAtPositionLittleEndian(16, header, OFFSET_BITS_PER_SAMPLE);
 
 		header[OFFSET_DATA_MARKER+0]='d';
 		header[OFFSET_DATA_MARKER+1]='a';
 		header[OFFSET_DATA_MARKER+2]='t';
 		header[OFFSET_DATA_MARKER+3]='a';
 
-		ByteTools.lWriteLongwordToBytearray(header, OFFSET_FILESIZE_MINUS_EIGHT, wavDataLength+44-8);
-		ByteTools.lWriteLongwordToBytearray(header, OFFSET_DATA_LENGTH, wavDataLength);
+		ByteTools.putLongWordAtPositionLittleEndian(wavDataLength+44-8,header, OFFSET_FILESIZE_MINUS_EIGHT);
+		ByteTools.putLongWordAtPositionLittleEndian(wavDataLength, header, OFFSET_DATA_LENGTH);
 		return header;
 	}
 

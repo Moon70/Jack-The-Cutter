@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lunartools.SwingTools;
+import lunartools.audiocutter.common.util.FFmpegFileFilter;
 import lunartools.audiocutter.core.AudioCutterModel;
 
 public class PreferencesController implements ActionListener{

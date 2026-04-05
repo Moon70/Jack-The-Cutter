@@ -8,9 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import lunartools.ChangeListenerSupport;
 import lunartools.SwingTools;
 import lunartools.audiocutter.common.model.AudioSectionModel;
@@ -18,7 +15,6 @@ import lunartools.audiocutter.common.model.SimpleEvents;
 import lunartools.audiocutter.core.model.StatusMessage;
 
 public class AudioCutterModel implements ChangeListenerSupport{
-	private static Logger logger = LoggerFactory.getLogger(AudioCutterModel.class);
 	public static final String PROGRAM_NAME = "Jack-The-Cutter";
 	private static final String PROGRAM_VERSION=SwingTools.determineProgramVersion();
 	private static final String PROGRAM_NAME_AND_VERSION=PROGRAM_NAME+" "+PROGRAM_VERSION;

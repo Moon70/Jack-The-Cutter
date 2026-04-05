@@ -1,10 +1,10 @@
 package lunartools.audiocutter.core.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.AdjustmentListener;
 import java.util.Objects;
 
 import javax.swing.JLabel;
@@ -62,26 +62,28 @@ public class ScrollbarsPanel extends JPanel{
 		setMaximumSize(SCROLLBARSPANEL_DIMENSION);
 
 		updateEnabledState();
-
-		//setBackground(new Color(0xccccff));
 	}
 
 	public void updateEnabledState() {
-		if(!audioCutterModel.hasAudiodata()) {
-			scrollbarMove.setEnabled(false);
-			scrollbarZoom.setEnabled(false);
-			return;
-		}
-		scrollbarMove.setEnabled(true);
-		scrollbarZoom.setEnabled(true);
+		boolean hasAudiodata=audioCutterModel.hasAudiodata();
+		scrollbarMove.setEnabled(hasAudiodata);
+		scrollbarZoom.setEnabled(hasAudiodata);
 	}
 
-	public JScrollBar getScrollbarMove() {
-		return scrollbarMove;
+	public void scrollbarMoveAddAdjustementistener(AdjustmentListener adjustmentListener) {
+		scrollbarMove.addAdjustmentListener(adjustmentListener);
 	}
 
-	public JScrollBar getScrollbarZoom() {
-		return scrollbarZoom;
+	public void scrollbarZoomAddAdjustementistener(AdjustmentListener adjustmentListener) {
+		scrollbarZoom.addAdjustmentListener(adjustmentListener);
+	}
+
+	public void setScrollbarMoveValues(int newValue, int newExtent, int newMin, int newMax) {
+		scrollbarMove.setValues(newValue, newExtent, newMin, newMax);
+	}
+
+	public void setScrollbarZoomValue(int value) {
+		scrollbarZoom.setValue(value);
 	}
 
 }

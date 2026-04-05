@@ -1,4 +1,4 @@
-package lunartools.audiocutter.gui.preferencespanel;
+package lunartools.audiocutter.common.util;
 
 import java.io.File;
 

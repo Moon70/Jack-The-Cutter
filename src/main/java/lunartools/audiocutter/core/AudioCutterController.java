@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javax.swing.JFrame;
-import javax.swing.JScrollBar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,20 +69,18 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 		});
 
 		ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
-		JScrollBar scrollbarMove=scrollbarsPanel.getScrollbarMove();
-		scrollbarMove.addAdjustmentListener(e -> {
+		scrollbarsPanel.scrollbarMoveAddAdjustementistener(e -> {
 			if(disableScrollbarMoveEvent) {
 				return;
 			}
-			int value=scrollbarMove.getValue();
+			int value=e.getValue();
 			int viewStartInSamples=model.getViewStartInSamples();
 			int viewEndInSamples=model.getViewEndInSamples();
 			int delta=viewEndInSamples-viewStartInSamples;
 			model.setViewRangeInSamples(value, value+delta);
 		});
 
-		JScrollBar scrollbarZoom=scrollbarsPanel.getScrollbarZoom();
-		scrollbarZoom.addAdjustmentListener(e -> {
+		scrollbarsPanel.scrollbarZoomAddAdjustementistener(e -> {
 			if(disableScrollbarZoomEvent) {
 				return;
 			}
@@ -124,7 +121,7 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 			ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
 			scrollbarsPanel.updateEnabledState();
 
-			JScrollBar scrollbarMove=scrollbarsPanel.getScrollbarMove();
+//			JScrollBar scrollbarMove=scrollbarsPanel.getScrollbarMove();
 			int zoomViewStartSample=model.getViewStartInSamples();
 			int zoomViewEndSample=model.getViewEndInSamples();
 			int value=zoomViewStartSample;
@@ -134,16 +131,15 @@ public class AudioCutterController implements HasParentFrame,FileDropHandler{
 
 			try {
 				disableScrollbarMoveEvent=true;
-				scrollbarMove.setValues(value, extent, min, max);
+				scrollbarsPanel.setScrollbarMoveValues(value, extent, min, max);
 			} finally {
 				disableScrollbarMoveEvent=false;
 			}
 		}else if(object==SimpleEvents.MODEL_ZOOMFACTORCHANGED){
 			ScrollbarsPanel scrollbarsPanel=view.getPanelLeft().getScrollbarsPanel();
-			JScrollBar scrollbarZoom=scrollbarsPanel.getScrollbarZoom();
 			try {
 				disableScrollbarZoomEvent=true;
-				scrollbarZoom.setValue(model.getZoom());
+				scrollbarsPanel.setScrollbarZoomValue(model.getZoom());
 			} finally {
 				disableScrollbarZoomEvent=false;
 			}

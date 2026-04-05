@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import lunartools.ImageTools;
 import lunartools.SwingTools;
 import lunartools.audiocutter.common.ui.IconProvider;
 import lunartools.audiocutter.common.ui.Icons;

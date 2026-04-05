@@ -1,5 +1,8 @@
 package lunartools.audiocutter.core.view;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -160,9 +163,24 @@ public class MenuView {
 		return menuFileItemCutMediaFile;
 	}
 
-	//TODO: temporary while refactoring
-	public ActionFactory getActionFactory() {
-		return actionFactory;
+	public void setRecentProjectFiles(ArrayList<String> recentProjectFilePaths) {
+		menuRecentProjectFiles.removeAll();
+		for(int i=0;i<recentProjectFilePaths.size();i++) {
+			String path=recentProjectFilePaths.get(i);
+			File file=new File(path);
+			JMenuItem menuItem=new JMenuItem(actionFactory.createOpenRecentProjectFileAction(file));
+			menuRecentProjectFiles.add(menuItem);
+		}
+	}
+
+	public void setRecentMediaFiles(ArrayList<String> recentMediaFilePaths) {
+		menuRecentMediaFiles.removeAll();
+		for(int i=0;i<recentMediaFilePaths.size();i++) {
+			String path=recentMediaFilePaths.get(i);
+			File file=new File(path);
+			JMenuItem menuItem=new JMenuItem(actionFactory.createOpenRecentMediaFileAction(file));
+			menuRecentMediaFiles.add(menuItem);
+		}
 	}
 
 }

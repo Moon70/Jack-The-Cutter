@@ -35,9 +35,7 @@ public class StatusPanel extends JPanel{
 	public StatusPanel(AudioCutterModel audioCutterModel) {
 		this.audioCutterModel=Objects.requireNonNull(audioCutterModel);
 		setLayout(new GridBagLayout());
-		//setPreferredSize(new Dimension(0, 50));
 		setMaximumSize(STATUSPANEL_DIMENSION);
-		//setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		Font fontBold=getFont().deriveFont(Font.BOLD);
 

@@ -1,11 +1,5 @@
 package lunartools.audiocutter.core.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +16,9 @@ public class MenuPresenter {
 	public MenuPresenter(AudioCutterModel model,MenuView menuView) {
 		this.model=model;
 		this.menuView=menuView;
-		updateMenuItemState();
+		menuView.setRecentMediaFiles(model.getRecentMediaFilePaths());
+		menuView.setRecentProjectFiles(model.getRecentProjectFilePaths());
+		updateEnabledState();
 		model.addChangeListener(this::updateModelChanges);
 	}
 
@@ -31,26 +27,26 @@ public class MenuPresenter {
 			logger.trace("updateModelChanges: "+object);
 		}
 		if(object==SimpleEvents.MODEL_AUDIODATACHANGED) {
-			updateMenuItemState();
+			updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_PROJECTDIRTCHANGED) {
-			updateMenuItemState();
+			updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_AUDIOSECTIONSCHANGED) {
-			updateMenuItemState();
+			updateEnabledState();
 		}else if(object instanceof StatusMessage) {
 			StatusMessage statusMessage=(StatusMessage)object;
 			if(statusMessage.getType()==StatusMessage.Type.FFMPEGVERSION) {
-				updateMenuItemState();
+				updateEnabledState();
 			}
 		}else if(object==SimpleEvents.MODEL_RECENTMEDIAFILESLISTCHANGED) {
-			updateRecentMediaFilesMenu();
-			updateMenuItemState();
+			menuView.setRecentMediaFiles(model.getRecentMediaFilePaths());
+			updateEnabledState();
 		}else if(object==SimpleEvents.MODEL_RECENTPROJECTSFILELISTCHANGED) {
-			updateRecentProjectFilesMenu();
-			updateMenuItemState();
+			menuView.setRecentProjectFiles(model.getRecentProjectFilePaths());
+			updateEnabledState();
 		}
 	}
 
-	private void updateMenuItemState() {
+	private void updateEnabledState() {
 		boolean ffmpegAvailable=model.isFFmpegAvailable();
 		boolean audiodataAvailable=model.hasAudiodata();
 		boolean projectNameAvailable=model.getProjectFile()!=null;
@@ -66,34 +62,8 @@ public class MenuPresenter {
 		menuView.getMenuToolsItemAutoCut().setEnabled(audiodataAvailable);
 		menuView.getMenuToolsItemCreateCuesheet().setEnabled(audiodataAvailable);
 
-		updateRecentMediaFilesMenu();
-		updateRecentProjectFilesMenu();
 		menuView.getMenuRecentMediaFiles().setEnabled(menuView.getMenuRecentMediaFiles().getItemCount()>0);
 		menuView.getMenuRecentProjectFiles().setEnabled(menuView.getMenuRecentProjectFiles().getItemCount()>0);
-	}
-
-	private void updateRecentMediaFilesMenu() {
-		ArrayList<String> recentMediaFilePaths=model.getRecentMediaFilePaths();
-		JMenu menuRecentMediaFiles=menuView.getMenuRecentMediaFiles();
-		menuRecentMediaFiles.removeAll();
-		for(int i=0;i<recentMediaFilePaths.size();i++) {
-			String path=recentMediaFilePaths.get(i);
-			File file=new File(path);
-			JMenuItem menuItem=new JMenuItem(menuView.getActionFactory().createOpenRecentMediaFileAction(file));
-			menuRecentMediaFiles.add(menuItem);
-		}
-	}
-
-	private void updateRecentProjectFilesMenu() {
-		ArrayList<String> recentProjectFilePaths=model.getRecentProjectFilePaths();
-		JMenu menuRecentProjectFiles=menuView.getMenuRecentProjectFiles();
-		menuRecentProjectFiles.removeAll();
-		for(int i=0;i<recentProjectFilePaths.size();i++) {
-			String path=recentProjectFilePaths.get(i);
-			File file=new File(path);
-			JMenuItem menuItem=new JMenuItem(menuView.getActionFactory().createOpenRecentProjectFileAction(file));
-			menuRecentProjectFiles.add(menuItem);
-		}
 	}
 
 }

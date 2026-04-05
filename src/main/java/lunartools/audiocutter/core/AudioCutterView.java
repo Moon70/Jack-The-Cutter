@@ -73,7 +73,7 @@ public class AudioCutterView implements HasParentFrame{
 		panelLeft=new LeftPanel(audioCutterModel);
 		panelLeft.setLocation(10, 0);
 		jSplitPaneHorizontal.setLeftComponent(panelLeft);
-		
+
 		jSplitPaneVertical=new JSplitPane( JSplitPane.VERTICAL_SPLIT );
 		MediaInfoPanel mediaInfoPanel=new MediaInfoPanel(audioCutterModel);
 		jSplitPaneVertical.setTopComponent(mediaInfoPanel);
@@ -86,7 +86,7 @@ public class AudioCutterView implements HasParentFrame{
 		jSplitPaneVertical.setEnabled(false);
 		jSplitPaneHorizontal.setRightComponent(jSplitPaneVertical);
 
-		
+
 		jFrame.add(jSplitPaneHorizontal);
 		jSplitPaneHorizontal.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
 
@@ -147,11 +147,8 @@ public class AudioCutterView implements HasParentFrame{
 				try {
 					evt.acceptDrop(DnDConstants.ACTION_LINK);
 					Transferable transferable=evt.getTransferable();
-					Object object=transferable.getTransferData(DataFlavor.javaFileListFlavor);
-					if(!(object instanceof List<?>)) {
-						return;
-					}
-					List<File> droppedFiles = (List<File>)object;
+					@SuppressWarnings("unchecked")
+					List<File> droppedFiles = (List<File>)transferable.getTransferData(DataFlavor.javaFileListFlavor);
 					if(droppedFiles.size()>1) {
 						audioCutterModel.setStatusMessage(new StatusMessage(StatusMessage.Type.WARNING,"only drag single files to Jack, please"));
 						return;
