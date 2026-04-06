@@ -4,12 +4,10 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-import lunartools.audiocutter.core.AudioCutterModel;
-
-public class ProjectFileFilter extends FileFilter{
-	public static final String FILE_EXTENSION="project".toLowerCase();
+public class CueSheetFileFilter extends FileFilter{
+	public static final String FILE_EXTENSION="cue".toLowerCase();
 	public static final String FILE_EXTENSION_WITH_DOT="."+FILE_EXTENSION;
-	public static final String DESCRIPTION=AudioCutterModel.PROGRAM_NAME+" project file";
+	public static final String DESCRIPTION="CUE sheet";
 
 	@Override
 	public boolean accept(File file) {

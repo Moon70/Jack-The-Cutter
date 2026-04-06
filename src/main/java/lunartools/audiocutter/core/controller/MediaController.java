@@ -1,19 +1,18 @@
 package lunartools.audiocutter.core.controller;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.util.Objects;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lunartools.SwingTools;
+import com.formdev.flatlaf.util.SystemFileChooser;
+
 import lunartools.audiocutter.common.service.AudioPlayer;
-import lunartools.audiocutter.common.ui.CueSheetFileFilter;
 import lunartools.audiocutter.common.ui.Dialogs;
+import lunartools.audiocutter.common.util.CueSheetFileFilter;
 import lunartools.audiocutter.common.util.ProjectFileFilter;
 import lunartools.audiocutter.core.AudioCutterModel;
 import lunartools.audiocutter.core.model.StatusMessage;
@@ -57,19 +56,14 @@ public class MediaController {
 		if (mediaService.isProjectDirty() && Dialogs.userCanceledUnsavedChangesDialogue()) {
 			return;
 		}
-		final JFileChooser fileChooser=new JFileChooser() {
-			public void updateUI() {
-				putClientProperty("FileChooser.useShellFolder", Boolean.FALSE);
-				super.updateUI();
-			}
-		};
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		final SystemFileChooser fileChooser=new SystemFileChooser();
+		fileChooser.setFileSelectionMode(SystemFileChooser.FILES_ONLY);
 		fileChooser.setAcceptAllFileFilterUsed(true);
 
 		fileChooser.setCurrentDirectory(mediaService.getCurrentProjectDirectory());
 		fileChooser.setDialogTitle("Select media file to load");
-		fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
-		if(fileChooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
+		//fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
+		if(fileChooser.showOpenDialog(null)==SystemFileChooser.APPROVE_OPTION) {
 			mediaService.closeProject();
 			openMediaFile(fileChooser.getSelectedFile());
 		}
@@ -117,13 +111,8 @@ public class MediaController {
 			return;
 		}
 
-		final JFileChooser fileChooser=new JFileChooser() {
-			public void updateUI() {
-				putClientProperty("FileChooser.useShellFolder", Boolean.FALSE);
-				super.updateUI();
-			}
-		};
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		final SystemFileChooser fileChooser=new SystemFileChooser();
+		fileChooser.setFileSelectionMode(SystemFileChooser.DIRECTORIES_ONLY);
 		File currentMediaFile=audioCutterModel.getMediaFile();
 		File lastSectionsFolder=audioCutterModel.getSectionsFolder();
 
@@ -135,14 +124,14 @@ public class MediaController {
 			File projectFile=audioCutterModel.getProjectFile();
 			if(projectFile!=null) {
 				String projectFilename=projectFile.getName();
-				File suggestedFile=new File(currentMediaFile.getParentFile(),projectFilename.substring(0,projectFilename.length()-ProjectFileFilter.FILEEXTENSION.length()));
+				File suggestedFile=new File(currentMediaFile.getParentFile(),projectFilename.substring(0,projectFilename.length()-ProjectFileFilter.FILE_EXTENSION.length()-1));
 				fileChooser.setSelectedFile(suggestedFile);
 			}
 		}
 		File choosenSectionFolder=null;
 		fileChooser.setDialogTitle("Select folder to save sections");
-		fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
-		if(fileChooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION) {
+		//fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
+		if(fileChooser.showOpenDialog(null)==SystemFileChooser.APPROVE_OPTION) {
 			choosenSectionFolder=fileChooser.getSelectedFile();
 		}else if(logger.isTraceEnabled()){
 			final String message="Select section folder dialogue canceled";
@@ -177,14 +166,9 @@ public class MediaController {
 	}
 
 	public void createCuesheet() {
-		final JFileChooser fileChooser=new JFileChooser() {
-			public void updateUI() {
-				putClientProperty("FileChooser.useShellFolder", Boolean.FALSE);
-				super.updateUI();
-			}
-		};
+		final SystemFileChooser fileChooser=new SystemFileChooser();
 		fileChooser.setAcceptAllFileFilterUsed(false);
-		fileChooser.addChoosableFileFilter(new CueSheetFileFilter());
+		fileChooser.addChoosableFileFilter(new SystemFileChooser.FileNameExtensionFilter(CueSheetFileFilter.DESCRIPTION,CueSheetFileFilter.FILE_EXTENSION));
 		File currentCueSheetFile=audioCutterModel.getCueSheetFile();
 		if(currentCueSheetFile!=null) {
 			fileChooser.setCurrentDirectory(currentCueSheetFile.getParentFile());
@@ -196,28 +180,28 @@ public class MediaController {
 				String mediaFileName=currentMediaFile.getName();
 				int p=mediaFileName.lastIndexOf('.');
 				if(p!=-1) {
-					File suggesterCueSheetFile=new File(currentMediaFile.getParentFile(),mediaFileName.substring(0, p)+CueSheetFileFilter.FILEEXTENSION);
+					File suggesterCueSheetFile=new File(currentMediaFile.getParentFile(),mediaFileName.substring(0, p)+CueSheetFileFilter.FILE_EXTENSION);
 					fileChooser.setSelectedFile(suggesterCueSheetFile);
 				}
 			}
 		}
 		fileChooser.setDialogTitle("Select CUE sheet to save");
-		fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
-		if(fileChooser.showSaveDialog(null)!=JFileChooser.APPROVE_OPTION) {
+		//fileChooser.setPreferredSize(new Dimension(800,(int)(800/SwingTools.SECTIOAUREA)));
+		if(fileChooser.showSaveDialog(null)!=SystemFileChooser.APPROVE_OPTION) {
 			return;
 		}
 
 		File fileCue=fileChooser.getSelectedFile();
 		String filename=fileCue.getName();
-		if(!filename.toLowerCase().endsWith(CueSheetFileFilter.FILEEXTENSION)) {
-			fileCue=new File(fileCue.getParentFile(),filename+CueSheetFileFilter.FILEEXTENSION);
+		if(!filename.toLowerCase().endsWith(CueSheetFileFilter.FILE_EXTENSION)) {
+			fileCue=new File(fileCue.getParentFile(),filename+CueSheetFileFilter.FILE_EXTENSION);
 		}
 		if(fileCue.exists() && Dialogs.userCanceledCueSheetFileExistsDialogue(fileCue)) {
 			return;
 		}
 		audioCutterModel.setCueSheetFile(fileCue);
 		String nameCue=fileCue.getName();
-		File fileWav=new File(fileCue.getParentFile(),nameCue.substring(0, nameCue.length()-CueSheetFileFilter.FILEEXTENSION.length())+".wav");
+		File fileWav=new File(fileCue.getParentFile(),nameCue.substring(0, nameCue.length()-CueSheetFileFilter.FILE_EXTENSION.length())+"wav");
 		if(fileWav.exists() && Dialogs.userCanceledWavFileExistsDialogue(fileWav)) {
 			return;
 		}
